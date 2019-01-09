@@ -1,0 +1,19 @@
+{
+  "node": true,
+  "esnext": true,
+  "bitwise": true,
+  "eqeqeq": true,
+  "immed": true,
+  "latedef": "nofunc",
+  "newcap": true,
+  "noarg": true,
+  "undef": true,
+  "smarttabs": true,
+  "asi": true,
+  "debug": true,
+  "validthis": true,
+  "globals": {
+    "require": false,
+    "__non_webpack_require__": false
+  }
+}
