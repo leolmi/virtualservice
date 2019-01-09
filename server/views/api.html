@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Virtual Service API</title>
+  <style>
+    ::-moz-selection {background: #b3d4fc;text-shadow: none;}
+    ::selection {background: #b3d4fc;text-shadow: none;}
+    html {padding: 30px 10px;font-size: 20px;line-height: 1.4;color: #737373;background: #f0f0f0;-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%;}
+    html, input {font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;}
+    body {max-width: 800px;_width: 800px;padding: 30px 20px 50px;border-radius: 4px;margin: 0 auto;box-shadow: 0 1px 10px #a7a7a7, inset 0 1px 0 #fff;background: #fcfcfc;}
+    h1 {margin: 0 10px;font-size: 50px;text-align: center;}
+    h1 span {color: #bbb;}
+    h3 {margin: 1.5em 0 0.5em;}
+    p {margin: 0;}
+    ul {padding: 0 0 0 40px;margin: 1em 0;}
+    .container {max-width: 380px;_width: 380px;margin: 0 auto;}
+    code {display: inline-block;font-family: monospace;}
+    pre {white-space:pre-wrap;font-family: monospace;font-size:.6em;margin:0;padding-left:70px;}
+    *[inline] {display:inline-block;}
+    *[on-right] {float:right;}
+    *[base-title] {display:inline-block;min-width: 240px;}
+    *[w-100] {min-width:100px;}
+    *[w-140] {min-width:140px;}
+    *[w-200] {min-width:200px;}
+    *[m-50] {margin-left:50px;}
+    *[m-100] {margin-left:100px;}
+    *[route] {background-color:darkorange;color:whitesmoke;padding:4px 10px;border-radius:7px;}
+  </style>
+</head>
+<body>
+  <h1>TAOON</h1>
+  <div id="content"></div>
+</body>
+<script>
+  const api = [
+    {
+      "description": "Services",
+      "baseRoute": "services",
+      "routes": [
+        {
+          "verb": "GET",
+          "route": "services",
+          "description": "Virtual Services List",
+          "response": [{
+            "_id": "{string}",
+            "meta": "{object}",
+            "content": "{mixed}"
+          }]
+        }
+      ]
+    }
+      "description": "Auth",
+      "baseRoute": "auth",
+      "routes": [
+        {
+          "verb": "POST",
+          "route": "auth/local",
+          "description": "Autenticazione",
+          "response": {
+            "token": "{string} token"
+          }
+        }
+      ]
+    }
+  ];
+  function _replace(str, o) {
+    for(var pn in o) {
+      const rgx = new RegExp('\\[' + pn + '\\]', 'gi');
+      if (typeof(o[pn])==='string') {
+        str = str.replace(rgx, o[pn]);
+      } else if (typeof(o[pn])==='object') {
+        const txt = JSON.stringify(o[pn], null, 2);
+        str = str.replace(rgx, txt);
+      }
+    }
+    return str;
+  }
+  (function() {
+    const template_group = '<h3 base-title>[description]</h3><p inline><code>[baseRoute]</code></p><ul>[items]</ul>';
+    const template_item = '<li><p>[description]</p><p route><code w-100>[verb]</code> <b>[route]</b> <p m-50>BODY: <pre>[body]</pre></p></p><p m-50>RESPONSE: <pre>[response]</pre></p></li>';
+    const container = document.getElementById('content');
+    var html = '';
+    api.forEach(function(item){
+      const section = _replace(template_group, item);
+      const content = {items:''};
+      item.routes.forEach(function(r){
+        r.body = r.body||'';
+        r.response = r.response||'';
+        content.items += _replace(template_item, r);
+      });
+      html += _replace(section, content) + '\n<br>\n';
+    });
+    container.innerHTML = html;
+  })();
+</script>
+</html>

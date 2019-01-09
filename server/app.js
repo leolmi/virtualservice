@@ -1,7 +1,13 @@
 'use strict';
 console.log('-----------------------------------------------\nVIRTUAL-SERVICE starting...');
 const express = require('express');
+const mongoose = require('mongoose');
 const config = require('./config/environment');
+// Connect to database
+mongoose.connect(config.mongo.uri, config.mongo.options);
+// Populate DB with sample data
+if(config.seedDB) { require('./config/seed'); }
+
 // console.log('ENVIROMENT VARIABLES', process.env);
 // Setup server
 const app = express();
