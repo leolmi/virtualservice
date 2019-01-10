@@ -9,6 +9,7 @@ const cookieParser = require('cookie-parser');
 const errorHandler = require('errorhandler');
 const path = require('path');
 const config = require('./environment');
+const client_path = config.clientPath||'client';
 
 let _counter = 0;
 

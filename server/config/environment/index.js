@@ -37,9 +37,8 @@ module.exports = {
   // MongoDB connection options
   mongo: {
     options: {
-      db: {
-        safe: true
-      }
+      family: 4,
+      useNewUrlParser: true
     },
     uri: process.env.MONGODB_URI ||
          process.env.MONGOLAB_URI ||

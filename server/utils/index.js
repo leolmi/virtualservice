@@ -34,7 +34,7 @@ const _ = require('lodash');
 const fs = require('fs');
 const path = require('path');
 const URL = require('url');
-const functions = require('./functions');
+// const functions = require('./functions');
 const _release = typeof __webpack_require__ === "function";
 const _use = typeof __webpack_require__ === "function" ? __non_webpack_require__ : require;
 const noop = function() {};
@@ -556,7 +556,7 @@ exports.getTimeStr = (dt) => {
 exports.evalExp = (exp, scope, cb) => {
   scope = scope || {};
   scope._ = _;
-  functions.forEach((f) => scope[f.name] = f.exec);
+  // functions.forEach((f) => scope[f.name] = f.exec);
   const args = _.keys(scope);
   /*jslint evil: true */
   const f = new Function(args, 'return ' + exp);

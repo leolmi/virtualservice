@@ -4,7 +4,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const config = require('./config/environment');
 // Connect to database
-mongoose.connect(config.mongo.uri, config.mongo.options);
+mongoose.connect(config.mongo.uri, config.mongo.options).then(() => console.log('Mongo db conntected!'), err => console.error('Mongo db connection error:', err));
 // Populate DB with sample data
 if(config.seedDB) { require('./config/seed'); }
 
@@ -20,8 +20,6 @@ const socketio = require('socket.io')(server, {
 require('./config/socketio')(socketio);
 require('./config/server')(app);
 require('./routes')(app);
-
-Scenario.startup();
 
 // Start server
 server.listen(config.port, config.ip, () => console.log('VIRTUAL-SERVICE listening on %d\n-----------------------------------------------', config.port));
