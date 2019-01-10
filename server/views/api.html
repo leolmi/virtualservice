@@ -35,18 +35,106 @@
 <script>
   const api = [
     {
+      "description": "Player",
+      "baseRoute": "service",
+      "routes": [{
+        "verb": "{all}",
+        "route": "service/...",
+        "description": "you can define your paths, verbs and call definitions by editor"
+      }]
+    }, {
       "description": "Services",
       "baseRoute": "services",
       "routes": [
         {
           "verb": "GET",
           "route": "services",
-          "description": "Virtual Services List",
+          "description": "Virtual services list",
           "response": [{
             "_id": "{string}",
-            "meta": "{object}",
-            "content": "{mixed}"
+            "owner": "{string}",
+            "lastChange": "{number}",
+            "creationDate": "{number}",
+            "name": "{string}",
+            "active": "{boolean}",
+            "dbo": "{string}",
+            "path": "{string}",
+            "calls": ['{object}']
           }]
+        }, {
+          "verb": "GET",
+          "route": "services/:id",
+          "auth": true,
+          "description": "Single virtual service definition",
+          "response": {
+            "_id": "{string}",
+            "owner": "{string}",
+            "lastChange": "{number}",
+            "creationDate": "{number}",
+            "name": "{string}",
+            "active": "{boolean}",
+            "dbo": "{string}",
+            "path": "{string}",
+            "calls": ['{object}']
+          }
+        }, {
+          "verb": "POST",
+          "route": "services",
+          "auth": true,
+          "description": "Save or update a virtual service",
+          "body": {
+            "_id": "{string}",
+            "owner": "{string}",
+            "lastChange": "{number}",
+            "creationDate": "{number}",
+            "name": "{string}",
+            "active": "{boolean}",
+            "dbo": "{string}",
+            "path": "{string}",
+            "calls": ['{object}']
+          },
+          "response": "error if failed otherwise nothing!"
+        }, {
+          "verb": "DELETE",
+          "route": "services/:id",
+          "auth": true,
+          "description": "Delete a virtual service",
+          "body": {
+            "_id": "{string}"
+          },
+          "response": "error if failed otherwise nothing!"
+        }
+      ]
+    }, {
+      "description": "Users",
+      "baseRoute": "user",
+      "routes": [
+        {
+          "verb": "GET",
+          "route": "user/me",
+          "auth": true,
+          "description": "Current logged user",
+          "response": {
+            "name": "{string}",
+            "email": "{string}",
+            "role": "{string}",
+          }
+        }, {
+          "verb": "GET",
+          "route": "user/:id",
+          "auth": true,
+          "description": "Current logged user role",
+          "response": "{string}"
+        }, {
+          "verb": "POST",
+          "route": "user/me",
+          "auth": true,
+          "description": "Update user password",
+          "body": {
+            "oldPassword": "{string}",
+            "newPassword": "{string}"
+          },
+          "response": "error if failed otherwise nothing!"
         }
       ]
     }
@@ -65,16 +153,20 @@
   }
   (function() {
     const template_group = '<h3 base-title>[description]</h3><p inline><code>[baseRoute]</code></p><ul>[items]</ul>';
-    const template_item = '<li><p>[description]</p><p route><code w-100>[verb]</code> <b>[route]</b> <p m-50>BODY: <pre>[body]</pre></p></p><p m-50>RESPONSE: <pre>[response]</pre></p></li>';
+    const template_item = '<li><p>[description]</p><p route><code w-100>[verb]</code> [origin]<b>[route]</b></p> [bodyresp]</li>';
+    const template_spec = '<p m-50>BODY: <pre>[body]</pre></p><p m-50>RESPONSE: <pre>[response]</pre></p>';
     const container = document.getElementById('content');
     var html = '';
     api.forEach(function(item){
       const section = _replace(template_group, item);
       const content = {items:''};
       item.routes.forEach(function(r){
+        let item = template_item;
         r.body = r.body||'';
+        r.origin = location.origin + '/';
         r.response = r.response||'';
-        content.items += _replace(template_item, r);
+        item = _replace(item, {bodyresp: (r.body || r.response) ? template_spec : ''});
+        content.items += _replace(item, r);
       });
       html += _replace(section, content) + '\n<br>\n';
     });
