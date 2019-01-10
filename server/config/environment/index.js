@@ -32,7 +32,7 @@ module.exports = {
   // Token expires in minutes
   tokenExpiration: 5,
   // List of user roles
-  userRoles: ['guest', 'user', 'admin'],
+  userRoles: ['user', 'admin'],
   seedDB: false,
   // MongoDB connection options
   mongo: {
