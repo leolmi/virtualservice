@@ -120,12 +120,6 @@
             "role": "{string}",
           }
         }, {
-          "verb": "GET",
-          "route": "user/:id",
-          "auth": true,
-          "description": "Current logged user role",
-          "response": "{string}"
-        }, {
           "verb": "POST",
           "route": "user/me",
           "auth": true,
@@ -135,6 +129,23 @@
             "newPassword": "{string}"
           },
           "response": "error if failed otherwise nothing!"
+        }
+      ]
+    }, {
+      "description": "Authorization",
+      "baseRoute": "auth",
+      "routes": [
+        {
+          "verb": "POST",
+          "route": "auth/local",
+          "description": "Login",
+          "body": {
+            "name": "{string}",
+            "password": "{string}"
+          },
+          "response": {
+            "token": "{string}"
+          }
         }
       ]
     }

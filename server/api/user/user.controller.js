@@ -1,6 +1,5 @@
 'use strict';
 const User = require('./user.model');
-const passport = require('passport');
 const config = require('../../config/environment');
 const jwt = require('jsonwebtoken');
 
@@ -20,20 +19,8 @@ exports.create = (req, res, next) => {
   newUser.role = 'user';
   newUser.save((err, user) => {
     if (err) return validationError(res, err);
-    const token = jwt.sign({_id: user._id }, config.secrets.session, { expiresInMinutes: 60*5 });
+    const token = jwt.sign({ _id: user._id }, config.secrets.session, { expiresIn: '5m' });
     res.json({ token: token });
-  });
-};
-
-/**
- * Get a single user
- */
-exports.role = (req, res, next) => {
-  const userId = req.params.id;
-  User.findById(userId, (err, user) => {
-    if (err) return next(err);
-    if (!user) return res.send(401);
-    res.json(user.role);
   });
 };
 

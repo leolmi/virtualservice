@@ -6,7 +6,7 @@ const config = require('../config/environment');
 const jwt = require('jsonwebtoken');
 const expressJwt = require('express-jwt');
 const compose = require('composable-middleware');
-const Users = require('../api/user/user.controller');
+const Users = require('../api/user/user.model');
 const validateJwt = expressJwt({ secret: config.secrets.session });
 
 /**
@@ -18,16 +18,13 @@ function isAuthenticated(check) {
   return compose()
     // Validate jwt
     .use(function (req, res, next) {
-      if (req.query && req.query.hasOwnProperty('access_token')) {
-        req.headers.authorization = 'Bearer ' + req.query.access_token;
-      }
       validateJwt(req, res, next);
     })
     // Attach user to request
     .use(function (req, res, next) {
-      Users.find(req.user._id, function (err, user) {
-        if (err) {return next(err);}
-        if (!user) {return res.send(404);}
+      Users.findOne({_id:req.user._id}, (err, user) => {
+        if (err) return next(err);
+        if (!user) return res.send(404);
         req.user = user;
         next();
       });
@@ -68,7 +65,7 @@ function hasRole(roleRequired) {
  * Returns a jwt token signed by the app secret
  */
 function signToken(id) {
-  return jwt.sign({ _id: id }, config.secrets.session, { expiresInMinutes: 60*5 });
+  return jwt.sign({ _id: id }, config.secrets.session, { expiresIn: '5m' });
 }
 
 /**

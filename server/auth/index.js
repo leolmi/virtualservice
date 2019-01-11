@@ -1,14 +1,14 @@
 'use strict';
 
-var express = require('express');
-var passport = require('passport');
-var config = require('../config/environment');
-var User = require('../api/user/user.controller');
+const express = require('express');
+const passport = require('passport');
+const config = require('../config/environment');
+const User = require('../api/user/user.model');
 
 // Passport Configuration
 require('./local/passport').setup(User, config);
 
-var router = express.Router();
+const router = express.Router();
 
 router.use('/local', require('./local'));
 

@@ -6,7 +6,10 @@ const crypto = require('crypto');
 const u = require('../../utils');
 
 const UserSchema = new Schema({
-  name: String,
+  name: {
+    type: String, 
+    required: function() { return this.userId != null; }
+  },
   email: { type: String, lowercase: true },
   role: { type: String, default: 'user' },
   hashedPassword: String,
@@ -62,16 +65,16 @@ UserSchema
 // Validate username is not taken
 UserSchema
   .path('name')
-  .validate(function(value, respond) {
+  .validate(function(value) {
     const self = this;
-    this.constructor.findOne({name: value}, function(err, user) {
-      if(err) throw err;
-      if(user) {
-        if(self.id === user.id) return respond(true);
-        return respond(false);
-      }
-      respond(true);
+    return new Promise((res, rej)=> {
+      self.constructor.findOne({name: value}, function(err, user) {
+        if (err) throw err;
+        if (!user) return res();
+        return (self.id === user.id) ? res() : rej();         
+      });
     });
+    
   }, 'The specified username is already in use.');
 
 
