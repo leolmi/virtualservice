@@ -77,7 +77,7 @@ exports.created = created;
  */
 const deleted = (res, obj, cb) => {
   cb = cb || noop;
-  res.status(204);
+  res.status(204).json(obj||{});
   return cb(obj);
 };
 exports.deleted = deleted;
@@ -101,7 +101,7 @@ const error = (res, err, code) => {
   if (err && err.message)
     err = err.message;
   //  err = new Error(err);
-  console.error('echo-service error:', err);
+  console.error('virtualservice error:', err);
   res.status(code || 500).json(err);
 };
 exports.error = error;

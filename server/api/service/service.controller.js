@@ -39,8 +39,8 @@ exports.save = function(req, res) {
 // elimina il servizio
 exports.delete = function(req, res) {
   if ((!req.params||{}).id) return u.error(res, 'Undefined service!'); 
-  Service.findOne({owner:req.user._id, _id:service._id}, 
+  Service.findOne({owner:req.user._id, _id:req.params.id}, 
     (err, xservice) => err ? u.error(res, err) : 
-      (xservice ? xservice.remove(rerr => rerr ? u.error(res, rerr) : u.deleted(res)) : u.error('Service not found!'))); 
+      (xservice ? xservice.remove(rerr => rerr ? u.error(res, rerr) : u.deleted(res, xservice)) : u.error(res, 'Service not found!'))); 
 };
 
