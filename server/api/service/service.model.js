@@ -14,6 +14,7 @@ const ServiceCallRuleSchema = new Schema({
 const ServiceCallSchema = new Schema({
   path: String,
   verb: String,
+  description: String,
   response: String,
   file: String,
   respType: String,
@@ -25,6 +26,7 @@ const ServiceSchema = new Schema({
   lastChange: Number,
   creationDate: Number,
   name: String,
+  description: String,
   active: {type: Boolean, default:true},
   dbo: String,
   path: String,

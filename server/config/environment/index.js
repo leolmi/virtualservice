@@ -33,8 +33,6 @@ module.exports = {
   tokenExpiration: 5,
   // List of user roles
   userRoles: ['user', 'admin'],
-  // sample data
-  seedDB: process.env.SEED_DB,
   // MongoDB connection options
   mongo: {
     options: {

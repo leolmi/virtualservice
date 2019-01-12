@@ -40,7 +40,7 @@
     "poststart": "start http://localhost:9010",
     "build": "webpack --config webpack.config.js",
     "test": "node dist/virtualservice.js",
-    "mongo": "mongod --dbpath C:/mongodb/data"
+    "mongo": "call mongod --dbpath C:/mongodb/data"
   },
   "devDependencies": {
     "webpack": "^3.10.0"
