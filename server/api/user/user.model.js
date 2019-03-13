@@ -12,9 +12,9 @@ const UserSchema = new Schema({
   },
   email: { type: String, lowercase: true },
   role: { type: String, default: 'user' },
+  lock: String,
   hashedPassword: String,
-  salt: String,
-  temporary: { type:Boolean, default:false }  // se vero richiede la modifica della password al primo accesso
+  salt: String
 });
 
 /**
@@ -62,21 +62,6 @@ UserSchema
     return hashedPassword.length;
   }, 'Password cannot be blank');
 
-// Validate username is not taken
-UserSchema
-  .path('name')
-  .validate(function(value) {
-    const self = this;
-    return new Promise((res, rej)=> {
-      self.constructor.findOne({name: value}, function(err, user) {
-        if (err) throw err;
-        if (!user) return res();
-        return (self.id === user.id) ? res() : rej();         
-      });
-    });
-    
-  }, 'The specified username is already in use.');
-
 
 const validatePresenceOf = function(value) {
   return value && value.length;
@@ -117,7 +102,8 @@ UserSchema.methods = {
    * @api public
    */
   makeSalt: function() {
-    return crypto.randomBytes(16).toString('base64');
+    return u.salt();
+    // return crypto.randomBytes(16).toString('base64');
   },
 
   /**
@@ -129,8 +115,9 @@ UserSchema.methods = {
    */
   encryptPassword: function(password) {
     if (!password || !this.salt) return '';
-    const salt = new Buffer(this.salt, 'base64');
-    return crypto.pbkdf2Sync(password, salt, 10000, 64, 'sha1').toString('base64');
+    return u.encrypt(password, this.salt);
+    // const salt = new Buffer(this.salt, 'base64');
+    // return crypto.pbkdf2Sync(password, salt, 10000, 64, 'sha1').toString('base64');
   }
 };
 

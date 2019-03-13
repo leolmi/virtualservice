@@ -7,6 +7,7 @@ const fs = require('fs');
 const path = require('path');
 const _base_url = '/service/';
 const _db_object = {};
+const Log = require('./log.model');
 
 
 function _pathValue(path, o) {
@@ -109,7 +110,7 @@ function _getValue(v, o) {
 // }
 
 function _result(res, call, o) {
-  const resp = call.response;
+  let resp = call.response;
   if (_.isString(resp)) {
     try {
       if (_.startsWith(resp, '=')) {
@@ -156,9 +157,17 @@ function _download(res, call) {
 }
 
 function _finder(o) {
-  return function() {
-    return _.startsWith(o.pathname||'', this.path + '/');
+  return () => {
+    console.log('FINDER', o);
+    return (o.pathname||'').indexOf(this.path + '/') === 0;
+    // return _.startsWith(o.pathname||'', this.path + '/');
   }
+}
+
+function _raiseError(res, owner, obj, err, code = null) {  
+  Log.create({ time:obj.time, owner:owner, error: err, content: obj});
+  if (owner) console.log('OWNER=', owner);
+  return u.error(res, err, code);
 }
 
 module.exports = (req, res) => {
@@ -169,21 +178,21 @@ module.exports = (req, res) => {
     }
   }
   const o = u.parseUrl(req, _base_url);
-  Service.find({
-    $where: _finder(o)   //'\''+(o.pathname||'')+'\'.indexOf(this.path + \'/\') === 0'
-  }, (err, services) => {
-    if (err) return u.error(res, err);
-    if (!services || services.length<1) return u.error(res, 'No service can reply!');
-    if (services.length>1) return u.error(res, 'More than one service!');
+  Service.find({} , (err, ss) => {
+    const services = _.filter(ss, s => !!s.path && (o.pathname||'').indexOf(s.path + '/') === 0);
+    if (err) return _raiseError(res, null, o, err);
+    if (!services || services.length<1) return _raiseError(res, null, o, 'No service can reply!');
+    if (services.length>1) return _raiseError(res, services.map(s => s._id).join(','), o, 'More than one service!');
     const srv = services[0];
-    if (srv.active === false) return u.error(res, 'Service not active!');
+    if (srv.active === false) return _raiseError(res, srv._id, o, 'Service not active!');
     _findCall(srv, o, (err, call) => {
-      if (err) return u.error(res, err);
+      if (err) return _raiseError(res, srv._id, o, err);
       if (o.verb === 'options') return u.ok(res);
       call._path = u.path(srv.path, call.path);
       _validatedb(srv, o);
       _validate(call, o, (err, code) => {
-        if (err) return u.error(res, err, code);
+        if (err) return _raiseError(res, srv._id, o, err, code);
+        Log.create({ time:o.time, owner:srv._id, call:call, content: o});
         if (call.respType === 'file') return _download(res, call);
         _result(res, call, o);
       });

@@ -25,6 +25,11 @@ module.exports = {
   secrets: {
     session: 'virtualservice-secret'
   },
+  mailer: {
+    service: 'gmail',
+    sender: 'leo.olmi@gmail.com',
+    password: 'TGVvLTE3N3g='
+  },
   // Path del server
   serverPath: path.normalize(__dirname + '/../..'),
   // Path del client

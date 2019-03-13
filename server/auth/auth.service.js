@@ -9,6 +9,11 @@ const compose = require('composable-middleware');
 const Users = require('../api/user/user.model');
 const validateJwt = expressJwt({ secret: config.secrets.session });
 
+exports.code = {
+  ok: 'ok',
+  none: 'none'
+};
+
 /**
  * Attaches the user object to the request if authenticated
  * Otherwise returns 403/401

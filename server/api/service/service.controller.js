@@ -4,6 +4,7 @@ const config = require('../../config/environment');
 const u = require('../../utils');
 const _ = require('lodash');
 const Service = require('./service.model');
+const Log = require('../player/log.model');
 
 // elenco dei servizi
 exports.index = function(req, res) {
@@ -44,3 +45,15 @@ exports.delete = function(req, res) {
       (xservice ? xservice.remove(rerr => rerr ? u.error(res, rerr) : u.deleted(res, xservice)) : u.error(res, 'Service not found!'))); 
 };
 
+// visualizza il log delle chiamate
+exports.monitor = function(req, res) {
+  console.log('monitor request', req.params);
+  // Log.find({owner: req.params.id}, (err, items) => {
+  Log.find({
+    owner: req.params.id, 
+    time: {$gt: parseInt(req.params.last)}
+  }, (err, items) => {
+    if (err) return u.error(res, err);
+    u.ok(res, items);
+  });
+}

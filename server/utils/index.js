@@ -31,12 +31,13 @@
  */
 
 const _ = require('lodash');
+const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 const URL = require('url');
-// const functions = require('./functions');
 const _release = typeof __webpack_require__ === "function";
 const _use = typeof __webpack_require__ === "function" ? __non_webpack_require__ : require;
+const VSSALT = 'VirtualServiceLeo';
 const noop = function() {};
 exports.noop = noop;
 
@@ -119,6 +120,17 @@ exports.ook = ook;
 
 const notImplemented = (res) => res.status(500).json(':( Not implemented yet!');
 exports.notImplemented = notImplemented;
+
+const _salt = (len = 16) => crypto.randomBytes(len).toString('base64');
+exports.salt = _salt;
+
+exports.encrypt = (password, salt) => {
+  if (!password) return '';
+  salt = salt || VSSALT;
+  const salt64 = new Buffer(salt, 'base64');
+  return crypto.pbkdf2Sync(password, salt64, 10000, 64, 'sha1').toString('base64');
+};
+
 
 /**
  * Effettua il log su console
@@ -233,6 +245,11 @@ exports.format = (msg, args, o) => {
     }
   }
   return msg;
+};
+
+exports.replaceBookmark = (str, bookmark, value) => {
+  const rgx = new RegExp('\\[' + bookmark + '\\]','gm');
+  return str.replace(rgx, value||'');
 };
 
 exports.str = (...args) => {
@@ -599,6 +616,8 @@ exports.parseUrl = (req, base) => {
   // console.log('PARSE URL:\n%s', u_str);
   // console.log('REQUEST', req);
   return {
+    user: (req.user||{}).email||'unknown',
+    time: Date.now(),
     base: base,
     params: req.query||req.params,
     data: req.body,
