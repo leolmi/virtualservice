@@ -128,7 +128,7 @@ function _getValue(v, o) {
 //   });
 // }
 
-function _result(res, call, o) {
+function _result(res, call, o, owner, pre) {
   let resp = call.response;
   if (_.isString(resp)) {
     try {
@@ -150,6 +150,9 @@ function _result(res, call, o) {
       return u.error(res, err);
     }
   }
+  o.time = Date.now();
+  _log(o, owner, resp, call, null, pre);
+  // Log.create({ time:Date.now(), owner: owner, call:call, author: o.user, verb: o.verb, content: {response: resp}});
   u.ok(res, resp);
 }
 function _getFixedPath(path) {
@@ -183,10 +186,31 @@ function _finder(o) {
   }
 }
 
-function _raiseError(res, owner, obj, err, code = null) {  
-  Log.create({ time:obj.time, owner:owner, error: err, content: obj});
+function _raiseError(res, owner, o, err, code = null) {
+  o = o || {};
+  // Log.create({ time:obj.time, owner:owner, error: err, author: o.user||'unknown', verb: o.verb||'...', content: o});
+  _log(o, owner, {}, null, err);
   if (owner) console.log('OWNER=', owner);
   return u.error(res, err, code);
+}
+
+function _log(o, owner, response, call, error, pre) {
+  o = o || {};
+  const now = Date.now();
+  const time = o.time || now;
+  const log = { 
+    time: time, 
+    owner: owner, 
+    path: '' + o.base + o.path,
+    call: call,
+    author: o.user || 'unknown', 
+    verb: o.verb || '...',
+    elapsed: pre ? now - pre.time : 0
+  };
+  log.content = response ? {response:response} : {request:o};
+  log.error = error ? error : null;
+  Log.create(log);
+  return log;
 }
 
 module.exports = (req, res) => {
@@ -198,6 +222,7 @@ module.exports = (req, res) => {
   }
   const o = u.parseUrl(req, _base_url);
   Service.find({} , (err, ss) => {
+    // console.log('parsed request: ', o);
     const services = _.filter(ss, s => !!s.path && (o.pathname||'').indexOf(s.path + '/') === 0);
     if (err) return _raiseError(res, null, o, err);
     if (!services || services.length<1) return _raiseError(res, null, o, 'No service can reply!');
@@ -211,9 +236,10 @@ module.exports = (req, res) => {
       _validatedb(srv, o);
       _validate(call, o, (err, code) => {
         if (err) return _raiseError(res, srv._id, o, err, code);
-        Log.create({ time:o.time, owner:srv._id, call:call, content: o});
+        // Log.create({ time:o.time, owner:srv._id, call:call, content:{request: o}, author: o.user, verb: o.verb});
+        const pre = _log(o, srv._id, null, call, null);
         if (call.respType === 'file') return _download(res, call);
-        _result(res, call, o);
+        _result(res, call, o, srv._id, pre);
       });
     });
   });

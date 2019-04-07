@@ -35,7 +35,7 @@ module.exports = {
   // Path del client
   clientPath: '',
   // Token expires in minutes
-  tokenExpiration: 5,
+  tokenExpiration: '360m',
   // List of user roles
   userRoles: ['user', 'admin'],
   // MongoDB connection options

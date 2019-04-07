@@ -8,7 +8,11 @@ const LogSchema = new Schema({
   owner: String,
   error: Schema.Types.Mixed,
   content: Schema.Types.Mixed,
-  call: Schema.Types.Mixed
+  call: Schema.Types.Mixed,
+  path: String,
+  author: String,
+  verb: String,
+  elapsed: Number
 }, { versionKey: false });
 
 module.exports = mongoose.model('Log', LogSchema);
