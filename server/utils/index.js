@@ -31,6 +31,7 @@
  */
 
 const _ = require('lodash');
+const vm = require('vm');
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
@@ -592,9 +593,26 @@ exports.evalExp = (exp, scope, cb) => {
  * @param args
  * @returns {*}
  */
+// exports.evalScriptA = (...args) => {
+//   const expression = args.shift();
+//   const context = args.shift();
+//   const utils = _.map(args, (a) => {
+//     if (_.isObject(a)) {
+//       return _.map(_.keys(a), (k) => 'const ' + k + ' = ' + JSON.stringify(a[k]) + ';').join('\n');
+//     } else if (_.isString(a)) {
+//       return a;
+//     } else {
+//       return '';
+//     }
+//   }).join('\n\n');
+//   /*jslint evil: true */
+//   const f = new Function('context', '_', utils + '\n\n' + expression);
+//   return f(context, _, utils);
+// };
 exports.evalScript = (...args) => {
   const expression = args.shift();
-  const context = args.shift();
+  const sandbox = _.clone(args.shift()) || {};
+  sandbox._ = _;
   const utils = _.map(args, (a) => {
     if (_.isObject(a)) {
       return _.map(_.keys(a), (k) => 'const ' + k + ' = ' + JSON.stringify(a[k]) + ';').join('\n');
@@ -604,9 +622,9 @@ exports.evalScript = (...args) => {
       return '';
     }
   }).join('\n\n');
-  /*jslint evil: true */
-  const f = new Function('context', '_', utils + '\n\n' + expression);
-  return f(context, _, utils);
+  const script = new vm.Script(utils + '\n\n' + expression);
+  const context = new vm.createContext(sandbox);
+  return script.runInNewContext(context);
 };
 
 exports.parseUrl = (req, base) => {
@@ -616,7 +634,7 @@ exports.parseUrl = (req, base) => {
   // console.log('PARSE URL:\n%s', u_str);
   // console.log('REQUEST', req);
   return {
-    user: (req.user||{}).email||'unknown',
+    user: (req.user||{}).email||req.socket.remoteAddress||'unknown',
     time: Date.now(),
     base: base,
     params: req.query||req.params,
@@ -680,11 +698,26 @@ exports.parseJS = (txt) => {
   try {
     txt = ((txt||'')+'').trim();
     txt = _.startsWith(txt, '=') ? txt.substr(1) : 'return ' + txt;
-    /* jshint evil: true */
-    const f = new Function('_', txt);
-    return f(_);
+    txt = 'result = (function() {' + txt + '})();';
+    const script = new vm.Script(txt);
+    const context = new vm.createContext({_: _, result:null});
+    script.runInNewContext(context);
+    return context.result;
   } catch (err) {
     console.error(err, txt);
   }
   return {};
-};
+}
+
+// exports.parseJS = (txt) => {
+//   try {
+//     txt = ((txt||'')+'').trim();
+//     txt = _.startsWith(txt, '=') ? txt.substr(1) : 'return ' + txt;
+//     /* jshint evil: true */
+//     const f = new Function('_', txt);
+//     return f(_);
+//   } catch (err) {
+//     console.error(err, txt);
+//   }
+//   return {};
+// };

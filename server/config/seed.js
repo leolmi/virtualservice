@@ -31,7 +31,7 @@ User.findOne({role:'admin'}, (err, user) => {
 });
 
 if (!isPreserve) {
-  Log.deleteMany({}, () => console.log('cleared log'));
+  Log.deleteMany({}, () => console.log('log cleared'));
 }
 
 if (isRegen || isTest) {

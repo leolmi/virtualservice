@@ -15,15 +15,15 @@ router.post('/', (req, res, next) => {
     _cache[org]++;
   } else if (_cache[org]===3) {
     _cache[org] = now;
-    return res.json(401, 'You have tryed access too many time. Wait for 5 minutes and retry!');
+    return res.status(401).json('You have tryed access too many time. Wait for 5 minutes and retry!');
   } else if (now - _cache[org] < 300000) {
-    return res.json(401, 'You have tryed access too many time. Wait for few minutes and retry!');
+    return res.status(401).json('You have tryed access too many time. Wait for few minutes and retry!');
   } else {
     _cache[org] = 1;
   }
   passport.authenticate('local', (err, user, info) => {
     const error = err || info;
-    if (error) return res.json(401, error);
+    if (error) return res.status(401).json(error);
     const code = !user ? auth.code.none : auth.code.ok;
     const token = !user ? null : auth.signToken(user._id, user.role);
     if (!!token) delete _cache[org];

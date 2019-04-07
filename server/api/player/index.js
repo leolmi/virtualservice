@@ -1,6 +1,7 @@
 'use strict';
 
 const _ = require('lodash');
+const vm = require('vm');
 const u = require('../../utils');
 const Service = require('../service/service.model');
 const fs = require('fs');
@@ -17,22 +18,40 @@ function _pathValue(path, o) {
   return s;
 }
 
+// function _evalExpA(exp, scope, o) {
+//   o = o || {};
+//   let k = [null];
+//   k = k.concat(_.keys(scope));
+//   k.push((!!o.script) ? exp : 'return ' + exp);
+//   // console.log('EVAL EXP: %s', exp);
+//   const args = _.map(_.keys(scope), (a) => scope[a]);
+//   /* jshint evil: true */
+//   const validator = new (Function.prototype.bind.apply(Function, k));
+//   try {
+//     const result = validator.apply(validator, args);
+//     return { value: result };
+//   } catch(err) {
+//     console.log('EXPRESSION ERROR: ', err);
+//     return { error: err };
+//   }
+// }
+
 function _evalExp(exp, scope, o) {
   o = o || {};
-  let k = [null];
-  k = k.concat(_.keys(scope));
-  k.push((!!o.script) ? exp : 'return ' + exp);
-  // console.log('EVAL EXP: %s', exp);
-  const args = _.map(_.keys(scope), (a) => scope[a]);
-  /* jshint evil: true */
-  const validator = new (Function.prototype.bind.apply(Function, k));
+  exp = (!!o.script) ? exp : 'return ' + exp;
+  exp = 'result = (function() {' + exp + '})();';
+  const sandbox = _.clone(scope||{});
+  sandbox.result = null;
+  const script = new vm.Script(exp);
+  const context = new vm.createContext(sandbox);
   try {
-    const result = validator.apply(validator, args);
-    return { value: result };
+    script.runInNewContext(context);
+    return { value: sandbox.result };
   } catch(err) {
     console.log('EXPRESSION ERROR: ', err);
     return { error: err };
   }
+  
 }
 
 function _validateExp(exp, scope) {
