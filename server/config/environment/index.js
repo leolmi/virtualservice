@@ -28,7 +28,7 @@ module.exports = {
   mailer: {
     service: 'gmail',
     sender: 'leo.olmi@gmail.com',
-    password: 'TGVvLTE3N3g='
+    password: 'xxxxxxxxx'
   },
   // Path del server
   serverPath: path.normalize(__dirname + '/../..'),
