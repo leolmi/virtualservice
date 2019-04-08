@@ -26,9 +26,9 @@ module.exports = {
     session: 'virtualservice-secret'
   },
   mailer: {
-    service: 'gmail',
-    sender: 'leo.olmi@gmail.com',
-    password: 'xxxxxxxxx'
+    service: process.env.MAIL_SENDER_SERVICE,
+    sender: process.env.MAIL_SENDER_NAME,
+    password: process.env.MAIL_SENDER_PASSWORD
   },
   // Path del server
   serverPath: path.normalize(__dirname + '/../..'),
