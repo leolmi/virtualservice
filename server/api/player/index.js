@@ -244,3 +244,20 @@ module.exports = (req, res) => {
     });
   });
 };
+
+
+/**
+ * TODO:
+ * 
+ *  1. publicare lo swagger dei servizi (su impostazione)
+ *    - il file swagger del servizio viene generato sul server al momento del salvataggio 
+ *      (quindi potrebbe essere implementato metodo per generare swagger lato server)
+ *    - la pubblicazione avviene sull'url:   ../base-path/swagger
+ *      (quindi la "call" swagger diventa privata)
+ * 
+ *  2. possibilità di pubblicare un servizio (su impostazione)
+ *    - Elenco dei servizi pubblici con ricerca e link a swagger su home page
+ * 
+ *  3. possibilità di forkare da servizio pubblico
+ * 
+ */
