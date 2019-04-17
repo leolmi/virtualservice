@@ -70,7 +70,14 @@ exports.sign = (req, res) => {
     if (err) return u.error(res, err);
     if (!user) return u.error(404);    
     const token = Auth.signToken(user._id, user.role);
-    res.redirect('/?' + token);
+    
+    // TEST #1: token ok cookie
+    res.cookie('sign-token', token, { maxAge: 120000, httpOnly: true });
+    res.redirect('/?confirmation');
+
+    // TEST #2: token on url
+    // res.redirect('/?' + token);
+    
     console.log('SIGN USER', user);
   });
 };

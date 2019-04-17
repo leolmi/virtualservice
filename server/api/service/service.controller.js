@@ -4,6 +4,7 @@ const config = require('../../config/environment');
 const u = require('../../utils');
 const _ = require('lodash');
 const Service = require('./service.model');
+const Player = require('../player');
 const Log = require('../player/log.model');
 
 // elenco dei servizi
@@ -29,6 +30,7 @@ exports.save = function(req, res) {
       const updated = _.merge(xservice, service, (a,b) => _.isArray(a) ? b : undefined);
       //updated.markModified('any-mixed-content');
       updated.save((err) => err ? u.error(res, err) : u.ok(res, xservice));
+      Player('flush', service._id);
     });
   } else {
     // save new
