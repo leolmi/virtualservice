@@ -122,7 +122,7 @@ exports.ook = ook;
 const notImplemented = (res) => res.status(500).json(':( Not implemented yet!');
 exports.notImplemented = notImplemented;
 
-const _salt = (len = 16) => crypto.randomBytes(len).toString('base64');
+const _salt = (len = 16, code = 'base64') => crypto.randomBytes(len).toString(code);
 exports.salt = _salt;
 
 exports.encrypt = (password, salt) => {

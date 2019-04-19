@@ -11,7 +11,8 @@ const validateJwt = expressJwt({ secret: config.secrets.session });
 
 exports.code = {
   ok: 'ok',
-  none: 'none'
+  none: 'none',
+  idle: 'idle'
 };
 
 /**

@@ -24,8 +24,8 @@ router.post('/', (req, res, next) => {
   passport.authenticate('local', (err, user, info) => {
     const error = err || info;
     if (!!error && error.code !== auth.code.none) return res.status(401).json(error);
-    const code = !user ? auth.code.none : auth.code.ok;
-    const token = !user ? null : auth.signToken(user._id, user.role);
+    const code = !user ? auth.code.none : (!!user.lock ? auth.code.idle : auth.code.ok);
+    const token = (code != auth.code.ok) ? null : auth.signToken(user._id, user.role);
     if (!!token) delete _cache[org];
     res.json({token: token, code: code});
   })(req, res, next);

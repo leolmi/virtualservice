@@ -72,12 +72,17 @@ const validatePresenceOf = function(value) {
  */
 UserSchema
   .pre('save', function(next) {
+    // console.log('check saving user', this);
+    // console.log('user isNew=%s', this.isNew);
     if (!this.isNew) return next();
-
-    if (!validatePresenceOf(this.hashedPassword))
+    const m = /^(.*?)\@/.exec(this.email);
+    this.name = m ? m[1] : this.email;
+    // console.log('saving user', this);
+    if (!validatePresenceOf(this.hashedPassword)) {
       next(new Error('Invalid password'));
-    else
+    } else {
       next();
+    }
   });
 
 /**

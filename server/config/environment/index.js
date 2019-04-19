@@ -27,7 +27,7 @@ module.exports = {
   },
   mailer: {
     service: process.env.MAIL_SENDER_SERVICE || 'gmail',
-    sender: process.env.MAIL_SENDER_NAME || 'virtual.service@gmail.com',
+    sender: process.env.MAIL_SENDER_NAME || 'virtual.service.leo@gmail.com',
     password: process.env.MAIL_SENDER_PASSWORD || 'xxx'
   },
   // Path del server

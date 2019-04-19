@@ -3,6 +3,7 @@
 const User = require('../api/user/user.model');
 const Service = require('../api/service/service.model');
 const Log = require('../api/player/log.model');
+const _ = require('lodash');
 const args = process.argv.slice(2);
 const ADMIN_ID = '54b3e04cde6279a8211b42fd';
 
@@ -10,25 +11,30 @@ const isRegen = args.indexOf('-r')>-1 || args.indexOf('--regen')>-1;
 const isTest = args.indexOf('-t')>-1 || args.indexOf('--test')>-1;
 const isPreserve = args.indexOf('-p')>-1 || args.indexOf('--preserve')>-1;
 
-// console.log('DB checking  regen=%s  test=%s', isRegen, isTest, args);
+function createDefault() {
+  User.create({
+    _id: ADMIN_ID,
+    provider: 'local',
+    role: 'admin',
+    name: 'admin',
+    email: 'leo.olmi@gmail.com',
+    password: process.env.VS_ADMIN_PSWD || 'mpestaha' 
+  }, () => {
+    console.log('finished creating users');
+  });
+}
 
-User.findOne({role:'admin'}, (err, user) => {
-  if (!user || isRegen) {
-    if (user) user.delete();
-    User.create({
-      _id: ADMIN_ID,
-      provider: 'local',
-      role: 'admin',
-      name: 'admin',
-      email: 'leo.olmi@gmail.com',
-      password: process.env.VS_ADMIN_PSWD || 'mpestaha' 
-    }, () => {
-      console.log('finished creating users');
-    });  
-  } else {
-    console.log('finished checking users');
-  }
-});
+if (isRegen) {
+  User.deleteMany({}, () => createDefault());
+} else {
+  User.findOne({role:'admin'}, (err, user) => {
+    if (!user) {
+      createDefault();  
+    } else {
+      console.log('finished checking users');
+    }
+  });
+}
 
 if (!isPreserve) {
   Log.deleteMany({}, () => console.log('log cleared'));

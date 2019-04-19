@@ -53,7 +53,6 @@ const SUBSCRIPTION_HTML = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transiti
 </body>
 </html>`
 
-
 const _transporter = mailer.createTransport({
   service: config.mailer.service||'gmail',
   auth: {
@@ -68,30 +67,38 @@ exports.sign = (req, res) => {
     lock: lock
   }, (err, user) => { 
     if (err) return u.error(res, err);
-    if (!user) return u.error(404);    
-    const token = Auth.signToken(user._id, user.role);
+    if (!user) return u.notfound(res);
+    user.lock = null;
+    user.save((err, user) => {
+      if (err) return u.error(res, err);
+      const token = Auth.signToken(user._id, user.role);
     
-    // TEST #1: token ok cookie
-    res.cookie('sign-token', token, { maxAge: 120000, httpOnly: true });
-    res.redirect('/?confirmation');
+      // TEST #1: token ok cookie
+      res.cookie('sign-token', token, { maxAge: 120000, httpOnly: true });
+      res.redirect('/?confirmation');
 
-    // TEST #2: token on url
-    // res.redirect('/?' + token);
-    
-    console.log('SIGN USER', user);
+      // TEST #2: token on url
+      // res.redirect('/?' + token);
+      
+      console.log('SIGN USER', user);
+    });
   });
 };
 
 exports.sendMail = (user, cb) => {
+  // console.log('procedura sendMail', user);  // <<<<<<<<<<< DEBUG
   if (!user) return cb('Undefined user!');
   if (!user.lock) return cb('No lock for user!');
   let html = SUBSCRIPTION_HTML;
-  html = u.replaceBookmark(html, 'URL', user.name);
+  html = u.replaceBookmark(html, 'USER', user.name);
   html = u.replaceBookmark(html, 'URL', URL_BASE + user.lock);
+  // console.log('sendMail mail body', html);  // <<<<<<<<<<< DEBUG
   _transporter.sendMail({
     from: config.mailer.sender,
     to: user.email,
     subject: SUBSCRIPTION_SUBJECT,
     html: html
-  }, cb);
+  }, (err, resp) => {
+    if (err) console.error('Transporte error', err);
+  });
 }

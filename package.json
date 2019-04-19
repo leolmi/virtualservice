@@ -38,6 +38,7 @@
   "scripts": {
     "server": "node server/app.js",
     "start": "node server/app.js",
+    "regen": "node server/app.js --regen",
     "poststart": "start http://localhost:9010",
     "build": "webpack --config webpack.config.js",
     "test": "node dist/virtualservice.js",

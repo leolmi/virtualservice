@@ -15,13 +15,16 @@ exports.index = (req, res) => User.find({}, '-salt -hashedPassword', (err, users
  * Creates a new user
  */
 exports.create = (req, res, next) => {
-  const newUser = new User(req.body);
-  newUser.role = 'user';
-  newUser.lock = u.salt();
+  const args = req.body;
+  args.role = 'user';
+  args.lock = u.salt(16, 'hex');
+  const newUser = new User(args);
+  // console.log('crea nuovo utente', newUser);  // <<<<<<<<<<< DEBUG
   newUser.save((err, user) => {
     if (err) return validationError(res, err);
     Sign.sendMail(user);
-    res.send(200);
+    // console.log('mail sended', user);
+    res.json(200);
   });
 };
 
