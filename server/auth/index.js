@@ -11,5 +11,6 @@ require('./local/passport').setup(User, config);
 const router = express.Router();
 
 router.use('/local', require('./local'));
+router.use('/sign', require('./sign'));
 
 module.exports = router;
