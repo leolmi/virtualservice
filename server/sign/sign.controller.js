@@ -6,7 +6,8 @@ const mailer = require('nodemailer');
 const User = require('../api/user/user.model');
 const Auth = require('../auth/auth.service');
 const config = require('../config/environment');
-const URL_BASE = 'https://virtualservice.herokuapp.com/?sign=';
+const URL_APP = 'https://virtualservice.herokuapp.com/';
+const URL_SIGN = URL_APP + '#/sign/';
 const SUBSCRIPTION_SUBJECT = 'Virtual-Service subscription';
 const SUBSCRIPTION_HTML = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -66,7 +67,7 @@ exports.sendMail = (user, cb) => {
   if (!user.lock) return cb('No lock for user!');
   let html = SUBSCRIPTION_HTML;
   html = u.replaceBookmark(html, 'USER', user.name);
-  html = u.replaceBookmark(html, 'URL', URL_BASE + user.lock);
+  html = u.replaceBookmark(html, 'URL', URL_SIGN + user.lock);
   _transporter.sendMail({
     from: config.mailer.sender,
     to: user.email,
