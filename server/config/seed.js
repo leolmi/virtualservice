@@ -18,7 +18,7 @@ function createDefault() {
     role: 'admin',
     name: 'admin',
     email: 'leo.olmi@gmail.com',
-    password: process.env.VS_ADMIN_PSWD || 'mpestaha' 
+    password: process.env.VS_ADMIN_PSWD || 'xxxxxx' 
   }, () => {
     console.log('finished creating users');
   });

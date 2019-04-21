@@ -2,6 +2,7 @@
 
 const express = require('express');
 const controller = require('./service.controller');
+const management = require('./service.management');
 const auth = require('../../auth/auth.service');
 
 const router = express.Router();
@@ -14,7 +15,10 @@ router.get('/monitor/:id/?:last', auth.isAuthenticated(), controller.monitor);
 router.get('/:id', auth.isAuthenticated(), controller.read);
 // salva il servizio
 router.post('/', auth.isAuthenticated(), controller.save);
+// admin management
+router.post('/execute', auth.hasRole('admin'), management.execute)
 // elimina il servizio
 router.delete('/:id', auth.isAuthenticated(), controller.delete);
+
 
 module.exports = router;
