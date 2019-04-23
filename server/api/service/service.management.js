@@ -15,9 +15,19 @@ function resetPassword(res, args) {
   });
 }
 
+function confirmUser(res, args) {
+  if (!args.id) return u.error(res, 'Undefined user identity!');
+  User.findById(args.id, (err, user) => {
+    if (err) return u.error(res, err);
+    user.lock = null;
+    user.save(err => err ? u.error(res, err) : res.send(200));
+  });
+}
+
 const MANAGER = {
   resetUsers: (res) => User.deleteMany({}, (err) => err ? u.error(res, err) : u.ok(res)),
-  resetPassword: (res, args) => resetPassword(res)
+  resetPassword: (res, args) => resetPassword(res, args),
+  confirmUser: (res, args) => confirmUser(res, args)
 };
 
 exports.execute = function(req, res) {
