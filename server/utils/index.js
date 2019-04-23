@@ -42,6 +42,11 @@ const VSSALT = 'VirtualServiceLeo';
 const noop = function() {};
 exports.noop = noop;
 
+exports.constants = {
+  ADMIN_ID: '54b3e04cde6279a8211b42fd',
+  TEMPLATE_ID: '44b3e04cde6279a8211b42fd'
+};
+
 /**
  * Return standard 200
  * @param res

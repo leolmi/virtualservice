@@ -25,6 +25,7 @@ const ServiceSchema = new Schema({
   owner: String,
   lastChange: Number,
   creationDate: Number,
+  author: String,
   name: String,
   description: String,
   active: {type: Boolean, default:true},

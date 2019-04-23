@@ -223,7 +223,7 @@ module.exports = (req, res) => {
   const o = u.parseUrl(req, _base_url);
   Service.find({} , (err, ss) => {
     // console.log('parsed request: ', o);
-    const services = _.filter(ss, s => !!s.path && (o.pathname||'').indexOf(s.path + '/') === 0);
+    const services = _.filter(ss, s => s.owner !== u.constants.TEMPLATE_ID && !!s.path && (o.pathname||'').indexOf(s.path + '/') === 0);
     if (err) return _raiseError(res, null, o, err);
     if (!services || services.length<1) return _raiseError(res, null, o, 'No service can reply!');
     if (services.length>1) return _raiseError(res, services.map(s => s._id).join(','), o, 'More than one service!');
