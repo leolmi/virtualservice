@@ -38,6 +38,7 @@ const path = require('path');
 const URL = require('url');
 const _release = typeof __webpack_require__ === "function";
 const _use = typeof __webpack_require__ === "function" ? __non_webpack_require__ : require;
+const samples = require('../samples');
 const VSSALT = 'VirtualServiceLeo';
 const noop = function() {};
 exports.noop = noop;
@@ -705,7 +706,12 @@ exports.parseJS = (txt) => {
     txt = _.startsWith(txt, '=') ? txt.substr(1) : 'return ' + txt;
     txt = 'result = (function() {' + txt + '})();';
     const script = new vm.Script(txt);
-    const context = new vm.createContext({_: _, result:null});
+    const scope = {
+      _: _,
+      samples: samples,
+      result:null
+    };
+    const context = new vm.createContext(scope);
     script.runInNewContext(context);
     return context.result;
   } catch (err) {
