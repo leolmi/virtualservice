@@ -25,6 +25,7 @@ router.post('/execute', auth.hasRole('admin'), management.execute)
 router.delete('/:id', auth.isAuthenticated(), controller.delete);
 // elimina il servizio
 router.delete('/template/:id', auth.hasRole('admin'), controller.deleteTemplate);
-
+// pulishe il log monitor
+router.delete('/monitor/:owner', auth.isAuthenticated(), controller.deleteMonitor);
 
 module.exports = router;

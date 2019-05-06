@@ -3,8 +3,6 @@
 const _ = require('lodash');
 const u = require('../utils');
 const mailer = require('nodemailer');
-const User = require('../api/user/user.model');
-const Auth = require('../auth/auth.service');
 const config = require('../config/environment');
 const URL_APP = 'https://virtualservice.herokuapp.com/';
 const URL_SIGN = URL_APP + '#/sign/';

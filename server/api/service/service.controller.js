@@ -66,7 +66,7 @@ exports.saveTemplate = function(req, res) {
 
 // elimina il servizio
 exports.delete = function(req, res) {
-  if ((!req.params||{}).id) return u.error(res, 'Undefined service!'); 
+  if (!(req.params||{}).id) return u.error(res, 'Undefined service!'); 
   Service.findOne({owner:req.user._id, _id:req.params.id}, 
     (err, xservice) => err ? u.error(res, err) : 
       (xservice ? xservice.remove(rerr => rerr ? u.error(res, rerr) : u.deleted(res, xservice)) : u.error(res, 'Service not found!'))); 
@@ -74,7 +74,7 @@ exports.delete = function(req, res) {
 
 // elimina il servizio
 exports.deleteTemplate = function(req, res) {
-  if ((!req.params||{}).id) return u.error(res, 'Undefined service!'); 
+  if (!(req.params||{}).id) return u.error(res, 'Undefined service!'); 
   Service.findOne({owner:u.constants.TEMPLATE_ID, _id:req.params.id}, 
     (err, xservice) => err ? u.error(res, err) : 
       (xservice ? xservice.remove(rerr => rerr ? u.error(res, rerr) : u.deleted(res, xservice)) : u.error(res, 'Service not found!'))); 
@@ -91,4 +91,9 @@ exports.monitor = function(req, res) {
     if (err) return u.error(res, err);
     u.ok(res, items);
   });
+}
+
+exports.deleteMonitor = function(req, res) {
+  if (!(req.params||{}).owner) return u.error(res, 'Undefined owner service!'); 
+  Log.deleteMany({owner: req.params.owner}, () => u.ok(res), (err) => u.error(res, err));
 }

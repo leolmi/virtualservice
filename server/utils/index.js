@@ -106,11 +106,10 @@ exports.notfound = notfound;
  * @returns {*}
  */
 const error = (res, err, code) => {
-  if (err && err.message)
-    err = err.message;
-  //  err = new Error(err);
+  if (err && err.message) err = err.message;
+  if (!_.isString(err)) err = JSON.stringify(err);
   console.error('virtualservice error:', err);
-  res.status(code || 500).json(err);
+  res.status(code || 500).send({message:err, error:err});
 };
 exports.error = error;
 
