@@ -4,7 +4,9 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const LogSchema = new Schema({
+  _id: String,
   time: Number,
+  prevId: String,
   owner: String,
   error: Schema.Types.Mixed,
   content: Schema.Types.Mixed,

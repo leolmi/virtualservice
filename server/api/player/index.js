@@ -200,8 +200,10 @@ function _log(o, owner, response, call, error, pre) {
   o = o || {};
   const now = Date.now();
   const time = o.time || now;
-  const log = { 
-    time: time, 
+  const log = {
+    _id: u.guid(),
+    time: time,
+    prevId: pre ? pre._id : null,
     owner: owner, 
     path: '' + o.base + o.path,
     call: call,
@@ -209,7 +211,14 @@ function _log(o, owner, response, call, error, pre) {
     verb: o.verb || '...',
     elapsed: pre ? now - pre.time : 0
   };
-  log.content = response ? {response:response} : {request:o};
+  log.content = log.content || {};
+  if (response) {
+    log.content.request = pre ? pre.content.request : {};
+    log.content.response = response;
+  } else {
+    log.content.request = o;
+    log.content.response = 'waiting...'
+  }
   log.error = error ? error : null;
   Log.create(log);
   return log;
