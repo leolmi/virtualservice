@@ -162,8 +162,14 @@ function _getFixedPath(path) {
   return m ? m[1] : path;
 }
 function _isPath(callpath, urlpath) {
-  let fixed_path = (_getFixedPath(callpath)||'').trim();
-  return (urlpath||'').indexOf(fixed_path) == 0;
+  // let fixed_path = (_getFixedPath(callpath)||'').trim();
+  // const isthis = (urlpath||'').indexOf(fixed_path) == 0;
+  // console.log('++++>>   FIXED: "%s"      URLPATH: "%s"     =    %s', fixed_path, urlpath, isthis);
+  const rgx_path = callpath.replace(/\{(.*?)\}/g, '([^/]+)');
+  const rgx = new RegExp(`^${rgx_path}$`, 'gi');
+  return rgx.test(urlpath || '');
+  // console.log('++++>> callpath: "%s"     rgx_path: "%s"      urlpath: "%s"     =    %s', callpath, rgx_path, urlpath, isthis);
+  // return isthis;
 }
 function _findCall(service, o, cb) {
   const call = _.find(service.calls||[], (c) => _isPath(u.path(service.path, c.path), o.pathname) && (o.verb==='options' || u.equal(c.verb, o.verb)));
@@ -235,6 +241,7 @@ module.exports = (req, res) => {
   Service.find({} , (err, ss) => {
     // console.log('parsed request: ', o);
     const services = _.filter(ss, s => s.owner !== u.constants.TEMPLATE_ID && !!s.path && (o.pathname||'').indexOf(s.path + '/') === 0);
+    // console.log('match services: ', services);
     if (err) return _raiseError(res, null, o, err);
     if (!services || services.length<1) return _raiseError(res, null, o, 'No service can reply!');
     if (services.length>1) return _raiseError(res, services.map(s => s._id).join(','), o, 'More than one service!');
