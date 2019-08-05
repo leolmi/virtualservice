@@ -39,8 +39,8 @@ function _pathValue(path, o) {
 
 function _evalExp(exp, scope, o) {
   o = o || {};
-  exp = (!!o.script) ? exp : 'return ' + exp;
-  exp = 'result = (function() {' + exp + '})();';
+  exp = (!!o.script) ? exp : `return ${exp}`;
+  exp = `result = (function() {${exp}})();`;
   const sandbox = _.clone(scope||{});
   sandbox.result = null;
   const script = new vm.Script(exp);
@@ -79,7 +79,8 @@ function _getExpressionScope(o, path = null) {
     headers: o.headers,
     cookies: o.cookies,
     pathValue: o.pathValue||{},
-    value: path ? _pathValue(path, _getData(o)) : null
+    value: path ? _pathValue(path, _getData(o)) : null,
+    setTimeout: setTimeout
   }
 }
 function _validatePath(call, o) {
@@ -104,16 +105,16 @@ function _validate(call, o, cb) {
   });
   cb(error, code);
 }
-function _getValue(v, o) {
-  switch (v.type) {
-    case 'data':
-      return u.generateTable(v.settings || {});
-    // case 'manual':
-    default:
-      const scope = _getExpressionScope(o); 
-      return _evalExp((v.settings || {}).value || 'value', scope).value || '';
-  }
-}
+// function _getValue(v, o) {
+//   switch (v.type) {
+//     case 'data':
+//       return u.generateTable(v.settings || {});
+//     // case 'manual':
+//     default:
+//       const scope = _getExpressionScope(o); 
+//       return _evalExp((v.settings || {}).value || 'value', scope).value || '';
+//   }
+// }
 
 // function _parseValues(resp, values, o) {
 //   _.keys(resp).forEach((k) => {
@@ -130,37 +131,47 @@ function _getValue(v, o) {
 //   });
 // }
 
-function _result(res, call, o, owner, pre) {
-  let resp = call.response;
-  if (_.isString(resp)) {
-    try {
-      if (_.startsWith(resp, '=')) {
-        // è un'espressione
-        resp = resp.substr(1);
-        const scope = _getExpressionScope(o);
-        //_.extend(scope, call.values); 
-        const result = _evalExp(resp, scope, {script:true});
-        if (result.error) return u.error(res, result.error);
-        resp = result.value;
-        // console.log('CALC RESULT', call.response);
-      } else {
-        // è un oggetto
-        resp = JSON.parse(resp);
-        //_parseValues(call.response, call.values, o);
-      }
-    } catch (err) {
-      return u.error(res, err);
-    }
-  }
+
+function _end(res, resp, call, o, owner, pre) {
   o.time = Date.now();
   _log(o, owner, resp, call, null, pre);
   // Log.create({ time:Date.now(), owner: owner, call:call, author: o.user, verb: o.verb, content: {response: resp}});
   u.ok(res, resp);
 }
-function _getFixedPath(path) {
-  const m = (/^(.*?)(\/\{|$)/g).exec(path||'');
-  return m ? m[1] : path;
+
+function _result(res, call, o, owner, pre) {
+  let resp = call.response;
+  if (_.isString(resp)) {
+    resp = resp.trim();
+    try {
+      const code = u.getJsCode(resp);
+      console.log('RESP', resp);
+      console.log('CODE', code);
+      if (!!code) {
+        // è codice javascript
+        const scope = _getExpressionScope(o);
+        const result = _evalExp(code, scope, {script:true});
+        if (result.error) return u.error(res, result.error);
+        resp = result.value;
+        if (u.isPromiseLike(resp)) {
+          return resp.then(
+            (r) => _end(res, r, call, o, owner, pre), 
+            (err) => u.error(res, err));
+        }
+        // console.log('CALC RESULT', call.response);
+      } else {
+        // è JSON
+        resp = JSON.parse(resp);
+      }
+    } catch (err) {
+      return u.error(res, err);
+    }
+  }
+  _end(res, resp, call, o, owner, pre);
 }
+// function _getFixedPath(path) {
+//   const m = (/^(.*?)(\/\{|$)/g).exec(path||'');
+//   return m ? m[1] : path;
 function _isPath(callpath, urlpath) {
   // let fixed_path = (_getFixedPath(callpath)||'').trim();
   // const isthis = (urlpath||'').indexOf(fixed_path) == 0;
@@ -186,13 +197,13 @@ function _download(res, call) {
   });
 }
 
-function _finder(o) {
-  return () => {
-    console.log('FINDER', o);
-    return (o.pathname||'').indexOf(this.path + '/') === 0;
-    // return _.startsWith(o.pathname||'', this.path + '/');
-  }
-}
+// function _finder(o) {
+//   return () => {
+//     console.log('FINDER', o);
+//     return (o.pathname||'').indexOf(this.path + '/') === 0;
+//     // return _.startsWith(o.pathname||'', this.path + '/');
+//   }
+// }
 
 function _raiseError(res, owner, o, err, code = null) {
   o = o || {};

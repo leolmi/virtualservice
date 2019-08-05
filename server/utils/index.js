@@ -513,10 +513,10 @@ exports.io = {
   },
   truncate(data, path, cb) {
     fs.truncate(path, 0, (err) => {
-      if (err) return console.log("Error clearing file: " + err);
+      if (err) return console.log('Error clearing file: ' + err);
       const content = JSON.stringify(data||{}, null, 2);
       fs.writeFile(path, content, (err) => {
-        if (err) return console.log("Error writing file: " + err);
+        if (err) return console.log('Error writing file: ' + err);
         cb();
       });
     });
@@ -582,7 +582,7 @@ exports.evalExp = (exp, scope, cb) => {
   // functions.forEach((f) => scope[f.name] = f.exec);
   const args = _.keys(scope);
   /*jslint evil: true */
-  const f = new Function(args, 'return ' + exp);
+  const f = new Function(args, `return ${exp}`);
   try {
     const values = _.map(args, (a) => scope[a]);
     const v = f.apply(f, values);
@@ -620,7 +620,7 @@ exports.evalScript = (...args) => {
   sandbox._ = _;
   const utils = _.map(args, (a) => {
     if (_.isObject(a)) {
-      return _.map(_.keys(a), (k) => 'const ' + k + ' = ' + JSON.stringify(a[k]) + ';').join('\n');
+      return _.map(_.keys(a), (k) => `const ${k} = ${JSON.stringify(a[k])};`).join('\n');
     } else if (_.isString(a)) {
       return a;
     } else {
@@ -694,6 +694,18 @@ exports.checkUrl = (...args) => {
   return url.join('/');
 };
 
+function _getJsCode(txt) {
+  if (_.isString(txt)) {
+    txt = txt.trim();
+    if (_.startsWith(txt, '=')) return txt.substr(1);
+    if (/^\/\/.*code\:javascript/.test(txt)) return txt;
+  }
+}
+
+exports.getJsCode = _getJsCode;
+
+
+
 /**
  * restituisce il js dal testo
  * @param txt
@@ -702,8 +714,9 @@ exports.checkUrl = (...args) => {
 exports.parseJS = (txt) => {
   try {
     txt = ((txt||'')+'').trim();
-    txt = _.startsWith(txt, '=') ? txt.substr(1) : 'return ' + txt;
-    txt = 'result = (function() {' + txt + '})();';
+    const code = _getJsCode(txt);
+    txt = !!code ? code : `return ${txt}`;
+    txt = `result = (function() {${txt}})();`;  
     const script = new vm.Script(txt);
     const scope = {
       _: _,
@@ -719,15 +732,4 @@ exports.parseJS = (txt) => {
   return {};
 }
 
-// exports.parseJS = (txt) => {
-//   try {
-//     txt = ((txt||'')+'').trim();
-//     txt = _.startsWith(txt, '=') ? txt.substr(1) : 'return ' + txt;
-//     /* jshint evil: true */
-//     const f = new Function('_', txt);
-//     return f(_);
-//   } catch (err) {
-//     console.error(err, txt);
-//   }
-//   return {};
-// };
+exports.isPromiseLike = (prm) => _.isObject(prm) && _.isFunction(prm.then);
