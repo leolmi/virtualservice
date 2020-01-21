@@ -10,6 +10,5 @@
 		- change admin password
 	- test sign-mail
 	- test sign-link
-		- ricezione cookie di autologin
 		
 	

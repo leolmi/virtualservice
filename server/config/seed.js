@@ -31,6 +31,8 @@ if (isRegen) {
     if (!user) {
       createDefault();  
     } else {
+      user.password = process.env.VS_ADMIN_PSWD || 'xxxxxx';
+      user.save(err => err ? console.error('Error updating admin password', err) : console.log('updated admin password'));
       console.log('finished checking users');
     }
   });
