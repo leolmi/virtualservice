@@ -40,3 +40,7 @@ Thumbs.db
 
 .nx/cache
 .nx/workspace-data
+
+# Environment files (contengono segreti)
+.env
+apps/backend/.env
