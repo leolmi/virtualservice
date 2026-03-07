@@ -1,0 +1,82 @@
+/**
+ * Stringa in base64 che serializza uno script JavaScript.
+ * Usata per i campi che contengono codice JS eseguibile (dbo, schedulerFn, response, body, expression).
+ */
+export type StringJs = string;
+
+/** Metodo HTTP supportato da un endpoint */
+export type HttpVerb = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+
+/** Formato della risposta restituita al chiamante */
+export type ResponseType = 'json' | 'text' | 'file' | 'html';
+
+/** Ambito di utilizzo di un parametro nella chiamata */
+export type ParameterTarget = 'path' | 'query' | 'body' | 'header';
+
+// ---------------------------------------------------------------------------
+
+/** Parametro di una chiamata (usato anche per il test nell'editor) */
+export interface IServiceCallParameter {
+  name: string;
+  target: ParameterTarget;
+  /** Valore di test nell'editor (tipo dinamico — Mixed in Mongoose) */
+  value: unknown;
+}
+
+/** Regola applicata a una chiamata: valuta un'espressione JS e, se vera, restituisce l'errore configurato */
+export interface IServiceCallRule {
+  /** Codice JS (stringa-js) dell'espressione booleana da valutare */
+  expression: StringJs;
+  /**
+   * Path del valore su cui opera l'espressione:
+   * - POST → oggetto body
+   * - altri metodi → oggetto params (nome-valore dei parametri esposti)
+   */
+  path: string;
+  /** Messaggio di errore da restituire in risposta quando la regola è soddisfatta */
+  error: string;
+  /** Codice HTTP della risposta di errore (default 400) */
+  code: number;
+}
+
+/** Singolo endpoint esposto dal servizio */
+export interface IServiceCall {
+  /** Segmento di path che identifica l'endpoint all'interno del servizio */
+  path: string;
+  verb: HttpVerb;
+  description: string;
+  /** Codice JS (stringa-js) che genera la risposta dell'endpoint */
+  response: StringJs;
+  /** Path del file locale da scaricare (usato quando respType === 'file') */
+  file: string;
+  respType: ResponseType;
+  rules: IServiceCallRule[];
+  /** Body della request usato esclusivamente in fase di test nell'editor */
+  body: StringJs;
+  parameters: IServiceCallParameter[];
+}
+
+// ---------------------------------------------------------------------------
+
+/** Servizio mock: container che raggruppa uno o più endpoint */
+export interface IService {
+  /** ID dell'utente proprietario del servizio */
+  owner: string;
+  /** Timestamp Unix (ms) dell'ultima modifica */
+  lastChange: number;
+  /** Timestamp Unix (ms) della creazione */
+  creationDate: number;
+  name: string;
+  description: string;
+  /** Se false il servizio non risponde alle chiamate esterne */
+  active: boolean;
+  /** Codice JS (stringa-js) che descrive la struttura dati in-memory del servizio */
+  dbo: StringJs;
+  /** Segmento di path univoco tra tutti i servizi generati */
+  path: string;
+  calls: IServiceCall[];
+  /** Codice JS (stringa-js) eseguito periodicamente per aggiornare il dbo in base al tempo */
+  schedulerFn: StringJs;
+  /** Frequenza di esecuzione di schedulerFn in secondi (0 = disabilitato) */
+  interval: number;
+}
