@@ -54,6 +54,10 @@ export interface IServiceCall {
   /** Body della request usato esclusivamente in fase di test nell'editor */
   body: StringJs;
   parameters: IServiceCallParameter[];
+  /** Header HTTP da aggiungere alla risposta (nome-valore) */
+  headers: Record<string, string>;
+  /** Cookie da impostare nella risposta (nome-valore) */
+  cookies: Record<string, string>;
 }
 
 // ---------------------------------------------------------------------------

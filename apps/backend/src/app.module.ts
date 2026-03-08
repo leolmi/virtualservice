@@ -5,6 +5,7 @@ import { UsersModule } from './app/users/users.module';
 import { AuthModule } from './app/auth/auth.module';
 import { MailModule } from './app/mail/mail.module';
 import { ServicesModule } from './app/services/services.module';
+import { MockServerModule } from './app/mock-server/mock-server.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { ServicesModule } from './app/services/services.module';
     UsersModule,
     AuthModule,
     ServicesModule,
+    MockServerModule,
   ],
 })
 export class AppModule {}
