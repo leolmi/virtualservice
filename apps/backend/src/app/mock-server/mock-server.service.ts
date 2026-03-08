@@ -51,7 +51,13 @@ export class MockServerService {
       return;
     }
 
-    // 4. Gestione OPTIONS: risponde 200 se esiste una call attiva con quel path
+    // 4. Verifica che il servizio sia attivo
+    if (!service.active) {
+      res.status(503).json({ error: 'Service not active!' });
+      return;
+    }
+
+    // 5. Gestione OPTIONS: risponde 200 se esiste una call con quel path
     if (req.method.toUpperCase() === 'OPTIONS') {
       const found = findAnyMatchByPath(
         service.calls as unknown as IServiceCall[],
@@ -62,12 +68,6 @@ export class MockServerService {
       } else {
         res.status(404).json({ error: 'Call not found' });
       }
-      return;
-    }
-
-    // 5. Verifica che il servizio sia attivo
-    if (!service.active) {
-      res.status(500).json({ error: 'Service not active!' });
       return;
     }
 
