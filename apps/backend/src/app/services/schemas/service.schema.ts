@@ -98,6 +98,14 @@ export class ServiceCall implements IServiceCall {
 
   @Prop({ type: [ServiceCallParameterSchema], default: [] })
   parameters!: ServiceCallParameter[];
+
+  /** Header HTTP da aggiungere alla risposta */
+  @Prop({ type: MongooseSchema.Types.Mixed, default: {} })
+  headers!: Record<string, string>;
+
+  /** Cookie da impostare nella risposta */
+  @Prop({ type: MongooseSchema.Types.Mixed, default: {} })
+  cookies!: Record<string, string>;
 }
 
 export const ServiceCallSchema = SchemaFactory.createForClass(ServiceCall);
