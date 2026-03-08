@@ -1,4 +1,4 @@
-# CLAUDE.md — my-app Workspace Guide
+# CLAUDE.md — virtualservice Workspace Guide
 
 This file describes the architecture, conventions, and commands for this NX monorepo.
 It is intended to help AI assistants (and new developers) understand the project quickly and contribute effectively.
@@ -7,7 +7,7 @@ It is intended to help AI assistants (and new developers) understand the project
 
 ## Project Overview
 
-**my-app** is a full-stack NX monorepo that provides a web interface for creating and managing **mock web services**.
+**virtualservice** is a full-stack NX monorepo that provides a web interface for creating and managing **mock web services**.
 
 Users can define "containers" (mock services), each with multiple entry-points (routes). Each entry-point exposes a dynamic URL path, an HTTP method, a response structure, error handling logic, and optional shared data models. Once configured, the user can export the entire service definition as a JSON file, which can be served locally via a minimal Node.js CLI client.
 
@@ -18,7 +18,7 @@ The platform also handles user authentication, including Google OAuth login, giv
 ## Monorepo Structure
 
 ```
-my-app/
+virtualservice/
 ├── apps/
 │   ├── frontend/                 ← Angular app
 │   │   ├── src/
@@ -102,10 +102,10 @@ my-app/
 All shared libs are accessible via aliases. Example:
 
 ```ts
-import { CreateServiceDto } from '@my-app/shared/dto';
-import { ServiceModel }     from '@my-app/shared/model';
-import { formatPath }       from '@my-app/shared/utils';
-import { AuthGuard }        from '@my-app/auth';
+import { CreateServiceDto } from '@virtualservice/shared/dto';
+import { ServiceModel }     from '@virtualservice/shared/model';
+import { formatPath }       from '@virtualservice/shared/utils';
+import { AuthGuard }        from '@virtualservice/auth';
 ```
 
 > Always import from lib barrel exports (`index.ts`), never from deep internal paths.
@@ -130,8 +130,8 @@ import { AuthGuard }        from '@my-app/auth';
 - Each domain feature is a **NestJS module** under `apps/backend/src/app/<feature>/`.
 - Mongoose **schemas** live in `<feature>/<feature>.schema.ts`.
 - Business logic lives in `<feature>/<feature>.service.ts`; controllers are thin.
-- DTOs are imported from `@my-app/shared/dto` — never redefined in the backend.
-- Auth guards from `@my-app/auth` are applied at controller or route level via `@UseGuards(AuthGuard)`.
+- DTOs are imported from `@virtualservice/shared/dto` — never redefined in the backend.
+- Auth guards from `@virtualservice/auth` are applied at controller or route level via `@UseGuards(AuthGuard)`.
 
 ---
 
@@ -243,3 +243,12 @@ nx affected:graph           # Only affected projects
 - **Shared DTOs** ensure the frontend and backend always agree on data shapes without duplication.
 - **Dynamic path uniqueness** is enforced globally — the backend must validate that no two entry-points share the same composed path.
 - **JSON export** is a pure serialization of the in-memory/DB service definition — the Node CLI client is intentionally decoupled from the web app.
+
+
+## model
+
+The model that defines the data structure used is in the **./model.md** file (in italian)
+
+## Server
+
+The server logic is definited in file **./server.md**

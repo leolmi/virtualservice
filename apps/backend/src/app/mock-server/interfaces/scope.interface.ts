@@ -1,4 +1,4 @@
-import { IServiceCall } from '@my-app/shared/model';
+import { IServiceCall } from '@virtualservice/shared/model';
 
 /** Risultato restituito dal Worker calc */
 export interface CalcResult {

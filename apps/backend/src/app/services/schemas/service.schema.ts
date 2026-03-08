@@ -8,7 +8,7 @@ import {
   HttpVerb,
   ResponseType,
   ParameterTarget,
-} from '@my-app/shared/model';
+} from '@virtualservice/shared/model';
 
 // ---------------------------------------------------------------------------
 // ServiceCallParameter

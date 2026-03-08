@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import { Request, Response } from 'express';
 import * as path from 'path';
 import * as fs from 'fs';
-import { IServiceCall } from '@my-app/shared/model';
+import { IServiceCall } from '@virtualservice/shared/model';
 import {
   Service,
   ServiceDocument,

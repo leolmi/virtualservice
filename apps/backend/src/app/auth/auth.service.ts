@@ -7,7 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { MailService } from '../mail/mail.service';
 import { UserDocument } from '../users/schemas/user.schema';
-import { JwtPayload } from '@my-app/shared/model';
+import { JwtPayload } from '@virtualservice/shared/model';
 
 @Injectable()
 export class AuthService {

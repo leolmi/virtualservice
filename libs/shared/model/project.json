@@ -1,5 +1,5 @@
 {
-  "name": "@my-app/shared/model",
+  "name": "@virtualservice/shared/model",
   "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/shared/model/src",
   "projectType": "library",

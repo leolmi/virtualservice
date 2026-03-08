@@ -16,7 +16,7 @@ import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { GoogleAuthGuard } from './guards/google-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { RegisterDto, LoginDto } from '@my-app/shared/dto';
+import { RegisterDto, LoginDto } from '@virtualservice/shared/dto';
 import { UserDocument } from '../users/schemas/user.schema';
 import { RequestWithUser } from './interfaces/request-with-user.interface';
 

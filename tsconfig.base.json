@@ -15,11 +15,10 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@virtualservice/model": ["libs/model/src/index.ts"],
-      "@my-app/shared/dto": ["libs/shared/dto/src/index.ts"],
-      "@my-app/shared/model": ["libs/shared/model/src/index.ts"],
-      "@my-app/shared/utils": ["libs/shared/utils/src/index.ts"],
-      "@my-app/auth": ["libs/auth/src/index.ts"]
+      "@virtualservice/shared/dto": ["libs/shared/dto/src/index.ts"],
+      "@virtualservice/shared/model": ["libs/shared/model/src/index.ts"],
+      "@virtualservice/shared/utils": ["libs/shared/utils/src/index.ts"],
+      "@virtualservice/auth": ["libs/auth/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

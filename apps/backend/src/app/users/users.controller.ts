@@ -8,8 +8,8 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import { JwtAuthGuard } from '@my-app/auth';
-import { UpdatePasswordDto } from '@my-app/shared/dto';
+import { JwtAuthGuard } from '@virtualservice/auth';
+import { UpdatePasswordDto } from '@virtualservice/shared/dto';
 import { UsersService } from './users.service';
 import { RequestWithUser } from '../auth/interfaces/request-with-user.interface';
 

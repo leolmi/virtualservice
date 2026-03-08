@@ -1,6 +1,6 @@
 import { Request } from 'express';
 import * as _ from 'lodash';
-import { IServiceCallRule } from '@my-app/shared/model';
+import { IServiceCallRule } from '@virtualservice/shared/model';
 import { ExpressionScope } from '../interfaces/scope.interface';
 
 /**

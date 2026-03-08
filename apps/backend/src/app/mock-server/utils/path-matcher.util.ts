@@ -1,4 +1,4 @@
-import { IServiceCall } from '@my-app/shared/model';
+import { IServiceCall } from '@virtualservice/shared/model';
 import { MatchedCall, PathMatchResult } from '../interfaces/scope.interface';
 
 const MARKER_RE = /\{([^}]+)\}/g;
