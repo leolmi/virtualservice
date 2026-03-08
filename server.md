@@ -141,7 +141,7 @@ Questo entry-point del server, identificabile dalla regex:
 /^([^?]{2,})\/service\/(.{2,})/gm
 effettuata sull'url della request, intercetta tutte le richieste che arrivano sugli endpoint del servizio
 		
-Quindi si deve ricercare il servizio a cui fa riferimento tra quelli salvati dagli utenti su mongodb;
+Quindi si deve ricercare il servizio a cui fa riferimento tra quelli salvati dagli utenti su MongoDB;
 	
 Il resto del path quindi sarà qualcosa del tipo:
 /service/service-path/call-path/...
@@ -254,4 +254,57 @@ I path inseriti sono path relativi per le risorse disponibili nell'applicazione 
 Ogni altro path o nel caso il file non esistesse in quel path, deve generare un errore 500 notificando all'utente l'impossibilità di consegnare il file indicato.
 
 Gli headers sono onere dell'utente che crea e valorizza la classe `ServiceCall`, magari degli warning in fare di editing possono indicare la strada corretta in relazione al documento scelto.
+
+
+## metodi per la fase di editing
+
+Il path `/service`, come abbiamo visto serve ad intercettare le chiamate definite sui servizi di mock disegnati dagli utenti.
+
+Adesso si elencono gli altri path utili alla fase di editing e managing tutti con radice `/services` in ordine di priorità:
+
+rotte in GET:
+- `/services`: (valida per utente autenticato) restituisce l'elenco dei servizi costruiti dall'utente;
+- `/services/templates`: (valida per utente autenticato) restituisce i templates pubblici;
+- `/services/monitor/:id/?:last`: (valida per utente autenticato) restituisce il log delle chiamate effettuate (quindi è un elenco di element `Log`) 
+    al servizio di id=`:id` che deve far parte dei servizi di cui è owner l'utente. Il valore `:last` se passato (perché opzionale) definisce 
+    l'ultimo elemento da restituire nell'elenco, è un valore number serializzato in stringa che deve essere deserializzato con `parseInt`. I log
+    con valore `time` più basso vengono esclusi dall'elenco;
+- `/services/:id`: (valida per utente autenticato) restituisce il servizio per id se l'owner è l'utente loggato;
+
+rotte in POST:
+- `/services`: (valida per utente autenticato) in body contiene l'oggetto che rappresenta la `Service` e lo scopo è il salvataggio del servizio. Una volta
+  validati i dati passati che quindi devono contenere almeno tutte le informazioni non opzionali della classe `Service`, il servizio viene ricercato per 
+  identificativo se presente e quindi aggiornato se ha corrispondenza su db, altrimenti inserito come nuovo. La risposta è l'istanza del `Service` 
+  aggiornato o inserito;   
+- `/services/restart`: (valida per utente autenticato) nel body viene atteso almeno il valore dell'identificativo del servizio, quindi deve essere ritrovato
+  su MongoDB per id e, se esiste ed ha come ower l'utente loggato, effettua il restart. Il restart di un servizio significa il reset del suo dbo in cache. L'esecuzione
+  del restart restituisce un 200. Il timer della schedulerFn se utilizzata viene riavviato;
+- `/services/template`: (valida per utente autenticato con ruolo amministratore) ancora non implementato
+- `/services/test`: (valida per utente autenticato) ancora non implementato
+- `/services/execute`: (valida per utente autenticato con ruolo amministratore) ancora non implementato
+
+rotte in DELETE:
+- `/services/:id`: (valida per utente autenticato) se il servizio per id esiste e l'utente loggato ne è l'owner, lo elimina dal MongoDB;
+- `/services/template/:id`: (valida per utente autenticato con ruolo amministratore) ancora non implementato
+- `/services`: (valida per utente autenticato) elimina tutto il log per l'utente loggato, ossia elimina tutte le righe di 
+    log che hanno come `owner` l'identificativo dell'utente loggato;
+
+
+## Logging
+
+Ogni richiesta effettuata sulle rotte `/service/...` devono essere loggate su MongoDB in una collection dedicata di cui la classe `Log` nel file
+model.md ne descrive la struttura;
+
+Per ogni richiesta deve essere preparata la classe Log nelle fasi iniziali di intercettazione per determinare il time della richiesta e le 
+informazioni di request. L'istanza di log deve essere poi inserita su db MongoDB nel momento in cui viene conclusa, ossia restituita all'utente
+sottoforma di errore oppure no;
+
+Per i campi request e response che conterranno alcune informazioni serializzabili rispettivamente della request e della response express trova
+i valori significativi evitando che contengano una quantità eccessiva di dati.
+
+
+## Templates
+
+per im  il momento non implementare la funzionalità dei template pubblici, la vedremo in seguito. L'importante è che il server sia predisposto
+con gli endpoint necessari che al momento risponderanno con un errore 500 dalla descrizione ":( not implemented yet".
 

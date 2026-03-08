@@ -56,3 +56,16 @@ classe del parametro gestito nelle chiamate
  - name: string;                              ← nome del parametro
  - target: 'path'|'query'|'body'|'header';    ← specifica l'ambito di utilizzo del parametro (per esempio "path", "query")
  - value: mixed;                              ← valore (utilizzato per il test nell'editor)
+
+---
+
+classe del log delle chiamate
+
+**Log**
+ - time: number;              ← vare del time calcolato con il `Date.now()` al momento dell'inserimento della riga;
+ - owner: string;             ← riferimento all'identificativo dell'utente owner del servizio;
+ - error?: mixed;             ← oggetto dell'errore se emesso;
+ - call: mixed;               ← oggetto della `ServiceCall` non è un riferimento per id dato che successivamente potrebbe venire modificata, rappresenta quindi uno snapshot dei valori della chiamata;
+ - request: mixed;            ← oggetto generico che contiene informazioni serializzabili della request;
+ - response?: mixed;          ← oggetto con i dati serializzabili della response;
+ - elapsed?: number;          ← tempo di esecuzione (dalla ricezione della richiesta al termine dell'esecuzione che sia in errore o meno);

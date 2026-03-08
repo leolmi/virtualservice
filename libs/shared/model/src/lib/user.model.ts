@@ -1,3 +1,5 @@
+export type UserRole = 'user' | 'admin';
+
 export interface IUser {
   _id: string;
   email: string;
@@ -7,6 +9,7 @@ export interface IUser {
   emailVerificationToken?: string;
   emailVerificationExpires?: Date;
   deletionRequestedAt?: Date;
+  role: UserRole;
   createdAt: Date;
   updatedAt: Date;
 }

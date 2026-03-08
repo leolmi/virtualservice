@@ -62,6 +62,31 @@ export interface IServiceCall {
 
 // ---------------------------------------------------------------------------
 
+/**
+ * Riga di log registrata ad ogni richiesta sugli endpoint /service/*.
+ * Il campo `call` è uno snapshot della ServiceCall al momento della richiesta.
+ */
+export interface ILog {
+  /** Timestamp Unix (ms) al momento della ricezione della richiesta */
+  time: number;
+  /** ID dell'utente owner del servizio */
+  owner: string;
+  /** ID del servizio (per query di monitoring) */
+  serviceId: string;
+  /** Errore emesso durante l'elaborazione (se presente) */
+  error?: unknown;
+  /** Snapshot della ServiceCall corrispondente alla richiesta */
+  call: unknown;
+  /** Dati serializzabili della request Express */
+  request: unknown;
+  /** Dati serializzabili della response Express */
+  response?: unknown;
+  /** Tempo di esecuzione in ms (dalla ricezione alla risposta) */
+  elapsed?: number;
+}
+
+// ---------------------------------------------------------------------------
+
 /** Servizio mock: container che raggruppa uno o più endpoint */
 export interface IService {
   /** ID dell'utente proprietario del servizio */

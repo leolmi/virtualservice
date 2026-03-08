@@ -10,6 +10,7 @@ import {
   ServiceDocument,
 } from '../services/schemas/service.schema';
 import { ServiceCacheService } from './service-cache.service';
+import { LogService } from '../services/log.service';
 import { findBestMatch, findAnyMatchByPath } from './utils/path-matcher.util';
 import { buildScope, buildRuleScope } from './utils/scope-builder.util';
 import { CalcResult } from './interfaces/scope.interface';
@@ -21,6 +22,15 @@ const SERVICE_PATH_RE = /^[^?]*\/service\/([^/?]+)\/?(.*?)(?:\?.*)?$/;
 /** Cartella degli asset per il file download */
 const ASSETS_DIR = path.join(__dirname, '..', '..', 'assets');
 
+// Campi header da includere nel log della request
+const LOGGED_HEADERS = [
+  'content-type',
+  'accept',
+  'origin',
+  'user-agent',
+  'referer',
+];
+
 @Injectable()
 export class MockServerService {
   private readonly logger = new Logger(MockServerService.name);
@@ -29,13 +39,55 @@ export class MockServerService {
     @InjectModel(Service.name)
     private readonly serviceModel: Model<ServiceDocument>,
     private readonly cacheService: ServiceCacheService,
+    private readonly logService: LogService,
   ) {}
 
   async handleRequest(req: Request, res: Response): Promise<void> {
+    const startTime = Date.now();
+
+    // Snapshot della request per il log
+    const requestInfo = this.buildRequestInfo(req);
+
+    // Helper: invia risposta, salva il log e termina
+    const respond = async (
+      statusCode: number,
+      body: unknown,
+      opts?: {
+        service?: ServiceDocument;
+        call?: unknown;
+        error?: unknown;
+        isFile?: boolean;
+      },
+    ): Promise<void> => {
+      const elapsed = Date.now() - startTime;
+
+      if (opts?.service) {
+        const responseInfo = opts.isFile
+          ? { status: statusCode, body: '[file]' }
+          : { status: statusCode, body };
+
+        this.logService.create({
+          time: startTime,
+          owner: opts.service.owner,
+          serviceId: opts.service._id.toString(),
+          call: opts.call ?? null,
+          request: requestInfo,
+          response: responseInfo,
+          error: opts.error ?? null,
+          elapsed,
+        }).catch((err: unknown) =>
+          this.logger.error('Errore nel salvataggio del log:', err),
+        );
+      }
+
+      if (opts?.isFile) return; // il file è già stato inviato da serveFile()
+      res.status(statusCode).json(body);
+    };
+
     // 1. Estrai servicePath e callPath dall'URL
     const match = req.path.match(SERVICE_PATH_RE);
     if (!match) {
-      res.status(404).json({ error: 'Not found' });
+      await respond(404, { error: 'Not found' });
       return;
     }
     const servicePath = match[1];
@@ -47,13 +99,13 @@ export class MockServerService {
       .exec();
 
     if (!service) {
-      res.status(404).json({ error: `Service '${servicePath}' not found` });
+      await respond(404, { error: `Service '${servicePath}' not found` });
       return;
     }
 
     // 4. Verifica che il servizio sia attivo
     if (!service.active) {
-      res.status(503).json({ error: 'Service not active!' });
+      await respond(503, { error: 'Service not active!' }, { service });
       return;
     }
 
@@ -79,13 +131,16 @@ export class MockServerService {
     );
 
     if (!matched) {
-      res
-        .status(404)
-        .json({ error: `Call '${callPath}' [${req.method}] not found` });
+      await respond(
+        404,
+        { error: `Call '${callPath}' [${req.method}] not found` },
+        { service },
+      );
       return;
     }
 
     const { call, pathValues } = matched;
+    const callSnapshot = { ...call };
 
     // 8. Inizializza la cache (prima invocazione) e ottieni il db corrente
     const db = await this.cacheService.initIfNeeded(service);
@@ -105,11 +160,9 @@ export class MockServerService {
           `[Service ${serviceId}] Eccezione nella valutazione della regola:`,
           err,
         );
-        // Errore nell'esecuzione → considera false, prosegui
         continue;
       }
 
-      // Aggiorna il db cache con quello eventualmente modificato dalla regola
       if (ruleResult.db) {
         this.cacheService.updateDb(serviceId, ruleResult.db);
         scope.db = ruleResult.db;
@@ -120,21 +173,31 @@ export class MockServerService {
           `[Service ${serviceId}] Errore nell'espressione della regola:`,
           ruleResult.error,
         );
-        // Considera false
         continue;
       }
 
-      // Regola soddisfatta → restituisce errore e interrompe
+      // Regola soddisfatta → errore configurato
       if (ruleResult.value === true) {
         this.applyResponseExtras(call, res);
-        res.status(rule.code).json({ error: rule.error });
+        const body = { error: rule.error };
+        await respond(rule.code, body, {
+          service,
+          call: callSnapshot,
+          error: rule.error,
+        });
         return;
       }
     }
 
     // 11. File download
     if (call.respType === 'file') {
-      this.serveFile(call, res);
+      this.applyResponseExtras(call, res);
+      const fileError = this.serveFile(call, res);
+      if (fileError) {
+        await respond(500, { error: fileError }, { service, call: callSnapshot, error: fileError });
+      } else {
+        await respond(200, null, { service, call: callSnapshot, isFile: true });
+      }
       return;
     }
 
@@ -143,25 +206,44 @@ export class MockServerService {
     try {
       respResult = await calc(call.response, scope as Record<string, unknown>);
     } catch (err) {
+      const errMsg = String(err);
       this.logger.error(
         `[Service ${serviceId}] Eccezione nel calcolo della response:`,
         err,
       );
-      res.status(500).json({ error: String(err) });
+      await respond(500, { error: errMsg }, { service, call: callSnapshot, error: errMsg });
       return;
     }
 
-    // 13. Aggiorna db cache con quello restituito dalla response
+    // 13. Aggiorna db cache
     if (respResult.db) {
       this.cacheService.updateDb(serviceId, respResult.db);
     }
 
     // 14. Invia la risposta
     this.applyResponseExtras(call, res);
-    this.sendResponse(respResult, call, res);
+    const { statusCode, body } = this.buildResponsePayload(respResult, call, res);
+    await respond(statusCode, body, { service, call: callSnapshot });
   }
 
   // ---------------------------------------------------------------------------
+
+  /** Serializza informazioni rilevanti della request per il log */
+  private buildRequestInfo(req: Request): Record<string, unknown> {
+    const headers: Record<string, unknown> = {};
+    for (const h of LOGGED_HEADERS) {
+      if (req.headers[h]) headers[h] = req.headers[h];
+    }
+    if (req.headers['authorization']) headers['authorization'] = '[present]';
+
+    return {
+      method: req.method,
+      path: req.path,
+      query: req.query,
+      body: req.body,
+      headers,
+    };
+  }
 
   /** Applica headers e cookies definiti nella ServiceCall alla response */
   private applyResponseExtras(call: IServiceCall, res: Response): void {
@@ -175,64 +257,61 @@ export class MockServerService {
     }
   }
 
-  /** Serializza e invia il risultato del calcolo in base a respType */
-  private sendResponse(
+  /**
+   * Calcola status e body da inviare in base al risultato e a respType.
+   * Non chiama res direttamente — ci pensa respond().
+   */
+  private buildResponsePayload(
     result: CalcResult,
     call: IServiceCall,
     res: Response,
-  ): void {
+  ): { statusCode: number; body: unknown } {
     if (result.error) {
-      res.status(500).json({ error: String(result.error) });
-      return;
+      return { statusCode: 500, body: { error: String(result.error) } };
     }
 
     const value = result.value;
 
-    // Valore non-stringa → json diretto
     if (typeof value !== 'string') {
-      res.status(200).json(value);
-      return;
+      return { statusCode: 200, body: value };
     }
 
-    // Valore stringa → rispetta respType
+    // Stringa: imposta Content-Type prima di rispondere
     switch (call.respType) {
       case 'json':
-        res.status(200).type('json').send(JSON.stringify(value));
-        break;
+        res.type('json');
+        return { statusCode: 200, body: JSON.stringify(value) };
       case 'text':
-        res.status(200).type('text').send(String(value));
-        break;
+        res.type('text');
+        return { statusCode: 200, body: String(value) };
       case 'html':
-        res.status(200).type('html').send(value);
-        break;
+        res.type('html');
+        return { statusCode: 200, body: value };
       default:
-        res.status(200).json(value);
+        return { statusCode: 200, body: value };
     }
   }
 
-  /** Serve un file dall'assets directory */
-  private serveFile(call: IServiceCall, res: Response): void {
+  /**
+   * Serve un file dall'assets directory.
+   * @returns null se ok, stringa di errore in caso di problema
+   */
+  private serveFile(call: IServiceCall, res: Response): string | null {
     if (!call.file) {
-      res.status(500).json({ error: 'File path not specified' });
-      return;
+      return 'File path not specified';
     }
 
     const filePath = path.resolve(ASSETS_DIR, call.file);
 
-    // Protezione path traversal
     if (!filePath.startsWith(ASSETS_DIR)) {
-      res.status(500).json({ error: `Invalid file path: ${call.file}` });
-      return;
+      return `Invalid file path: ${call.file}`;
     }
 
     if (!fs.existsSync(filePath)) {
-      res
-        .status(500)
-        .json({ error: `File not found: ${call.file}` });
-      return;
+      return `File not found: ${call.file}`;
     }
 
-    this.applyResponseExtras(call, res);
     res.sendFile(filePath);
+    return null;
   }
 }
