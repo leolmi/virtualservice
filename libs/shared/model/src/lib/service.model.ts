@@ -97,14 +97,19 @@ export interface IService {
   lastChange: number;
   /** Timestamp Unix (ms) della creazione */
   creationDate: number;
+  /** Il nome del servizio */
   name: string;
+  /** La descrizione del servizio */
   description: string;
   /** Se false il servizio non risponde alle chiamate esterne */
   active: boolean;
+  /** Indica un servizio impostato tra i preferiti per l'utente owner */
+  starred: boolean;
   /** Codice JS (stringa-js) che descrive la struttura dati in-memory del servizio */
   dbo: StringJs;
   /** Segmento di path univoco tra tutti i servizi generati */
   path: string;
+  /** Elenco delle chiamate (enpoint) gestite dal servizio */
   calls: IServiceCall[];
   /** Codice JS (stringa-js) eseguito periodicamente per aggiornare il dbo in base al tempo */
   schedulerFn: StringJs;
