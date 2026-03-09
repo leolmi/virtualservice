@@ -30,7 +30,7 @@ async function bootstrap(): Promise<void> {
 
   const port = process.env['PORT'] ?? 3000;
   await app.listen(port);
-  console.log(`Backend in ascolto su http://localhost:${port}/api`);
+  console.log(`Backend listening on http://localhost:${port}/api`);
 }
 
 bootstrap();

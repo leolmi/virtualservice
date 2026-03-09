@@ -11,7 +11,7 @@ import { randomUUID } from 'crypto';
 import { User, UserDocument } from './schemas/user.schema';
 
 const SALT_ROUNDS = 10;
-const VERIFICATION_TOKEN_TTL_MS = 48 * 60 * 60 * 1000; // 48 ore
+const VERIFICATION_TOKEN_TTL_MS = 48 * 60 * 60 * 1000; // 48 hours
 
 @Injectable()
 export class UsersService {
@@ -47,7 +47,7 @@ export class UsersService {
     const existing = await this.findByEmail(email);
     if (existing) {
       throw new ConflictException(
-        'Un account con questa email esiste già',
+        'An account with this email already exists',
       );
     }
 
@@ -84,7 +84,7 @@ export class UsersService {
     const user = await this.userModel
       .findByIdAndUpdate(userId, { googleId }, { new: true })
       .exec();
-    if (!user) throw new NotFoundException('Utente non trovato');
+    if (!user) throw new NotFoundException('User not found');
     return user;
   }
 
@@ -92,7 +92,7 @@ export class UsersService {
     const user = await this.findByVerificationToken(token);
     if (!user) {
       throw new BadRequestException(
-        'Token non valido o scaduto',
+        'Invalid or expired token',
       );
     }
 
@@ -108,17 +108,17 @@ export class UsersService {
     newPassword: string,
   ): Promise<void> {
     const user = await this.userModel.findById(userId).exec();
-    if (!user) throw new NotFoundException('Utente non trovato');
+    if (!user) throw new NotFoundException('User not found');
 
     if (!user.password) {
       throw new BadRequestException(
-        'Questo account usa Google OAuth e non ha una password locale',
+        'This account uses Google OAuth and does not have a local password',
       );
     }
 
     const passwordMatch = await bcrypt.compare(currentPassword, user.password);
     if (!passwordMatch) {
-      throw new BadRequestException('La password attuale non è corretta');
+      throw new BadRequestException('Current password is incorrect');
     }
 
     user.password = await bcrypt.hash(newPassword, SALT_ROUNDS);
@@ -127,7 +127,7 @@ export class UsersService {
 
   async requestDeletion(userId: string): Promise<void> {
     const user = await this.userModel.findById(userId).exec();
-    if (!user) throw new NotFoundException('Utente non trovato');
+    if (!user) throw new NotFoundException('User not found');
 
     user.deletionRequestedAt = new Date();
     await user.save();
@@ -145,22 +145,22 @@ export class UsersService {
   }
 
   /**
-   * Crea o aggiorna il superuser admin in modo atomico.
-   * Chiamato all'avvio del server tramite AdminBootstrapService.
-   * - Se un admin esiste già: aggiorna email e password.
-   * - Se non esiste: lo crea con isEmailVerified=true e role='admin'.
+   * Atomically creates or updates the admin superuser.
+   * Called at server startup via AdminBootstrapService.
+   * - If an admin already exists: updates email and password.
+   * - If not: creates one with isEmailVerified=true and role='admin'.
    */
   async ensureAdminUser(email: string, password: string): Promise<void> {
     const normalizedEmail = email.toLowerCase();
     const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
 
-    // Se non esiste ancora un admin, verifica che l'email non sia già presa da un utente normale
+    // If no admin exists yet, ensure the email is not already taken by a regular user
     const existingAdmin = await this.userModel.findOne({ role: 'admin' }).exec();
     if (!existingAdmin) {
       const emailTaken = await this.findByEmail(normalizedEmail);
       if (emailTaken) {
         throw new ConflictException(
-          `Impossibile creare il superuser admin: l'email "${normalizedEmail}" è già in uso da un altro utente.`,
+          `Cannot create admin superuser: email "${normalizedEmail}" is already in use by another user.`,
         );
       }
     }
@@ -188,9 +188,9 @@ export class UsersService {
     email: string,
   ): Promise<{ user: UserDocument; verificationToken: string }> {
     const user = await this.findByEmail(email);
-    if (!user) throw new NotFoundException('Utente non trovato');
+    if (!user) throw new NotFoundException('User not found');
     if (user.isEmailVerified) {
-      throw new BadRequestException("L'email è già stata verificata");
+      throw new BadRequestException('Email is already verified');
     }
 
     const verificationToken = randomUUID();

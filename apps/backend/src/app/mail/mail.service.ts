@@ -38,14 +38,14 @@ export class MailService {
       await this.transporter.sendMail({
         from,
         to: toEmail,
-        subject: 'Conferma il tuo indirizzo email — VirtualService',
+        subject: 'Confirm your email address — VirtualService',
         html: this.buildVerificationEmailHtml(verifyUrl),
-        text: `Benvenuto su VirtualService!\n\nConferma la tua email visitando questo link (valido 48 ore):\n${verifyUrl}`,
+        text: `Welcome to VirtualService!\n\nConfirm your email by visiting this link (valid for 48 hours):\n${verifyUrl}`,
       });
-      this.logger.log(`Email di verifica inviata a ${toEmail}`);
+      this.logger.log(`Verification email sent to ${toEmail}`);
     } catch (error) {
       this.logger.error(
-        `Errore nell'invio dell'email di verifica a ${toEmail}`,
+        `Error sending verification email to ${toEmail}`,
         error,
       );
       throw error;
@@ -55,28 +55,28 @@ export class MailService {
   private buildVerificationEmailHtml(verifyUrl: string): string {
     return `
 <!DOCTYPE html>
-<html lang="it">
-<head><meta charset="UTF-8"><title>Conferma Email</title></head>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Confirm Email</title></head>
 <body style="font-family: Arial, sans-serif; background: #f4f4f4; margin: 0; padding: 20px;">
   <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 8px; padding: 32px;">
-    <h1 style="color: #333; margin-top: 0;">Benvenuto su VirtualService</h1>
+    <h1 style="color: #333; margin-top: 0;">Welcome to VirtualService</h1>
     <p style="color: #555; line-height: 1.6;">
-      Grazie per esserti registrato! Per attivare il tuo account clicca sul pulsante qui sotto.
-      Il link è valido per <strong>48 ore</strong>.
+      Thank you for signing up! Click the button below to activate your account.
+      The link is valid for <strong>48 hours</strong>.
     </p>
     <div style="text-align: center; margin: 32px 0;">
       <a href="${verifyUrl}"
          style="background: #4F46E5; color: white; padding: 14px 28px; text-decoration: none;
                 border-radius: 6px; font-weight: bold; display: inline-block;">
-        Conferma il mio indirizzo email
+        Confirm my email address
       </a>
     </div>
     <p style="color: #888; font-size: 12px;">
-      Se non hai creato un account su VirtualService, ignora questa email.
+      If you did not create an account on VirtualService, please ignore this email.
     </p>
     <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;">
     <p style="color: #999; font-size: 11px;">
-      Se il pulsante non funziona, copia e incolla questo link nel browser:<br>
+      If the button does not work, copy and paste this link into your browser:<br>
       <a href="${verifyUrl}" style="color: #4F46E5;">${verifyUrl}</a>
     </p>
   </div>

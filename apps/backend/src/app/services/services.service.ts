@@ -24,7 +24,7 @@ export class ServicesService {
   /** Restituisce un servizio per id (solo se l'owner corrisponde) */
   async findOne(id: string, ownerId: string): Promise<ServiceDocument> {
     const service = await this.serviceModel.findById(id).exec();
-    if (!service) throw new NotFoundException('Servizio non trovato');
+    if (!service) throw new NotFoundException('Service not found');
     if (service.owner !== ownerId) throw new ForbiddenException();
     return service;
   }
@@ -64,7 +64,7 @@ export class ServicesService {
   /** Elimina un servizio (solo se l'owner corrisponde) */
   async remove(id: string, ownerId: string): Promise<void> {
     const service = await this.serviceModel.findById(id).exec();
-    if (!service) throw new NotFoundException('Servizio non trovato');
+    if (!service) throw new NotFoundException('Service not found');
     if (service.owner !== ownerId) throw new ForbiddenException();
 
     this.cacheService.clearService(id);
@@ -77,7 +77,7 @@ export class ServicesService {
    */
   async restart(id: string, ownerId: string): Promise<void> {
     const service = await this.serviceModel.findById(id).exec();
-    if (!service) throw new NotFoundException('Servizio non trovato');
+    if (!service) throw new NotFoundException('Service not found');
     if (service.owner !== ownerId) throw new ForbiddenException();
 
     // Cancella la cache (timer + db) e reinizializza immediatamente

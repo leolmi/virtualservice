@@ -3,17 +3,17 @@ import { ConfigService } from '@nestjs/config';
 import { UsersService } from './users.service';
 
 /**
- * Servizio eseguito una sola volta all'avvio dell'applicazione.
- * Legge le variabili d'ambiente VIRTUALSERVICE_ADIMN_EMAIL e
- * VIRTUALSERVICE_ADIMN_PASSWORD e garantisce che il superuser admin
- * esista su MongoDB con quelle credenziali.
+ * Service executed once on application startup.
+ * Reads the VIRTUALSERVICE_ADIMN_EMAIL and VIRTUALSERVICE_ADIMN_PASSWORD
+ * environment variables and ensures the admin superuser exists in MongoDB
+ * with those credentials.
  *
- * Regole (da server.md):
- *  - L'admin è l'unico utente con role='admin'.
- *  - Email e password sono configurabili da env; all'avvio vengono allineate.
- *  - La password admin non ha scadenza.
- *  - L'admin non necessita di verifica email (isEmailVerified=true).
- *  - Non è possibile creare un secondo admin tramite la normale registrazione.
+ * Rules (from server.md):
+ *  - The admin is the only user with role='admin'.
+ *  - Email and password are configurable via env; they are synced on startup.
+ *  - The admin password does not expire.
+ *  - The admin does not require email verification (isEmailVerified=true).
+ *  - It is not possible to create a second admin via normal registration.
  */
 @Injectable()
 export class AdminBootstrapService implements OnApplicationBootstrap {
@@ -32,18 +32,18 @@ export class AdminBootstrapService implements OnApplicationBootstrap {
 
     if (!email || !password) {
       this.logger.warn(
-        'VIRTUALSERVICE_ADIMN_EMAIL o VIRTUALSERVICE_ADIMN_PASSWORD non definiti: ' +
-          'il superuser admin non verrà creato/aggiornato.',
+        'VIRTUALSERVICE_ADIMN_EMAIL or VIRTUALSERVICE_ADIMN_PASSWORD are not set: ' +
+          'the admin superuser will not be created/updated.',
       );
       return;
     }
 
     try {
       await this.usersService.ensureAdminUser(email, password);
-      this.logger.log(`Superuser admin sincronizzato con successo (${email}).`);
+      this.logger.log(`Admin superuser synced successfully (${email}).`);
     } catch (err) {
       this.logger.error(
-        `Errore nella sincronizzazione del superuser admin: ${(err as Error).message}`,
+        `Error syncing admin superuser: ${(err as Error).message}`,
       );
     }
   }

@@ -23,7 +23,7 @@ export class AuthService {
     confirmPassword: string,
   ): Promise<{ message: string }> {
     if (password !== confirmPassword) {
-      throw new ConflictException('Le password non coincidono');
+      throw new ConflictException('Passwords do not match');
     }
 
     const { user, verificationToken } =
@@ -33,14 +33,14 @@ export class AuthService {
 
     return {
       message:
-        'Registrazione completata. Controlla la tua email per attivare il account.',
+        'Registration complete. Check your email to activate your account.',
     };
   }
 
   async login(user: UserDocument): Promise<{ accessToken: string }> {
     if (!user.isEmailVerified) {
       throw new ForbiddenException(
-        'Devi verificare la tua email prima di accedere. Controlla la tua casella di posta.',
+        'You must verify your email before logging in. Please check your inbox.',
       );
     }
 
@@ -49,7 +49,7 @@ export class AuthService {
 
   async verifyEmail(token: string): Promise<{ message: string }> {
     await this.usersService.verifyEmail(token);
-    return { message: 'Email verificata con successo. Puoi ora accedere.' };
+    return { message: 'Email verified successfully. You can now log in.' };
   }
 
   async resendVerification(email: string): Promise<{ message: string }> {
@@ -60,7 +60,7 @@ export class AuthService {
 
     return {
       message:
-        'Email di verifica reinviata. Controlla la tua casella di posta.',
+        'Verification email resent. Please check your inbox.',
     };
   }
 

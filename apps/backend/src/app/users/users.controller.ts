@@ -29,7 +29,7 @@ export class UsersController {
       dto.currentPassword,
       dto.newPassword,
     );
-    return { message: 'Password aggiornata con successo' };
+    return { message: 'Password updated successfully' };
   }
 
   @Delete('me')
@@ -40,7 +40,7 @@ export class UsersController {
     await this.usersService.requestDeletion(req.user.userId);
     return {
       message:
-        'Richiesta di eliminazione account registrata. Sarà elaborata entro 30 giorni.',
+        'Account deletion request registered. It will be processed within 30 days.',
     };
   }
 }
