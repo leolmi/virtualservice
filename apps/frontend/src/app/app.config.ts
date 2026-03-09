@@ -8,6 +8,8 @@ import { provideEffects } from '@ngrx/effects';
 import { appRoutes } from './app.routes';
 import { authReducer } from './auth/store/auth.reducer';
 import { AuthEffects } from './auth/store/auth.effects';
+import { APP_VERSION } from './core/tokens/app.tokens';
+import { version } from '../../../../package.json';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -17,5 +19,6 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     provideStore({ auth: authReducer }),
     provideEffects([AuthEffects]),
+    { provide: APP_VERSION, useValue: version },
   ],
 };

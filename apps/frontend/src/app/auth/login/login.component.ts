@@ -14,6 +14,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { login, loginWithGoogle } from '../store/auth.actions';
 import { selectAuthLoading, selectAuthError } from '../store/auth.selectors';
+import { APP_VERSION } from '../../core/tokens/app.tokens';
 
 @Component({
   selector: 'vs-login',
@@ -32,6 +33,8 @@ export class LoginComponent {
   private store = inject(Store);
   private fb = inject(FormBuilder);
   private breakpoints = inject(BreakpointObserver);
+
+  readonly version = inject(APP_VERSION);
 
   isNarrow = toSignal(
     this.breakpoints
