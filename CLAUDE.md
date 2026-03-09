@@ -252,3 +252,7 @@ The model that defines the data structure used is in the **./model.md** file (in
 ## Server
 
 The server logic is definited in file **./server.md**
+
+## Client
+
+Some guidelines regarding the client implementation are described in the **./client.md** file
