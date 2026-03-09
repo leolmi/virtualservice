@@ -308,3 +308,21 @@ i valori significativi evitando che contengano una quantità eccessiva di dati.
 per im  il momento non implementare la funzionalità dei template pubblici, la vedremo in seguito. L'importante è che il server sia predisposto
 con gli endpoint necessari che al momento risponderanno con un errore 500 dalla descrizione ":( not implemented yet".
 
+## Superuser admin
+
+Per quanto riguarda il ruolo **admin** questo è attribuibile solo ad un superuser impostato da variabili d'ambiente.
+
+Questo significa che il superuser sarà creato in modo automatico all'avvio del server ed avrà una email ed una password configurabili da variabili d'ambiente.
+
+Il check su MongoDB all'avvio dovrà verificare la presenza di questo particolare utente (unico con ruolo admin) ed allineare email e password con quelle definite nelle variabili d'ambiente.
+
+Le due variabili saranno:
+
+- `VIRTUALSERVICE_ADIMN_EMAIL`
+- `VIRTUALSERVICE_ADIMN_PASSWORD`
+
+La password per l'utente admin non avrà scadenza;
+
+Non sarà possibile creare un altro utente admin oltre quello previsto;
+
+L'utente admin non necessita di validazione attraverso mail;

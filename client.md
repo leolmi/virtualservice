@@ -18,7 +18,7 @@ I colori presenti sono rappresentati da queste variabili css:
 
 il riferimento per Material è quello al tema `indigo-pink.css`;
 
-In generale i due colori principali sono:
+In generale i colori principali sono:
 - `--vs-light`: per gli sfondi chiari e i testi sugli sfondi scuri;
 - `--vs-dark`: per gli sfondi scuri ed i testi sugli sfondi chiari;
 - `--vs-accent`: per tutte le parti evidenziate;
@@ -36,10 +36,10 @@ La lingua con cui sono visualizzati tutti gli elementi testuali è l'inglese;
 
 Vediamo l'elenco delle pagine previste per il frontend:
 - home page
-- browser di servizi (rotta: 'services')
-- editor del servizio (rotta: 'editor/:id/:page')
-- monitor dei log del servizio (rotta: 'monitor/:id')
-
+- browser di servizi
+- editor del servizio
+- monitor dei log del servizio
+- help page 
 
 
 ### home page
@@ -141,6 +141,14 @@ Rotta prevista `/monitor/:id`;
 - `:id` contiene l'identificativo del servizio monitorato;
 
 Rappresenta la pagina dove l'utente loggato può monitorare gli eventi legati alle chiamate relative al servizio specificato.
+
+---
+
+### help page
+
+Rotta prevista `/help`;
+
+Mostra l'help dell'applicazione;
 
 
 ## Toolbar
