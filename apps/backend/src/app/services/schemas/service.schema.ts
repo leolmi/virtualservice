@@ -134,6 +134,9 @@ export class Service implements IService {
   @Prop({ default: '' })
   description!: string;
 
+  @Prop({ default: false })
+  starred!: boolean;
+
   @Prop({ default: true })
   active!: boolean;
 

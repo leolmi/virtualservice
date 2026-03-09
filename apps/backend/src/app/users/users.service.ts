@@ -144,6 +144,46 @@ export class UsersService {
     return isMatch ? user : null;
   }
 
+  /**
+   * Crea o aggiorna il superuser admin in modo atomico.
+   * Chiamato all'avvio del server tramite AdminBootstrapService.
+   * - Se un admin esiste già: aggiorna email e password.
+   * - Se non esiste: lo crea con isEmailVerified=true e role='admin'.
+   */
+  async ensureAdminUser(email: string, password: string): Promise<void> {
+    const normalizedEmail = email.toLowerCase();
+    const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+
+    // Se non esiste ancora un admin, verifica che l'email non sia già presa da un utente normale
+    const existingAdmin = await this.userModel.findOne({ role: 'admin' }).exec();
+    if (!existingAdmin) {
+      const emailTaken = await this.findByEmail(normalizedEmail);
+      if (emailTaken) {
+        throw new ConflictException(
+          `Impossibile creare il superuser admin: l'email "${normalizedEmail}" è già in uso da un altro utente.`,
+        );
+      }
+    }
+
+    await this.userModel
+      .findOneAndUpdate(
+        { role: 'admin' },
+        {
+          $set: {
+            email: normalizedEmail,
+            password: hashedPassword,
+            isEmailVerified: true,
+            emailVerificationToken: null,
+            emailVerificationExpires: null,
+            deletionRequestedAt: null,
+            role: 'admin',
+          },
+        },
+        { upsert: true, new: true },
+      )
+      .exec();
+  }
+
   async regenerateVerificationToken(
     email: string,
   ): Promise<{ user: UserDocument; verificationToken: string }> {
