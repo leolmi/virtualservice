@@ -1,0 +1,106 @@
+<div class="login-page" [class.narrow]="isNarrow()">
+  <!-- LEFT panel: ON LINE -->
+  <div class="side-panel side-left">
+    <div class="side-content">
+      <mat-icon class="side-icon">cloud</mat-icon>
+      <h2 class="side-title">ON LINE</h2>
+      <p class="side-desc">
+        Create your virtual server in just a few steps with all the calls you
+        need.<br />
+        Add a virtual database to store and distribute test data.<br />
+        Your server is immediately online ready:
+      </p>
+      <div class="code-box">
+        <span class="code-base">https://virtualservice.app/service/</span
+        ><span class="code-path">yourpath</span>/<span class="code-method"
+          >yourmethod</span
+        >
+      </div>
+      <mat-icon class="side-help">help_outline</mat-icon>
+    </div>
+  </div>
+
+  <!-- CENTER panel: login form -->
+  <div class="center-panel">
+    @if (isNarrow()) {
+      <div class="center-brand">
+        <img src="assets/cloud-white.svg" class="center-logo" alt="logo" />
+        <h1 class="center-title">Virtual Service</h1>
+        <p class="center-subtitle">
+          build a develop web service
+          <strong class="center-accent">REST</strong> in a few moments
+        </p>
+      </div>
+    }
+
+    <div class="form-container">
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <mat-form-field appearance="outline" class="full-width">
+          <input
+            matInput
+            type="email"
+            placeholder="email"
+            formControlName="email"
+            autocomplete="email"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <input
+            matInput
+            type="password"
+            placeholder="password"
+            formControlName="password"
+            autocomplete="current-password"
+          />
+        </mat-form-field>
+
+        <p class="form-hint">
+          Insert your <strong>email</strong> and <strong>password</strong
+          ><br />to login or to register.
+        </p>
+
+        @if (error()) {
+          <p class="form-error">{{ error() }}</p>
+        }
+
+        <button
+          mat-stroked-button
+          type="submit"
+          class="full-width submit-btn"
+          [disabled]="loading()"
+        >
+          {{ loading() ? 'Loading…' : 'Submit' }}
+        </button>
+      </form>
+
+      <button
+        mat-stroked-button
+        class="full-width google-btn"
+        (click)="onGoogleLogin()"
+      >
+        <img src="assets/google-logo.svg" class="google-icon" alt="Google" />
+        Authenticate with Google
+      </button>
+    </div>
+
+    <span class="version-label">virtual service v.2.0.0</span>
+  </div>
+
+  <!-- RIGHT panel: LOCAL -->
+  <div class="side-panel side-right">
+    <div class="side-content">
+      <mat-icon class="side-icon">desktop_windows</mat-icon>
+      <h2 class="side-title">LOCAL</h2>
+      <p class="side-desc">
+        Download one or more servers created on editor online as json files.<br />
+        Install the
+        <a href="#" class="side-link">virtual service client</a>:
+      </p>
+      <div class="code-box">npm i virtualservice-local -g</div>
+      <p class="side-desc">Start one or more servers locally without anything else:</p>
+      <div class="code-box">vs "my/local/path/myserver.json"</div>
+      <mat-icon class="side-help">help_outline</mat-icon>
+    </div>
+  </div>
+</div>

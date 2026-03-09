@@ -1,0 +1,55 @@
+@use '@angular/material' as mat;
+
+/* Angular Material prebuilt indigo-pink theme */
+@include mat.core();
+
+html {
+  @include mat.theme(
+    (
+      color: (
+        theme-type: light,
+        primary: mat.$azure-palette,
+        tertiary: mat.$rose-palette,
+      ),
+      typography: (
+        plain-family: 'Roboto, sans-serif',
+      ),
+      density: 0,
+    )
+  );
+}
+
+:root {
+  --vs-light: #ddd;
+  --vs-dark: #263238;
+  --vs-primary: cornflowerblue;
+  --vs-accent: #ff4081;
+  --vs-accent-light: #fc00ba;
+  --vs-accent-transp: #ff408150;
+  --vs-warn-light: #f44336;
+  --vs-warn: brown;
+
+  --toolbar-height-wide: 140px;
+  --toolbar-height-narrow: 60px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  font-family: Roboto, sans-serif;
+}
+
+.flex-spacer {
+  flex: 1 1 auto;
+}
+
+.accent-text {
+  color: var(--vs-primary);
+}

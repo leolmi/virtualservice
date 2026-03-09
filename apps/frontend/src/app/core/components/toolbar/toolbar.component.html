@@ -1,0 +1,27 @@
+<mat-toolbar class="vs-toolbar" [class.narrow]="isNarrow()">
+  <div class="brand">
+    <img
+      class="brand-logo"
+      src="assets/cloud-white.svg"
+      alt="Virtual Service"
+    />
+    @if (!isNarrow()) {
+      <div class="brand-divider"></div>
+      <div class="brand-text">
+        <span class="brand-title">Virtual Service</span>
+        <span class="brand-desc"
+          >build a develop web service
+          <strong class="brand-accent">REST</strong> in a few moments</span
+        >
+      </div>
+    }
+  </div>
+
+  <span class="flex-spacer"></span>
+
+  @if (isLoggedIn()) {
+    <div class="user-section">
+      <!-- user profile goes here -->
+    </div>
+  }
+</mat-toolbar>

@@ -91,6 +91,8 @@ export interface ILog {
 export interface IService {
   /** ID dell'utente proprietario del servizio */
   owner: string;
+  /** Se true il servizio è nei preferiti dell'utente */
+  starred: boolean;
   /** Timestamp Unix (ms) dell'ultima modifica */
   lastChange: number;
   /** Timestamp Unix (ms) della creazione */

@@ -1,0 +1,252 @@
+:host {
+  display: block;
+  flex: 1;
+  overflow: auto;
+}
+
+/* ── page layout ─────────────────────────────────────────── */
+.login-page {
+  display: flex;
+  flex-direction: row;
+  min-height: calc(100vh - var(--toolbar-height-wide));
+}
+
+/* ── side panels (W1) ──────────────────────────────────────── */
+.side-panel {
+  flex: 1;
+  background-color: var(--vs-light);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 48px 40px;
+}
+
+.side-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 380px;
+  gap: 16px;
+
+  .side-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    color: var(--vs-dark);
+  }
+
+  .side-title {
+    font-size: 1.1rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    color: var(--vs-dark);
+    margin: 0;
+  }
+
+  .side-desc {
+    font-size: 0.85rem;
+    color: var(--vs-dark);
+    line-height: 1.6;
+    margin: 0;
+
+    a.side-link {
+      color: var(--vs-primary);
+      text-decoration: none;
+    }
+  }
+
+  .code-box {
+    width: 100%;
+    background-color: var(--vs-dark);
+    color: var(--vs-light);
+    font-family: 'Courier New', monospace;
+    font-size: 0.8rem;
+    padding: 12px 16px;
+    border-radius: 2px;
+    text-align: left;
+    word-break: break-all;
+
+    .code-path {
+      color: var(--vs-accent);
+    }
+
+    .code-method {
+      color: var(--vs-accent-light);
+    }
+
+    .code-base {
+      color: var(--vs-light);
+    }
+  }
+
+  .side-help {
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+    color: var(--vs-dark);
+    border: 2px solid var(--vs-dark);
+    border-radius: 50%;
+    margin-top: auto;
+    cursor: pointer;
+  }
+}
+
+/* ── center panel (W2 = ~170px in wide mode) ───────────────── */
+.center-panel {
+  width: 340px;
+  flex-shrink: 0;
+  background-color: var(--vs-dark);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 40px 24px 20px;
+  position: relative;
+}
+
+/* brand block shown only in narrow mode */
+.center-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 32px;
+  gap: 8px;
+
+  .center-logo {
+    width: 64px;
+    height: 64px;
+  }
+
+  .center-title {
+    font-size: 1.8rem;
+    font-weight: 300;
+    color: var(--vs-light);
+    margin: 0;
+    letter-spacing: 0.04em;
+  }
+
+  .center-subtitle {
+    font-size: 0.85rem;
+    color: rgba(221, 221, 221, 0.65);
+    text-align: center;
+    margin: 0;
+    line-height: 1.5;
+
+    .center-accent {
+      color: var(--vs-primary);
+      font-weight: 500;
+    }
+  }
+}
+
+/* form ───────────────────────────────────────────────────────── */
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+/* white form fields on dark background */
+::ng-deep .center-panel mat-form-field {
+  .mdc-text-field {
+    background-color: #ffffff !important;
+    border-radius: 4px;
+  }
+
+  .mdc-text-field--outlined:not(.mdc-text-field--disabled)
+    .mdc-notched-outline__leading,
+  .mdc-text-field--outlined:not(.mdc-text-field--disabled)
+    .mdc-notched-outline__notch,
+  .mdc-text-field--outlined:not(.mdc-text-field--disabled)
+    .mdc-notched-outline__trailing {
+    border-color: rgba(255, 255, 255, 0.5) !important;
+  }
+
+  input.mat-mdc-input-element {
+    color: var(--vs-dark);
+  }
+
+  .mat-mdc-form-field-infix {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+}
+
+.form-hint {
+  font-size: 0.8rem;
+  color: var(--vs-light);
+  text-align: center;
+  margin: 4px 0 8px;
+  line-height: 1.5;
+
+  strong {
+    font-weight: 500;
+  }
+}
+
+.form-error {
+  font-size: 0.8rem;
+  color: var(--vs-warn-light);
+  text-align: center;
+  margin: 0 0 8px;
+}
+
+.submit-btn {
+  color: var(--vs-light) !important;
+  border-color: rgba(221, 221, 221, 0.4) !important;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.google-btn {
+  background-color: transparent;
+  color: var(--vs-accent) !important;
+  border-color: var(--vs-accent) !important;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+
+  .google-icon {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.version-label {
+  display: block;
+  text-align: center;
+  font-size: 0.7rem;
+  color: rgba(221, 221, 221, 0.35);
+  margin-top: auto;
+  padding-top: 24px;
+}
+
+/* ── narrow mode (≤800px) ──────────────────────────────────── */
+.login-page.narrow {
+  flex-direction: column;
+  min-height: calc(100vh - var(--toolbar-height-narrow));
+
+  .center-panel {
+    width: 100%;
+    order: 1;
+  }
+
+  .side-left {
+    order: 2;
+  }
+
+  .side-right {
+    order: 3;
+  }
+}
