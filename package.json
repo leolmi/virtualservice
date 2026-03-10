@@ -2,7 +2,15 @@
   "name": "@virtualservice/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "start": "node dist/apps/backend/main.js",
+    "build": "npx nx run-many -t build -p frontend backend --configuration=production",
+    "heroku-postbuild": "npm run build"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  },
   "private": true,
   "dependencies": {
     "@angular/animations": "~21.1.0",
