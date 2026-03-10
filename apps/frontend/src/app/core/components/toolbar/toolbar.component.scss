@@ -57,6 +57,47 @@
   .flex-spacer {
     flex: 1 1 auto;
   }
+
+  /* User section */
+  .user-section {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--vs-light);
+
+    .user-avatar {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+      line-height: 28px;
+      opacity: 0.85;
+    }
+
+    .user-name {
+      font-size: 0.85rem;
+      opacity: 0.85;
+      max-width: 160px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .cmd-separator {
+      width: 1px;
+      height: 24px;
+      background: rgba(255, 255, 255, 0.25);
+      margin: 0 4px;
+    }
+
+    .cmd-btn {
+      color: var(--vs-light);
+      opacity: 0.85;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
 }
 
 /* narrow mode */
@@ -71,5 +112,9 @@
       width: 32px;
       height: 32px;
     }
+  }
+
+  .user-section {
+    gap: 4px;
   }
 }

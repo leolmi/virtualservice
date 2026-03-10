@@ -1,0 +1,96 @@
+<div
+  class="services-page"
+  [class.drag-over]="isDragOver"
+  (dragover)="onDragOver($event)"
+  (dragleave)="onDragLeave($event)"
+  (drop)="onDrop($event)"
+>
+
+  <!-- Background drop hint (always visible, behind content) -->
+  <div class="drop-hint">
+    <span class="drop-hint-label">drop a file of one of the following types here</span>
+    <span class="drop-hint-types">
+      curl text file (bash style) &nbsp;·&nbsp;
+      chrome log (.har) &nbsp;·&nbsp;
+      swagger (SOA 2.0) &nbsp;·&nbsp;
+      postman (collection v2)
+    </span>
+  </div>
+
+  <!-- Main scrollable content -->
+  <div class="services-content">
+
+    @if (loading()) {
+      <div class="loading-overlay">
+        <mat-spinner diameter="48"></mat-spinner>
+      </div>
+    }
+
+    @if (error()) {
+      <div class="error-banner">{{ error() }}</div>
+    }
+
+    <!-- Starred section -->
+    @if (starredServices().length > 0) {
+      <section class="services-section starred-section">
+        <mat-icon class="section-icon">star</mat-icon>
+        <div class="tiles-grid">
+          @for (svc of starredServices(); track svc._id) {
+            <vs-service-tile
+              [service]="svc"
+              (toggleActive)="onToggleActive($event)"
+              (toggleStarred)="onToggleStarred($event)"
+              (delete)="onDeleteService($event)"
+              (open)="onOpenService($event)"
+              (monitor)="onMonitorService($event)"
+              (downloadSwagger)="onDownloadSwagger($event)"
+            />
+          }
+        </div>
+      </section>
+      <hr class="section-divider" />
+    }
+
+    <!-- All other services section -->
+    <section class="services-section other-section">
+      <mat-icon class="section-icon">toll</mat-icon>
+      <div class="tiles-grid">
+        @for (svc of otherServices(); track svc._id) {
+          <vs-service-tile
+            [service]="svc"
+            (toggleActive)="onToggleActive($event)"
+            (toggleStarred)="onToggleStarred($event)"
+            (delete)="onDeleteService($event)"
+            (open)="onOpenService($event)"
+            (monitor)="onMonitorService($event)"
+            (downloadSwagger)="onDownloadSwagger($event)"
+          />
+        }
+        @if (otherServices().length === 0 && starredServices().length === 0 && !loading()) {
+          <p class="empty-label">No services yet. Click <strong>+</strong> to create one.</p>
+        }
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Bottom FAB toolbar -->
+  <div class="bottom-fab-bar">
+    <button
+      mat-fab
+      matTooltip="Open help page"
+      (click)="onGoToHelp()"
+    >
+      <mat-icon>help_outline</mat-icon>
+    </button>
+    <button
+      mat-fab
+      color="accent"
+      matTooltip="Create new service"
+      (click)="onCreateService()"
+    >
+      <mat-icon>add</mat-icon>
+    </button>
+  </div>
+
+</div>
