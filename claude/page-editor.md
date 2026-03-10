@@ -89,16 +89,16 @@ Nei documenti relativi alle singole pagine child dell'editor saranno descritti i
 
 #### Pagina: Call definition
 pagina che visualizza le informazioni della call selezionata;
-vedi `./page-editor-call.md`;
+vedi `page-editor-call.md`;
 
 #### Pagina: Call test
 pagina che permette di testare la call selezionata;
-vedi `./page-editor-test.md`;
+vedi `page-editor-test.md`;
 
 #### Pagina: Service definition
 pagina che visualizza e permette di modificare la descrizione e il db del servizio;
-vedi `./page-editor-database.md`;
+vedi `page-editor-database.md`;
 
 #### Pagina: Timed function
 pagina che visualizza le informazioni della call selezionata;
-vedi `./page-editor-function.md`;
+vedi `page-editor-function.md`;

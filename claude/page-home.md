@@ -16,5 +16,5 @@ Il resto della pagina sottostante alla toolbar è divisa in tre settori orizzont
 - un settore a sinistra di larghezza W1
   W2 è una larghezza fissa indicativamente sui 170px, W1 rappresenta il resto della larghezza della finestra divisa in parti uguali.
 
-esempio home-page in screen largo: **./documents/images/home-page.png**;
-esempio home-page in screen stretto: **./documents/images/home-page-2.png**;
+esempio home-page in screen largo: **documents/images/home-page.png**;
+esempio home-page in screen stretto: **documents/images/home-page-2.png**;

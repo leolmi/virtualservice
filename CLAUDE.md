@@ -248,16 +248,16 @@ nx affected:graph           # Only affected projects
 
 ## model
 
-The model that defines the data structure used is in the **./claude/model.md** file (in italian)
+The model that defines the data structure used is in the **claude/model.md** file (in italian)
 
 ---
 
 ## Server
 
-The server logic is definited in file **./claude/server.md**
+The server logic is definited in file **claude/server.md**
 
 ---
 
 ## Client
 
-The client is definited in file **./claude/client.md**
+The client is definited in file **claude/client.md**

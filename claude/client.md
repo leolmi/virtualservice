@@ -36,16 +36,16 @@ La lingua con cui sono visualizzati tutti gli elementi testuali è l'inglese;
 
 
 Vediamo l'elenco delle pagine previste per il frontend:
-- `home page`: leggi `./page-home.md`;
-- `browser di servizi`: leggi `./page-services.md`;
-- `editor del servizio`: leggi `./page-editor.md`;
-- `monitor dei log del servizio`: leggi `./page-monitor.md`;
-- `help page`: leggi `./page-help.md`;
-- `management page`: leggi `./page-management.md`;
+- `home page`: leggi `page-home.md`;
+- `browser di servizi`: leggi `page-services.md`;
+- `editor del servizio`: leggi `page-editor.md`;
+- `monitor dei log del servizio`: leggi `page-monitor.md`;
+- `help page`: leggi `page-help.md`;
+- `management page`: leggi `page-management.md`;
 
 
 ## Toolbar
-leggi `./toolbar.md`;
+leggi `toolbar.md`;
 
 
 ## Responsive

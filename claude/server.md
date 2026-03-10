@@ -1,5 +1,5 @@
 
-Per le definizioni delle classi si fa riferimento al file **./model.md**.
+Per le definizioni delle classi si fa riferimento al file **model.md**.
 
 L'host dell'applicazione distribuita è al momento: "https://virtualservice.herokuapp.com"
 
