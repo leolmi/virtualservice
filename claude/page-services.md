@@ -24,7 +24,7 @@ I file compatibili per il drop sono:
 Una label in sovraimpressione sullo sfondo, in basso e centrata prevede la dicitura: 
 `drop a file of one of the following types here` e sotto una seconda riga enumera le tipologie compatibili.
 
-
+--
 
 ## Struttura della pagina
 
@@ -43,6 +43,11 @@ Entrambe le sezioni mostrano un'icona in posizione assoluta e di dimensione font
 Le due sezioni sono separate da una linea demarcatrice come nell'immagine di riferimento;
 
 Se sono presenti diverse tiles la pagina deve risultare scrollabile solo verticalmente;
+
+Nella parte bassa, quindi allineata al bottom, è presente in posizione `absolute` una toolbar con sfondo
+trasparente che visualizza, allineati a destra, una serie di pulsanti `mat-fab`:
+- `help`: pulsante con icona fissa `help_outline`, tooltip `open help page`. Il click porta alla pagina di help;
+- `add`: pulsante con icona fissa `add`, tooltip `create new service` e colore `accent`. il click crea un nuovo servizio e lo apre nell'editor;
 
 
 ## Tiles
