@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
+import { DEFAULT_PORT } from './defaults';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
@@ -28,7 +29,7 @@ async function bootstrap(): Promise<void> {
     credentials: false,
   });
 
-  const port = process.env['PORT'] ?? 3000;
+  const port = process.env['PORT'] ?? DEFAULT_PORT;
   await app.listen(port);
   console.log(`Backend listening on http://localhost:${port}/api`);
 }

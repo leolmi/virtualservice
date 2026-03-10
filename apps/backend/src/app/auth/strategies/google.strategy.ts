@@ -4,6 +4,7 @@ import { Strategy, VerifyCallback, Profile } from 'passport-google-oauth20';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from '../auth.service';
 import { UserDocument } from '../../users/schemas/user.schema';
+import { DEFAULT_GOOGLE_CALLBACK_URL, DEFAULT_GOOGLE_CLIENT_ID, DEFAULT_GOOGLE_CLIENT_SECRET } from '../../../defaults';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
@@ -12,9 +13,9 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     private readonly authService: AuthService,
   ) {
     super({
-      clientID: configService.getOrThrow<string>('GOOGLE_CLIENT_ID'),
-      clientSecret: configService.getOrThrow<string>('GOOGLE_CLIENT_SECRET'),
-      callbackURL: configService.getOrThrow<string>('GOOGLE_CALLBACK_URL'),
+      clientID: configService.getOrThrow<string>('GOOGLE_CLIENT_ID', DEFAULT_GOOGLE_CLIENT_ID),
+      clientSecret: configService.getOrThrow<string>('GOOGLE_CLIENT_SECRET', DEFAULT_GOOGLE_CLIENT_SECRET),
+      callbackURL: configService.getOrThrow<string>('GOOGLE_CALLBACK_URL', DEFAULT_GOOGLE_CALLBACK_URL),
       scope: ['email', 'profile'],
     });
   }

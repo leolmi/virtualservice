@@ -6,6 +6,7 @@ import { AuthModule } from './app/auth/auth.module';
 import { MailModule } from './app/mail/mail.module';
 import { ServicesModule } from './app/services/services.module';
 import { MockServerModule } from './app/mock-server/mock-server.module';
+import { DEFAULT_MONGO_URI } from './defaults';
 
 @Module({
   imports: [
@@ -16,7 +17,7 @@ import { MockServerModule } from './app/mock-server/mock-server.module';
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
-        uri: configService.getOrThrow<string>('MONGO_URI'),
+        uri: configService.getOrThrow<string>('MONGO_URI', DEFAULT_MONGO_URI),
       }),
       inject: [ConfigService],
     }),

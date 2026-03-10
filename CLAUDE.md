@@ -244,11 +244,20 @@ nx affected:graph           # Only affected projects
 - **Dynamic path uniqueness** is enforced globally — the backend must validate that no two entry-points share the same composed path.
 - **JSON export** is a pure serialization of the in-memory/DB service definition — the Node CLI client is intentionally decoupled from the web app.
 
+---
 
 ## model
 
-The model that defines the data structure used is in the **./model.md** file (in italian)
+The model that defines the data structure used is in the **./claude/model.md** file (in italian)
+
+---
 
 ## Server
 
-The server logic is definited in file **./server.md**
+The server logic is definited in file **./claude/server.md**
+
+---
+
+## Client
+
+The client is definited in file **./claude/client.md**

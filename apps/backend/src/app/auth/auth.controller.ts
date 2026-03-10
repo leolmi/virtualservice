@@ -19,6 +19,7 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RegisterDto, LoginDto } from '@virtualservice/shared/dto';
 import { UserDocument } from '../users/schemas/user.schema';
 import { RequestWithUser } from './interfaces/request-with-user.interface';
+import { DEFAULT_FRONTEND_URL } from '../../defaults';
 
 interface RequestWithPassportUser extends Request {
   user: UserDocument;
@@ -82,10 +83,7 @@ export class AuthController {
     @Res() res: Response,
   ): void {
     const { accessToken } = this.authService.googleCallback(req.user);
-    const frontendUrl = this.configService.get<string>(
-      'FRONTEND_URL',
-      'http://localhost:4200',
-    );
+    const frontendUrl = this.configService.get<string>('FRONTEND_URL', DEFAULT_FRONTEND_URL);
     res.redirect(`${frontendUrl}/auth/callback?token=${accessToken}`);
   }
 

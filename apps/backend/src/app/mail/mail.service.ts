@@ -2,6 +2,14 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
 import { Transporter } from 'nodemailer';
+import {
+  DEFAULT_BASE_URL,
+  DEFAULT_SMTP_FROM,
+  DEFAULT_SMTP_HOST,
+  DEFAULT_SMTP_PASS,
+  DEFAULT_SMTP_PORT,
+  DEFAULT_SMTP_USER,
+} from '../../defaults';
 
 @Injectable()
 export class MailService {
@@ -10,12 +18,22 @@ export class MailService {
 
   constructor(private readonly configService: ConfigService) {
     this.transporter = nodemailer.createTransport({
-      host: this.configService.getOrThrow<string>('SMTP_HOST'),
-      port: this.configService.get<number>('SMTP_PORT', 587),
-      secure: this.configService.get<number>('SMTP_PORT', 587) === 465,
+      host: this.configService.getOrThrow<string>(
+        'SMTP_HOST',
+        DEFAULT_SMTP_HOST,
+      ),
+      port: this.configService.get<number>('SMTP_PORT', DEFAULT_SMTP_PORT),
+      secure:
+        this.configService.get<number>('SMTP_PORT', DEFAULT_SMTP_PORT) === 465,
       auth: {
-        user: this.configService.getOrThrow<string>('SMTP_USER'),
-        pass: this.configService.getOrThrow<string>('SMTP_PASS'),
+        user: this.configService.getOrThrow<string>(
+          'SMTP_USER',
+          DEFAULT_SMTP_USER,
+        ),
+        pass: this.configService.getOrThrow<string>(
+          'SMTP_PASS',
+          DEFAULT_SMTP_PASS,
+        ),
       },
     });
   }
@@ -26,13 +44,10 @@ export class MailService {
   ): Promise<void> {
     const baseUrl = this.configService.get<string>(
       'BASE_URL',
-      'http://localhost:3000',
+      DEFAULT_BASE_URL,
     );
     const verifyUrl = `${baseUrl}/api/auth/verify-email?token=${verificationToken}`;
-    const from = this.configService.get<string>(
-      'SMTP_FROM',
-      'VirtualService <noreply@virtualservice.app>',
-    );
+    const from = this.configService.get<string>('SMTP_FROM', DEFAULT_SMTP_FROM);
 
     try {
       await this.transporter.sendMail({
