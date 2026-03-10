@@ -1,0 +1,307 @@
+<div class="help-container">
+  <!-- LEFT: scrollable content -->
+  <div
+    class="help-content"
+    vsScroller
+    [idMap]="sectionIds"
+    offset="25%"
+    (current)="handleCurrent($event)"
+  >
+    <header>
+      <img alt="VirtualService" src="assets/cloud.svg" />
+      <div class="header-divider"></div>
+      <div class="header-info">
+        <div class="app-name">Virtual Service</div>
+        <div class="app-desc">build and develop REST web services in a few moments</div>
+      </div>
+    </header>
+
+    <nav class="help-menu">
+      <ul>
+        <li><a (click)="goTo('intro')">Introduction</a></li>
+        <li><a (click)="goTo('services')">Services</a></li>
+        <li><a (click)="goTo('editor')">Editor</a></li>
+        <li><a (click)="goTo('expression-editor')">Expression editor</a></li>
+        <li><a (click)="goTo('monitor')">Monitor</a></li>
+      </ul>
+    </nav>
+
+    <div class="help-sections">
+
+      <!-- INTRODUCTION -->
+      <h1 id="intro">Introduction</h1>
+      <div class="help-section">
+        <p>During the development of web applications the backend and the frontend often rely on different teams.</p>
+        <p>So you need to create a common REST call definition agreement.</p>
+        <p>If the backend is developed first, utilities such as
+          <a href="https://swagger.io/" target="_blank">swagger</a> or
+          <a href="https://www.postman.com/" target="_blank">postman</a>
+          are probably sufficient for the subsequent development of the client.</p>
+        <p>When it is necessary to first define REST calls, <b>virtual-service</b> becomes a practical solution.</p>
+        <ul class="important-points">
+          <li>Server immediately available;</li>
+          <li>Only <b>JavaScript</b> on the backend;</li>
+          <li>Simplify procedures using <a href="https://lodash.com/docs" target="_blank">lodash</a> utilities;</li>
+          <li>Async functions to generate responses;</li>
+          <li>Untrusted code handled in dedicated processes with a predefined timeout;</li>
+        </ul>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <!-- SERVICES -->
+      <h1 id="services" data-image="assets/help/services-list.png">Services</h1>
+      <div class="help-section">
+        <p>This page displays the list of all user-defined services. You can create new ones or manage existing ones.</p>
+        <p>Each card represents a service.</p>
+
+        <em>Toolbar commands:</em>
+        <div class="help-icon-row">
+          <mat-icon>power_settings_new</mat-icon>
+          <p>Use this button to logout.</p>
+        </div>
+
+        <em>Card commands:</em>
+        <div class="help-icon-row">
+          <mat-icon>radio_button_checked</mat-icon>
+          <p>This is an active service. Click to deactivate it.<br>A deactivated service cannot respond to any request.</p>
+        </div>
+        <div class="help-icon-row">
+          <mat-icon>radio_button_unchecked</mat-icon>
+          <p>This is an inactive service. Click to activate it.</p>
+        </div>
+        <div class="help-icon-row">
+          <mat-icon color="warn">delete</mat-icon>
+          <p>Use this button to remove the service and all its calls.</p>
+        </div>
+        <div class="help-icon-row">
+          <mat-icon>desktop_windows</mat-icon>
+          <p>Open the monitor page to watch all requests to this service.</p>
+        </div>
+        <div class="help-icon-row">
+          <mat-icon>star</mat-icon>
+          <p>Add / remove this service from favourites.</p>
+        </div>
+        <div class="help-icon-row">
+          <button mat-stroked-button color="accent">OPEN</button>
+          <p>Open the editor for this service.</p>
+        </div>
+
+        <em>Drag &amp; Drop files</em>
+        <p>Drag files onto this area and drop to add external call definitions. A new service will be created and the imported calls will be added.</p>
+
+        <em>FAB buttons</em>
+        <div class="help-icon-row">
+          <button mat-fab color="accent"><mat-icon>add</mat-icon></button>
+          <p>Create a new service and open it in the editor.</p>
+        </div>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <!-- EDITOR -->
+      <h1 id="editor" data-image="assets/help/editor.png">Editor</h1>
+      <div class="help-section">
+        <p>The editor lets you manage REST calls that are part of a service. You can create, delete, and test them.</p>
+
+        <em>Toolbar commands:</em>
+        <div class="help-icon-row">
+          <mat-icon>settings_backup_restore</mat-icon>
+          <p>Restart the service, rebuilding its database.</p>
+        </div>
+        <div class="help-icon-row">
+          <mat-icon>desktop_windows</mat-icon>
+          <p>Open the monitor page to watch all requests to this service.</p>
+        </div>
+        <div class="help-icon-row">
+          <mat-icon>view_module</mat-icon>
+          <p>Back to the list of user's services.</p>
+        </div>
+
+        <em>Calls list</em>
+        <p>On the left you will find the list of all calls defined in the service. A search box helps you filter by path.</p>
+
+        <em>Service definitions</em>
+        <p>At the top of the editor there are two properties:</p>
+        <ul>
+          <li><b>Service name</b>: the name of the service;</li>
+          <li><b>Base path</b>: the root path segment appended after <code>/service/</code>.</li>
+        </ul>
+        <p>The full URL for every call will be:</p>
+        <p class="code">https://virtualservice.herokuapp.com/service/<span class="color-accent">base-path</span>/<span class="color-accent">call-path</span></p>
+
+        <em>Drag &amp; Drop files</em>
+        <p>Drag files here to import external call definitions. The imported calls will be added to the current service.</p>
+
+        <em>The editor is split into three sections by tabs:</em>
+
+        <!-- CALL DEFINITION -->
+        <h2 id="editor-call" data-image="assets/help/editor-call.png">Call definition</h2>
+        <em>Call path</em>
+        <p>First, define the HTTP verb and the last path segment of the call.</p>
+        <div class="help-icon-row">
+          <mat-icon color="warn">delete</mat-icon>
+          <p>Use this button to remove the call from the service.</p>
+        </div>
+
+        <em>Call rules</em>
+        <p>If you want to throw errors instead of returning a response, define one rule for each error scenario you want to handle.</p>
+
+        <em>Call response</em>
+        <p>The <b>RESPONSE</b> is written as a JavaScript expression whose return value is sent to the client.</p>
+        <p class="highlight">For details on the expression editor see the section
+          <a (click)="goTo('expression-editor')">Expression editor</a> below.</p>
+
+        <em>FAB buttons</em>
+        <div class="help-icon-row">
+          <button mat-fab color="accent"><mat-icon>add</mat-icon></button>
+          <p>Create a new call and select it.</p>
+        </div>
+
+        <!-- CALL TEST -->
+        <h2 id="editor-test" data-image="assets/help/editor-test.png">Call test</h2>
+        <p>Here you can test the call and refine the response code to get the desired result.<br>
+          The verb and path are locked; dynamic path segments are highlighted.</p>
+
+        <em>Path buttons</em>
+        <div class="help-icon-row">
+          <mat-icon>settings_ethernet</mat-icon>
+          <p>Download the call as a bash curl script for local execution.</p>
+        </div>
+        <div class="help-icon-row">
+          <mat-icon>filter_none</mat-icon>
+          <p>Copy the test path to the clipboard.</p>
+        </div>
+
+        <em>Call description</em>
+        <p>In the <b>DESCRIPTION</b> box you can write Markdown text to describe the call.</p>
+
+        <em>Test parameters</em>
+        <p>All dynamic parts of the URL (path or query) can be set here.</p>
+
+        <em>Test body</em>
+        <p>For verbs that carry a body you can define a JavaScript object.</p>
+
+        <em>Test results</em>
+        <p>The test results are displayed here. Errors are highlighted in red.</p>
+
+        <em>FAB buttons</em>
+        <div class="help-icon-row">
+          <button mat-fab color="accent"><mat-icon>flash_on</mat-icon></button>
+          <p>Run the call test.</p>
+        </div>
+
+        <!-- SERVICE DATABASE -->
+        <h2 id="editor-database" data-image="assets/help/editor-database.png">Service definition</h2>
+        <em>Service description</em>
+        <p>In the <b>DESCRIPTION</b> box you can write Markdown text to describe the service.</p>
+
+        <em>Database</em>
+        <p>In this box you can write JavaScript code to define the service's database object, which is available to all calls.</p>
+        <p>The database must be a serializable JavaScript object. You can generate it using the full power of lodash utilities.</p>
+        <p class="highlight">For details on the expression editor see the section
+          <a (click)="goTo('expression-editor')">Expression editor</a> below.</p>
+
+        <!-- TIMED FUNCTION -->
+        <h2 id="timed-function" data-image="assets/help/timed-function.png">Timed function</h2>
+        <p>A <b>timed function</b> lets you repeat an operation at a set interval.
+          A classic example: inserting notifications into the database every few seconds.</p>
+
+        <em>Options</em>
+        <p>In the <b>Interval</b> field enter the time interval in seconds.</p>
+
+        <em>Function</em>
+        <p>Write JavaScript code to define the function that runs every <b>interval</b> seconds.</p>
+        <p class="highlight">For details on the expression editor see the section
+          <a (click)="goTo('expression-editor')">Expression editor</a> below.</p>
+
+      </div>
+
+      <div class="section-divider"></div>
+
+      <!-- EXPRESSION EDITOR -->
+      <h1 id="expression-editor" data-image="assets/help/expression-editor.png">Expression editor</h1>
+      <div class="help-section">
+        <p>In the expression editor you write JavaScript code.</p>
+        <p>The return value can be a JSON object, a JavaScript object, or a Promise that resolves to one of those.</p>
+        <p class="highlight">All code runs in a <b>dedicated process</b> with an execution <b>timeout of 10 seconds</b>.<br>
+          If execution crashes or times out, an error is generated.</p>
+
+        <em>Database sample — using samples</em>
+        <pre><code>{{ code.db_samples }}</code></pre>
+
+        <em>Database sample — generating records</em>
+        <pre><code>{{ code.db_generating }}</code></pre>
+
+        <em>Available objects</em>
+        <p>The following objects are available in the JS context:</p>
+        <ul class="available-exp-objects">
+          <li><code>_</code>: lodash utilities</li>
+          <li><code>db</code>: the service database object (not in database definition)</li>
+          <li><code>samples</code>: sample data (only in database definition)</li>
+          <li><code>pathValue</code>: dynamic URL path parts (not in database definition)</li>
+          <li><code>params</code>: query parameters from URL (not in database definition)</li>
+          <li><code>data</code>: the request body (not in database definition)</li>
+          <li><code>headers</code>: request headers (not in database definition)</li>
+          <li><code>cookies</code>: request cookies (not in database definition)</li>
+        </ul>
+
+        <em>Available samples</em>
+        <p>These objects are available only in database expression context:</p>
+        <ul class="available-samples">
+          <li><code>samples.northwind</code>: all Northwind database tables;</li>
+          <li><code>samples.italia</code>: all Italian regions and municipalities;</li>
+          <li><code>samples.nations</code>: all countries and nations;</li>
+        </ul>
+
+        <em>Deferred response</em>
+        <pre><code>{{ code.deferred }}</code></pre>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <!-- MONITOR -->
+      <h1 id="monitor" data-image="assets/help/monitor.png">Monitor</h1>
+      <div class="help-section">
+        <p>The monitor lets you observe interactions with a specific service. You can analyse each call in detail, seeing both the request and the response.</p>
+
+        <em>Toolbar commands:</em>
+        <div class="help-icon-row">
+          <mat-icon color="warn">delete</mat-icon>
+          <p>Use this button to clear the log.</p>
+        </div>
+        <div class="help-icon-row">
+          <mat-icon>settings_backup_restore</mat-icon>
+          <p>Restart the service, rebuilding its database.</p>
+        </div>
+        <div class="help-icon-row">
+          <mat-icon>edit</mat-icon>
+          <p>Go to the editor page.</p>
+        </div>
+        <div class="help-icon-row">
+          <mat-icon>view_module</mat-icon>
+          <p>Back to the list of user's services.</p>
+        </div>
+
+        <p>The upper half shows the call list. The most recent item is at the top.</p>
+        <p>A search box helps you find particular items in the list.</p>
+        <p>The lower half shows the detail of the selected item: request on the left, response on the right.</p>
+      </div>
+
+    </div><!-- end help-sections -->
+  </div><!-- end help-content -->
+
+  <!-- RIGHT: fixed image panel (wide) -->
+  @if (isWide()) {
+    <div class="help-image-right">
+      <div class="help-image-container" [style.background-image]="'url(' + imageUrl() + ')'"></div>
+    </div>
+  }
+
+  <!-- BOTTOM: image panel (narrow) -->
+  @if (!isWide()) {
+    <div class="help-image-bottom">
+      <div class="help-image-container" [style.background-image]="'url(' + imageUrl() + ')'"></div>
+    </div>
+  }
+</div>

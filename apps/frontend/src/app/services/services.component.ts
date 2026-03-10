@@ -74,6 +74,13 @@ export class ServicesComponent {
     }
 
     commands.push({
+      id: 'help',
+      icon: 'help_outline',
+      tooltip: 'Help',
+      action: () => this.router.navigate(['/help']),
+    });
+    commands.push({ type: 'separator' });
+    commands.push({
       id: 'logout',
       icon: 'power_settings_new',
       tooltip: 'Logout',

@@ -14,6 +14,12 @@ export const appRoutes: Route[] = [
     loadComponent: () =>
       import('./services/services.component').then((m) => m.ServicesComponent),
   },
+  {
+    path: 'help',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./help/help.component').then((m) => m.HelpComponent),
+  },
   // { path: 'editor/:id/:page', loadComponent: () => import('./editor/editor.component').then(m => m.EditorComponent), canActivate: [authGuard] },
   // { path: 'monitor/:id', loadComponent: () => import('./monitor/monitor.component').then(m => m.MonitorComponent), canActivate: [authGuard] },
 ];

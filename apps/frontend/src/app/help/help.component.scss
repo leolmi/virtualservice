@@ -1,0 +1,301 @@
+$code-dark: #263238;
+
+:host {
+  display: flex;
+  flex-direction: row;
+  flex: 1 1 auto;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.help-container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: white;
+}
+
+// ──────────────────────────────────────────────
+// LEFT panel: scrollable text
+// ──────────────────────────────────────────────
+.help-content {
+  position: relative;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-color: white;
+  padding: 0 40px 80px;
+  flex: 0 0 50%;
+  max-width: 50%;
+
+  > header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 20px 0;
+
+    > img {
+      margin-left: 20px;
+      width: auto;
+      height: 80px;
+    }
+
+    .header-divider {
+      width: 20px;
+      border-right: rgba(200, 200, 200, 1) 2px solid;
+      opacity: 0.3;
+      display: block;
+      height: 100%;
+      min-height: 70px;
+      margin: 0 20px;
+    }
+
+    .header-info {
+      font-weight: 100;
+
+      .app-name {
+        font-size: 2rem;
+      }
+
+      .app-desc {
+        margin-top: 12px;
+        font-size: 1.1rem;
+        opacity: 0.7;
+      }
+    }
+  }
+}
+
+// ──────────────────────────────────────────────
+// Navigation menu
+// ──────────────────────────────────────────────
+.help-menu {
+  padding: 16px 20px;
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  a {
+    cursor: pointer;
+    color: var(--vs-primary, cornflowerblue);
+    font-weight: 500;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// ──────────────────────────────────────────────
+// Sections
+// ──────────────────────────────────────────────
+.help-sections {
+  margin: 20px 0;
+
+  a {
+    cursor: pointer;
+    color: var(--vs-primary, cornflowerblue);
+  }
+
+  h1 {
+    margin-top: 40px;
+    padding: 8px 0;
+    transition: color 0.2s, outline 0.2s;
+  }
+
+  h2 {
+    margin-top: 40px;
+    font-size: 1.2rem;
+  }
+
+  .current-help-element {
+    color: var(--vs-accent, #ff4081);
+    outline: var(--vs-accent, #ff4081) 2px solid;
+    outline-offset: 4px;
+  }
+
+  em {
+    display: block;
+    opacity: 0.6;
+    margin-top: 24px;
+    margin-bottom: 8px;
+  }
+
+  code {
+    font-family: monospace;
+    font-size: 0.88em;
+    background-color: rgba(38, 50, 56, 0.08);
+    padding: 2px 5px;
+    border-radius: 3px;
+  }
+
+  pre {
+    margin: 8px 0 16px;
+
+    > code {
+      display: block;
+      background-color: $code-dark;
+      color: #ccc;
+      padding: 12px 16px;
+      border-radius: 5px;
+      white-space: pre;
+      overflow-x: auto;
+      font-size: 0.85em;
+    }
+  }
+
+  .code {
+    font-family: monospace;
+    font-size: 0.88em;
+    background-color: $code-dark;
+    color: #ccc;
+    padding: 8px 12px;
+    border-radius: 5px;
+    white-space: pre-wrap;
+    display: block;
+    margin: 8px 0;
+
+    .color-accent {
+      color: var(--vs-accent, #ff4081);
+    }
+  }
+
+  .highlight {
+    padding: 10px 14px;
+    background: rgba(10, 10, 10, 0.05);
+    border-left: var(--vs-accent, #ff4081) 6px solid;
+    margin: 16px 0;
+  }
+
+  .section-divider,
+  .help-sections > .section-divider {
+    width: 30%;
+    margin: 60px auto 0;
+    border-top: rgba(10, 10, 10, 0.1) 1px solid;
+    padding-top: 40px;
+  }
+
+  .help-section {
+    min-height: 80vh;
+
+    .help-icon-row {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      padding: 10px 0;
+      gap: 20px;
+
+      > p {
+        margin: 0;
+      }
+    }
+
+    .important-points > li {
+      font-size: 1.3em;
+      font-variant: petite-caps;
+      margin: 10px 0;
+    }
+
+    .available-exp-objects > li > code,
+    .available-samples > li > code {
+      min-width: 120px;
+      display: inline-block;
+    }
+  }
+}
+
+// ──────────────────────────────────────────────
+// RIGHT image panel (wide mode)
+// ──────────────────────────────────────────────
+.help-image-right {
+  pointer-events: none;
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: calc(50% - 0px);
+  height: 100%;
+  padding: 0 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .help-image-container {
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 100%;
+    width: 100%;
+    transition: background-image 0.5s ease-in-out;
+  }
+}
+
+// ──────────────────────────────────────────────
+// BOTTOM image panel (narrow mode)
+// ──────────────────────────────────────────────
+.help-image-bottom {
+  pointer-events: none;
+  flex: 0 0 40vh;
+  background-color: white;
+  display: flex;
+
+  .help-image-container {
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 100%;
+    width: 100%;
+    transition: background-image 0.5s ease-in-out;
+  }
+}
+
+// ──────────────────────────────────────────────
+// Narrow responsive (≤ 800px)
+// ──────────────────────────────────────────────
+@media only screen and (max-width: 800px) {
+  :host {
+    flex-direction: column;
+  }
+
+  .help-container {
+    flex-direction: column;
+    overflow-y: auto;
+    height: auto;
+  }
+
+  .help-content {
+    flex: 1 1 auto;
+    max-width: 100%;
+    padding: 0 16px 40px;
+
+    > header {
+      > img {
+        margin-left: 0;
+        height: 60px;
+      }
+
+      .header-info {
+        .app-name {
+          font-size: 1.4rem;
+        }
+
+        .app-desc {
+          font-size: 0.95rem;
+        }
+      }
+    }
+  }
+
+  .help-sections {
+    .help-section {
+      min-height: 50vh;
+    }
+  }
+}
