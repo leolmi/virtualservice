@@ -45,11 +45,22 @@
       </button>
       <button
         mat-icon-button
-        matTooltip="Download swagger"
-        (click)="onDownloadSwagger($event)"
+        matTooltip="Download service"
+        [matMenuTriggerFor]="downloadMenu"
+        (click)="$event.stopPropagation()"
       >
         <mat-icon>get_app</mat-icon>
       </button>
+      <mat-menu #downloadMenu>
+        <button mat-menu-item (click)="onDownloadVirtualService()">
+          <mat-icon>code</mat-icon>
+          <span>Download as virtual-service file</span>
+        </button>
+        <button mat-menu-item (click)="onDownloadOpenApi()">
+          <mat-icon>description</mat-icon>
+          <span>Download as OpenApi JSON file</span>
+        </button>
+      </mat-menu>
       <button
         mat-icon-button
         [matTooltip]="service().starred ? 'Remove from favorites' : 'Add to favorites'"

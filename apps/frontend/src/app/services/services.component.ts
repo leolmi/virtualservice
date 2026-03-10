@@ -110,12 +110,6 @@ export class ServicesComponent {
     this.router.navigate(['/monitor', id]);
   }
 
-  onDownloadSwagger(id: string): void {
-    this.snackBar.open('Swagger download coming soon', 'Close', {
-      duration: 3000,
-    });
-  }
-
   onCreateService(): void {
     this.store.dispatch(createService());
   }

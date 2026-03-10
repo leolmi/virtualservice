@@ -43,7 +43,6 @@
               (delete)="onDeleteService($event)"
               (open)="onOpenService($event)"
               (monitor)="onMonitorService($event)"
-              (downloadSwagger)="onDownloadSwagger($event)"
             />
           }
         </div>
@@ -63,7 +62,6 @@
             (delete)="onDeleteService($event)"
             (open)="onOpenService($event)"
             (monitor)="onMonitorService($event)"
-            (downloadSwagger)="onDownloadSwagger($event)"
           />
         }
         @if (otherServices().length === 0 && starredServices().length === 0 && !loading()) {
