@@ -1,0 +1,131 @@
+:host {
+  display: block;
+  width: 250px;
+  flex-shrink: 0;
+}
+
+.tile {
+  width: 250px;
+  cursor: pointer;
+  box-shadow: none !important;
+  transition: box-shadow 200ms ease;
+  background: white;
+
+  &:hover {
+    box-shadow:
+      0 2px 4px -1px rgba(0, 0, 0, 0.2),
+      0 4px 5px 0 rgba(0, 0, 0, 0.14),
+      0 1px 10px 0 rgba(0, 0, 0, 0.12) !important;
+  }
+
+  &.inactive {
+    background: repeating-linear-gradient(
+      45deg,
+      #f8f8ff,
+      #f8f8ff 10px,
+      rgba(200, 200, 200, 0.1) 10px,
+      rgba(200, 200, 200, 0.1) 20px
+    ) !important;
+  }
+}
+
+/* Override Material header layout */
+::ng-deep .tile .mat-mdc-card-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 8px 0;
+
+  .mat-mdc-card-header-text {
+    display: none;
+  }
+}
+
+.title-block {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  .service-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--vs-dark);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .service-date {
+    font-size: 0.75rem;
+    color: rgba(38, 50, 56, 0.6);
+    margin-top: 2px;
+  }
+}
+
+.active-btn {
+  flex-shrink: 0;
+
+  .active-icon {
+    color: var(--vs-primary);
+  }
+}
+
+.delete-btn {
+  flex-shrink: 0;
+}
+
+mat-card-content {
+  padding: 8px 16px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+
+  .description {
+    font-size: 0.8rem;
+    color: var(--vs-dark);
+    margin: 0 0 8px;
+    flex: 1;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    min-height: 3.6em;
+  }
+
+  .call-count {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--vs-accent-light);
+    margin-top: auto;
+  }
+}
+
+mat-card-actions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 4px 8px;
+
+  .left-actions {
+    display: flex;
+    align-items: center;
+  }
+
+  .flex-spacer {
+    flex: 1 1 auto;
+  }
+}
+
+/* Narrow mode: scale down */
+@media only screen and (max-width: 800px) {
+  :host {
+    width: 220px;
+    zoom: 0.8;
+  }
+
+  .tile {
+    width: 220px;
+  }
+}

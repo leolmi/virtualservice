@@ -1,27 +1,67 @@
 <mat-toolbar class="vs-toolbar" [class.narrow]="isNarrow()">
+
+  <!-- Brand -->
   <div class="brand">
-    <img
-      class="brand-logo"
-      src="assets/cloud-white.svg"
-      alt="Virtual Service"
-    />
+    <img class="brand-logo" src="assets/cloud-white.svg" alt="Virtual Service" />
     @if (!isNarrow()) {
       <div class="brand-divider"></div>
       <div class="brand-text">
         <span class="brand-title">Virtual Service</span>
-        <span class="brand-desc"
-          >build a develop web service
-          <strong class="brand-accent">REST</strong> in a few moments</span
-        >
+        <span class="brand-desc">
+          build a develop web service
+          <strong class="brand-accent">REST</strong> in a few moments
+        </span>
       </div>
     }
   </div>
 
   <span class="flex-spacer"></span>
 
-  @if (isLoggedIn()) {
+  <!-- User section (visible only when logged in) -->
+  @if (user()) {
     <div class="user-section">
-      <!-- user profile goes here -->
+      <mat-icon class="user-avatar">account_circle</mat-icon>
+
+      @if (!isNarrow()) {
+        <span class="user-name">{{ user()!.email }}</span>
+      }
+
+      @if (!isNarrow()) {
+        <!-- Wide mode: render commands as icon buttons -->
+        @for (cmd of visibleCommands(); track cmd.id) {
+          @if (cmd.type === 'separator') {
+            <div class="cmd-separator"></div>
+          } @else {
+            <button
+              mat-icon-button
+              class="cmd-btn"
+              [matTooltip]="cmd.tooltip ?? ''"
+              [disabled]="cmd.enabled === false"
+              (click)="cmd.action?.()">
+              <mat-icon>{{ cmd.icon }}</mat-icon>
+            </button>
+          }
+        }
+      } @else {
+        <!-- Narrow mode: commands in popup menu -->
+        @if (buttonCommands().length > 0) {
+          <button mat-icon-button [matMenuTriggerFor]="cmdMenu" class="cmd-btn">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #cmdMenu="matMenu">
+            @for (cmd of buttonCommands(); track cmd.id) {
+              <button
+                mat-menu-item
+                [disabled]="cmd.enabled === false"
+                (click)="cmd.action?.()">
+                <mat-icon>{{ cmd.icon }}</mat-icon>
+                <span>{{ cmd.tooltip }}</span>
+              </button>
+            }
+          </mat-menu>
+        }
+      }
     </div>
   }
+
 </mat-toolbar>

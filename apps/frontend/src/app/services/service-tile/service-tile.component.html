@@ -1,0 +1,65 @@
+<mat-card class="tile" [class.inactive]="!service().active" (click)="onCardClick()">
+
+  <mat-card-header>
+    <button
+      mat-icon-button
+      class="active-btn"
+      [matTooltip]="service().active ? 'Deactivate service' : 'Activate service'"
+      (click)="onToggleActive($event)"
+    >
+      <mat-icon [class.active-icon]="service().active">
+        {{ service().active ? 'radio_button_checked' : 'radio_button_unchecked' }}
+      </mat-icon>
+    </button>
+
+    <div class="title-block">
+      <span class="service-name">{{ service().name }}</span>
+      <span class="service-date">{{ formatDate(service().lastChange) }}</span>
+    </div>
+
+    <button
+      mat-icon-button
+      color="warn"
+      class="delete-btn"
+      matTooltip="Delete service"
+      (click)="onDelete($event)"
+    >
+      <mat-icon>delete</mat-icon>
+    </button>
+  </mat-card-header>
+
+  <mat-card-content>
+    <p class="description">{{ service().description || '—' }}</p>
+    <span class="call-count">{{ service().calls.length }} calls</span>
+  </mat-card-content>
+
+  <mat-card-actions>
+    <div class="left-actions">
+      <button
+        mat-icon-button
+        matTooltip="Open service calls monitor"
+        [disabled]="!service().active"
+        (click)="onMonitor($event)"
+      >
+        <mat-icon>desktop_windows</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        matTooltip="Download swagger"
+        (click)="onDownloadSwagger($event)"
+      >
+        <mat-icon>get_app</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        [matTooltip]="service().starred ? 'Remove from favorites' : 'Add to favorites'"
+        (click)="onToggleStarred($event)"
+      >
+        <mat-icon>{{ service().starred ? 'star' : 'star_border' }}</mat-icon>
+      </button>
+    </div>
+    <span class="flex-spacer"></span>
+    <button mat-stroked-button (click)="onOpen($event)">OPEN</button>
+  </mat-card-actions>
+
+</mat-card>
