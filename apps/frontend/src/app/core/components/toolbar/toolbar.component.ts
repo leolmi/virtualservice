@@ -29,10 +29,12 @@ export class ToolbarComponent {
   private store = inject(Store);
   private toolbarService = inject(ToolbarService);
 
-  isNarrow = toSignal(
+  private isNarrowBreakpoint = toSignal(
     this.breakpoints.observe('(max-width: 800px)').pipe(map((r) => r.matches)),
     { initialValue: false },
   );
+
+  isNarrow = computed(() => this.toolbarService.forceLow() || this.isNarrowBreakpoint());
 
   user = this.store.selectSignal(selectUser);
 

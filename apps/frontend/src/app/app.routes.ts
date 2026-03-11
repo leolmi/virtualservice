@@ -20,6 +20,38 @@ export const appRoutes: Route[] = [
     loadComponent: () =>
       import('./help/help.component').then((m) => m.HelpComponent),
   },
-  // { path: 'editor/:id/:page', loadComponent: () => import('./editor/editor.component').then(m => m.EditorComponent), canActivate: [authGuard] },
+  {
+    path: 'editor/:id',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./editor/editor.component').then((m) => m.EditorComponent),
+    children: [
+      {
+        path: 'call',
+        loadComponent: () =>
+          import('./editor/call/call.component').then((m) => m.CallComponent),
+      },
+      {
+        path: 'test',
+        loadComponent: () =>
+          import('./editor/test/test.component').then((m) => m.TestComponent),
+      },
+      {
+        path: 'database',
+        loadComponent: () =>
+          import('./editor/database/database.component').then(
+            (m) => m.DatabaseComponent,
+          ),
+      },
+      {
+        path: 'function',
+        loadComponent: () =>
+          import('./editor/function/function.component').then(
+            (m) => m.FunctionComponent,
+          ),
+      },
+      { path: '', redirectTo: 'call', pathMatch: 'full' },
+    ],
+  },
   // { path: 'monitor/:id', loadComponent: () => import('./monitor/monitor.component').then(m => m.MonitorComponent), canActivate: [authGuard] },
 ];

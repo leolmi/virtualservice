@@ -1,0 +1,21 @@
+<div class="empty-call">
+  @if (callsCount() > 0) {
+    <span class="hint">select a call</span>
+    <span class="or">or</span>
+  }
+
+  <span class="create-link" (click)="onCreateCall()">create new call</span>
+
+  <span class="or">or</span>
+
+  <span class="hint">drop a file of one of the following types here</span>
+
+  <div class="file-types">
+    @for (type of dropFileTypes; track type.description) {
+      <span class="file-type">
+        <span class="file-type-desc">{{ type.description }}</span>
+        <span class="file-type-ext">{{ type.extensions }}</span>
+      </span>
+    }
+  </div>
+</div>

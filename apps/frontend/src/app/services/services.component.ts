@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
+import { DROP_FILE_TYPES } from '../core/constants/drop-file-types';
 import { ToolbarService } from '../core/services/toolbar.service';
 import { ToolbarCommand } from '../core/models/toolbar-command.model';
 import { selectUser } from '../auth/store/auth.selectors';
@@ -50,6 +51,8 @@ export class ServicesComponent {
   readonly error = this.store.selectSignal(selectServicesError);
   readonly starredServices = this.store.selectSignal(selectStarredServices);
   readonly otherServices = this.store.selectSignal(selectOtherServices);
+
+  readonly dropFileTypes = DROP_FILE_TYPES;
 
   isDragOver = false;
 
@@ -103,7 +106,7 @@ export class ServicesComponent {
   }
 
   onOpenService(id: string): void {
-    this.router.navigate(['/editor', id, 'calls']);
+    this.router.navigate(['/editor', id, 'call']);
   }
 
   onMonitorService(id: string): void {

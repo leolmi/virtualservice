@@ -10,6 +10,8 @@ import { authReducer } from './auth/store/auth.reducer';
 import { AuthEffects } from './auth/store/auth.effects';
 import { servicesReducer } from './services/store/services.reducer';
 import { ServicesEffects } from './services/store/services.effects';
+import { editorReducer } from './editor/store/editor.reducer';
+import { EditorEffects } from './editor/store/editor.effects';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { APP_VERSION } from './core/tokens/app.tokens';
 import { version } from '../../../../package.json';
@@ -20,8 +22,8 @@ export const appConfig: ApplicationConfig = {
     provideRouter(appRoutes),
     provideHttpClient(withInterceptors([authInterceptor])),
     provideAnimationsAsync(),
-    provideStore({ auth: authReducer, services: servicesReducer }),
-    provideEffects([AuthEffects, ServicesEffects]),
+    provideStore({ auth: authReducer, services: servicesReducer, editor: editorReducer }),
+    provideEffects([AuthEffects, ServicesEffects, EditorEffects]),
     { provide: APP_VERSION, useValue: version },
   ],
 };
