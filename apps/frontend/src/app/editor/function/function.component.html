@@ -1,0 +1,40 @@
+<!-- OPTIONS -->
+<label class="section-label">OPTIONS</label>
+<div class="function-options">
+  <div class="toggle-col">
+    <mat-slide-toggle
+      color="accent"
+      [checked]="active()"
+      [matTooltip]="active() ? 'disable scheduled function' : 'enable scheduled function'"
+      (change)="onToggleActive($event.checked)"
+    ></mat-slide-toggle>
+  </div>
+
+  <div class="interval-col">
+    <label class="interval-label">Interval (seconds)</label>
+    <input
+      class="interval-input"
+      type="number"
+      min="0"
+      max="10000"
+      [disabled]="!active()"
+      [ngModel]="service()?.interval ?? 0"
+      (ngModelChange)="onIntervalChange($event)"
+    />
+  </div>
+</div>
+
+<!-- FUNCTION -->
+<label class="section-label">FUNCTION</label>
+<div class="service-function">
+  <textarea
+    class="fn-editor"
+    spellcheck="false"
+    autocomplete="off"
+    autocorrect="off"
+    autocapitalize="off"
+    placeholder="// scheduler function executed every <interval> seconds&#10;// 'db' is the service in-memory database&#10;// example: db.counter = (db.counter || 0) + 1;"
+    [ngModel]="service()?.schedulerFn ?? ''"
+    (ngModelChange)="onSchedulerFnChange($event)"
+  ></textarea>
+</div>
