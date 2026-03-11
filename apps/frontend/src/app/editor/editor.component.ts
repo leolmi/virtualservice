@@ -85,7 +85,7 @@ export class EditorComponent {
     { route: 'call', icon: 'label', title: 'Call definition' },
     { route: 'test', icon: 'flash_on', title: 'Call test' },
     { route: 'database', icon: 'dns', title: 'Service definition' },
-    { route: 'function', icon: 'schedule', title: 'Timed function' },
+    { route: 'function', icon: 'update', title: 'Timed function' },
   ];
 
   readonly activeTab = toSignal(

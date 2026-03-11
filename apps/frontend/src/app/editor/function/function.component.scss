@@ -1,0 +1,109 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  background: #fff;
+}
+
+// ── Section label ──────────────────────────────────────────────────────────
+.section-label {
+  display: block;
+  flex-shrink: 0;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.45);
+  padding: 6px 16px 2px;
+}
+
+// ── Options bar ────────────────────────────────────────────────────────────
+.function-options {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  min-height: 56px;
+  background: rgba(10, 10, 10, 0.06);
+  padding: 8px 16px;
+  gap: 24px;
+
+  .toggle-col {
+    display: flex;
+    align-items: center;
+    flex: 1;
+  }
+
+  .interval-col {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 4px;
+
+    .interval-label {
+      font-size: 0.75rem;
+      color: rgba(0, 0, 0, 0.5);
+      font-weight: 500;
+    }
+
+    .interval-input {
+      font-family: 'Courier New', monospace;
+      font-size: 0.95rem;
+      color: var(--vs-accent);
+      font-weight: 600;
+      border: none;
+      border-bottom: 2px solid var(--vs-light);
+      background: transparent;
+      outline: none;
+      width: 100%;
+      padding: 4px 0;
+      transition: border-color 0.2s;
+
+      &:focus {
+        border-bottom-color: var(--vs-accent);
+      }
+
+      &:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+      }
+
+      // hide browser spin buttons
+      &::-webkit-inner-spin-button,
+      &::-webkit-outer-spin-button {
+        opacity: 1;
+      }
+    }
+  }
+}
+
+// ── Function editor ────────────────────────────────────────────────────────
+.service-function {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+
+  .fn-editor {
+    flex: 1;
+    width: 100%;
+    min-height: 0;
+    resize: none;
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 12px 16px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    line-height: 1.55;
+    background: #1e1e1e;
+    color: #d4d4d4;
+    outline: none;
+    box-sizing: border-box;
+    tab-size: 2;
+
+    &::placeholder {
+      color: rgba(212, 212, 212, 0.3);
+    }
+  }
+}
