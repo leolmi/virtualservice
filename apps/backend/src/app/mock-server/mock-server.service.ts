@@ -242,6 +242,8 @@ export class MockServerService {
       query: req.query,
       body: req.body,
       headers,
+      ip: req.ip,
+      ips: req.ips?.length ? req.ips : undefined,
     };
   }
 
