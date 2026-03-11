@@ -27,14 +27,9 @@
 <!-- FUNCTION -->
 <label class="section-label">FUNCTION</label>
 <div class="service-function">
-  <textarea
+  <vs-code-editor
     class="fn-editor"
-    spellcheck="false"
-    autocomplete="off"
-    autocorrect="off"
-    autocapitalize="off"
-    placeholder="// scheduler function executed every <interval> seconds&#10;// 'db' is the service in-memory database&#10;// example: db.counter = (db.counter || 0) + 1;"
-    [ngModel]="service()?.schedulerFn ?? ''"
-    (ngModelChange)="onSchedulerFnChange($event)"
-  ></textarea>
+    [value]="service()?.schedulerFn ?? ''"
+    (valueChange)="onSchedulerFnChange($event)"
+  />
 </div>

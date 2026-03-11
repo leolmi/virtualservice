@@ -140,15 +140,7 @@
 
   .response-editor {
     flex: 1;
-    font-family: 'Courier New', monospace;
-    font-size: 0.875rem;
-    line-height: 1.55;
-    border: none;
-    outline: none;
-    resize: none;
-    padding: 14px 16px;
-    background: #1e1e1e;
-    color: #d4d4d4;
+    min-height: 0;
   }
 }
 

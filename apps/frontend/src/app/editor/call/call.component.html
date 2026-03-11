@@ -65,12 +65,11 @@
     <!-- Response section -->
     <div class="section-label">RESPONSE</div>
     <div class="response-container">
-      <textarea
+      <vs-code-editor
         class="response-editor"
         [value]="call.response"
-        (change)="onUpdateResponse($any($event.target).value)"
-        spellcheck="false"
-        placeholder="// JavaScript response code..."></textarea>
+        (valueChange)="onUpdateResponse($event)"
+      />
     </div>
   } @else {
     <vs-empty-call />
