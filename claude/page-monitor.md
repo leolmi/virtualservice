@@ -6,3 +6,9 @@ Rotta prevista `/monitor/:id`;
 Layout di riferimento: `apps/frontend/src/assets/help/monitor.png`;
 
 Rappresenta la pagina dove l'utente loggato può monitorare gli eventi legati alle chiamate relative al servizio specificato.
+
+
+## Struttura della pagina
+
+Adatta il componente che trovi nel path `C:\Leo\sviluppo\leolmi\apps\virtual-service\src\app\pages\monitor` al progetto corrente;
+

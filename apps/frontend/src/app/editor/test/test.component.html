@@ -43,7 +43,70 @@
         <span class="empty-desc">this call has no description</span>
       }
     } @else {
-      <vs-code-editor
+      <textarea
+        class="description-editor"
+        [ngModel]="call.description"
+        (ngModelChange)="onUpdateDescription($event)"
+        rows="4"
+        placeholder="Write a description (markdown supported)..."
+      ></textarea>
+    }
+    <button class="edit-btn" mat-icon-button matTooltip="edit description" (click)="onToggleEditDescription()">
+      <mat-icon>{{ editDescription() ? 'check' : 'edit' }}</mat-icon>
+    </button>
+  </div>
+
+  <!-- TEST AREA -->
+  <div class="call-test">
+    <!-- PARAMETERS -->
+    @if (hasParams()) {
+      <div class="call-test-parameters">
+        <!-- Path params -->
+        <div class="params-col params-col--path">
+          <label class="editor-label">Path parameters</label>
+          <div class="parameters">
+            @for (prm of pathParams(); track prm.name) {
+              <div class="parameter-item">
+                <label>{{ prm.name }}</label>
+                <input
+                  class="param-input"
+                  [class.param-input--active]="activeParamName() === prm.name"
+                  [ngModel]="prm.value"
+                  (ngModelChange)="onUpdateParamValue(prm.name, $event)"
+                  (focusin)="onActivateParam(prm.name)"
+                  (focusout)="onActivateParam(null)"
+                />
+              </div>
+            }
+          </div>
+        </div>
+        <!-- Query params -->
+        <div class="params-col params-col--query">
+          <label class="editor-label">Query parameters</label>
+          <div class="parameters">
+            @for (prm of queryParams(); track prm.name) {
+              <div class="parameter-item">
+                <label>{{ prm.name }}</label>
+                <input
+                  class="param-input"
+                  [class.param-input--active]="activeParamName() === prm.name"
+                  [ngModel]="prm.value"
+                  (ngModelChange)="onUpdateParamValue(prm.name, $event)"
+                  (focusin)="onActivateParam(prm.name)"
+                  (focusout)="onActivateParam(null)"
+                />
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- BODY -->
+    @if (hasBody()) {
+      <label class="editor-label">BODY</label>
+      <div class="call-test-body">
+        <vs-code-editor
           class="body-editor"
           [value]="call.body"
           (valueChange)="onUpdateBody($event)"

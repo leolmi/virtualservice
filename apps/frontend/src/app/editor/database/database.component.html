@@ -8,7 +8,27 @@
       <span class="empty-desc">this service has no description</span>
     }
   } @else {
-    <vs-code-editor
+    <textarea
+      class="description-editor"
+      [ngModel]="service()?.description ?? ''"
+      (ngModelChange)="onUpdateDescription($event)"
+      placeholder="Write a description (markdown supported)..."
+    ></textarea>
+  }
+  <button
+    class="edit-btn"
+    mat-icon-button
+    [matTooltip]="editDescription() ? 'confirm' : 'edit description'"
+    (click)="onToggleEditDescription()"
+  >
+    <mat-icon>{{ editDescription() ? 'check' : 'edit' }}</mat-icon>
+  </button>
+</div>
+
+<!-- DATABASE -->
+<label class="section-label">DATABASE</label>
+<div class="service-database">
+  <vs-code-editor
     class="dbo-editor"
     [value]="service()?.dbo ?? ''"
     (valueChange)="onUpdateDbo($event)"
