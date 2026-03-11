@@ -46,6 +46,12 @@
           <div class="rule-message">{{ rule.error }}</div>
           <mat-icon
             class="rule-action"
+            matTooltip="Edit rule"
+            (click)="onEditRule($index)">
+            edit
+          </mat-icon>
+          <mat-icon
+            class="rule-action"
             matTooltip="Delete rule"
             (click)="onDeleteRule($index)">
             delete

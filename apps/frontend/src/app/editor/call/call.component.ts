@@ -4,6 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialog } from '@angular/material/dialog';
 import { HttpVerb } from '@virtualservice/shared/model';
 import { EmptyCallComponent } from '../components/empty-call/empty-call.component';
 import {
@@ -11,7 +12,7 @@ import {
   selectEditorService,
 } from '../store/editor.selectors';
 import * as EditorActions from '../store/editor.actions';
-
+import { RuleDialogComponent } from '../components/rule-dialog/rule-dialog.component';
 import { CodeEditorComponent } from '../../core/components/code-editor/code-editor.component';
 
 @Component({
@@ -30,6 +31,7 @@ import { CodeEditorComponent } from '../../core/components/code-editor/code-edit
 })
 export class CallComponent {
   private store = inject(Store);
+  private dialog = inject(MatDialog);
 
   readonly activeCall = this.store.selectSignal(selectEditorActiveCall);
   readonly service = this.store.selectSignal(selectEditorService);
@@ -63,6 +65,19 @@ export class CallComponent {
 
   onAddRule(): void {
     this.store.dispatch(EditorActions.addRule());
+  }
+
+  onEditRule(ruleIndex: number): void {
+    const call = this.activeCall();
+    if (!call) return;
+    const rule = call.rules[ruleIndex];
+    this.dialog
+      .open(RuleDialogComponent, { data: rule, width: '600px' })
+      .afterClosed()
+      .subscribe((changes) => {
+        if (!changes) return;
+        this.store.dispatch(EditorActions.updateRule({ ruleIndex, changes }));
+      });
   }
 
   onDeleteRule(ruleIndex: number): void {

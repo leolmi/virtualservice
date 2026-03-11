@@ -100,6 +100,20 @@ export const editorReducer = createReducer(
     return { ...state, service: { ...state.service, calls }, dirty: true };
   }),
 
+  on(EditorActions.updateRule, (state, { ruleIndex, changes }) => {
+    if (!state.service || state.activeCallIndex === null) return state;
+    const idx = state.activeCallIndex;
+    const call = state.service.calls[idx];
+    const rules = call.rules.map((r, i) =>
+      i === ruleIndex ? { ...r, ...changes } : r,
+    );
+    const updatedCall = { ...call, rules };
+    const calls = state.service.calls.map((c, i) =>
+      i === idx ? updatedCall : c,
+    );
+    return { ...state, service: { ...state.service, calls }, dirty: true };
+  }),
+
   on(EditorActions.saveEditor, (state) => ({ ...state, saving: true })),
   on(EditorActions.saveEditorSuccess, (state, { service }) => ({
     ...state,

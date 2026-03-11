@@ -1,6 +1,6 @@
 import { createAction, props } from '@ngrx/store';
 import { IServiceItem } from '../../services/store/services.state';
-import { IServiceCall } from '@virtualservice/shared/model';
+import { IServiceCall, IServiceCallRule } from '@virtualservice/shared/model';
 
 export const loadEditor = createAction('[Editor] Load', props<{ id: string }>());
 export const loadEditorSuccess = createAction(
@@ -34,6 +34,10 @@ export const addRule = createAction('[Editor] Add Rule');
 export const deleteRule = createAction(
   '[Editor] Delete Rule',
   props<{ ruleIndex: number }>(),
+);
+export const updateRule = createAction(
+  '[Editor] Update Rule',
+  props<{ ruleIndex: number; changes: Partial<IServiceCallRule> }>(),
 );
 
 export const saveEditor = createAction('[Editor] Save');
