@@ -10,4 +10,4 @@ Permette di modificare la proprietà `interval` ed editare il testo js della `sc
 
 ## Struttura della pagina
 
-Adatta il componente che trovi nel file `C:\Leo\sviluppo\leolmi\apps\virtual-service\src\app\components\editor-function\editor-function.component.html` al progetto corrente;
+Adatta il componente che trovi nel file `leolmi\apps\virtual-service\src\app\components\editor-function\editor-function.component.html` al progetto corrente;

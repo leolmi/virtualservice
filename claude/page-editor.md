@@ -6,7 +6,7 @@ Rotta prevista `/editor/:id/:page`;
 
 Layout di riferimento: `apps/frontend/src/assets/help/editor.png`;
 
-Codice di rifferimento: `C:\Leo\sviluppo\leolmi\apps\virtual-service\src\app\pages\editor\editor.component.html`;
+Codice di rifferimento: `leolmi\apps\virtual-service\src\app\pages\editor\editor.component.html`;
 
 Rappresenta la pagina dove l'utente loggato può:
 - modificare le proprietà servizio ed il db definito nel servizio e comune alle chiamate;

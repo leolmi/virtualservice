@@ -13,4 +13,4 @@ Fintanto che non esiste la call attiva per il servizio corrente la pagina mostra
 
 ## Struttura della pagina
 
-Adatta il componente che trovi nel file `C:\Leo\sviluppo\leolmi\apps\virtual-service\src\app\components\editor-test\editor-test.component.html` al progetto corrente;
+Adatta il componente che trovi nel file `leolmi\apps\virtual-service\src\app\components\editor-test\editor-test.component.html` al progetto corrente;
