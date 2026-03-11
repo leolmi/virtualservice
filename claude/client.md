@@ -27,7 +27,7 @@ In generale i colori principali sono:
 Si utilizza il set di icone Material di Google ed il carattere Roboto sempre rilasciato da Google.
 
 Si utilizzano inoltre i componenti Material come:
-- pulsanti **mat-button**, **mat-icon-button**
+- pulsanti **mat-button**, **mat-icon-button**, **mat-flat-button**, **mat-fab**
 - per le tile **mat-card**
 
 Il sito deve essere responsive e adattarsi anche a layout particolarmente stretti in browser di device come cellulari o tablet.

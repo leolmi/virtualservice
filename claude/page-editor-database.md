@@ -9,6 +9,7 @@ Layout di riferimento: `apps/frontend/src/assets/help/editor-database.png`;
 Visualizza e permette di modificare la descrizione e il db del servizio;
 
 
-
 ## Struttura della pagina
-da implementare...
+
+Adatta il componente che trovi nel file `C:\Leo\sviluppo\leolmi\apps\virtual-service\src\app\components\editor-database\editor-database.component.html` al progetto corrente;
+

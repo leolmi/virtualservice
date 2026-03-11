@@ -44,16 +44,16 @@ Occupa una larghezza pari al 30% della larghezza della viewport;
 Mostra l'elenco delle call del servizio ordinate alfabeticamente sulla rotta;
 
 La lista deve essere filtrabile quindi in alto, prima dell'elenco mostrerà un box per inserire il testo di ricerca. La ricerca 
-applicherà il filtro mostrando solo gli elementi che lo risolvono. Il testo del filtro di ricerca dovrà essere valutato
-case-insensitive e in modalità contains;
+applicherà il filtro in modo da mostrare nell'elenco solo gli elementi che lo risolvono. Il testo del filtro di ricerca dovrà 
+essere valutato in modo case-insensitive e in modalità contains;
 
 L'item di lista è così formato:
 - il method: la prima voce a sinistra è il method della chiamata, maiuscolo e in colore di contrasto `--vs-accent`;
 - il path: costruito mostrando le due componenti in colore chiaro: 
   - il base-path (proprietà `path` del servizio) con opacità `.5`;
-  - il path (proprietà `path` della call);
+  - il path di chiamata (proprietà `path` della call);
 
-L'item di lista deve essere selezionabile e la sua selezione permette di visualizzare la pagina `Call definition`.
+L'item di lista deve essere selezionabile e la sua selezione attiva la call corrente;
 
 L'item di lista selezionato, che rappresenta la call attiva, apparirà con i colori invertiti (sfondo chiaro e testo scuro).
 
