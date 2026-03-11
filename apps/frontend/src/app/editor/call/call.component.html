@@ -1,0 +1,88 @@
+<div class="call-page">
+  @if (activeCall(); as call) {
+    <!-- Address box -->
+    <div class="address-box">
+      <button mat-flat-button class="verb-btn" [matMenuTriggerFor]="verbMenu">
+        {{ call.verb }}
+      </button>
+      <span class="base-path">{{ basePath() }}/</span>
+      <input
+        class="path-input mono"
+        [value]="call.path"
+        (change)="onUpdatePath($any($event.target).value)"
+        placeholder="call-path" />
+      <button
+        mat-icon-button
+        matTooltip="Delete call"
+        color="warn"
+        (click)="onDeleteCall()">
+        <mat-icon>delete</mat-icon>
+      </button>
+      <mat-menu #verbMenu="matMenu">
+        @for (v of verbs; track v) {
+          <button
+            mat-menu-item
+            [class.active-verb]="v === call.verb"
+            (click)="onUpdateVerb(v)">
+            {{ v }}
+          </button>
+        }
+      </mat-menu>
+    </div>
+
+    <!-- Rules section -->
+    <div class="section-label">RULES</div>
+    <div class="rules-container">
+      @if (!call.rules.length) {
+        <div class="rules-help">
+          You can define some rules to <b>validate request</b> data or db state
+          and return errors instead of response
+        </div>
+      }
+      @for (rule of call.rules; track $index) {
+        <div class="rule-item">
+          <mat-icon class="rule-icon">error</mat-icon>
+          <div class="rule-code">{{ rule.code }}</div>
+          <div class="rule-message">{{ rule.error }}</div>
+          <mat-icon
+            class="rule-action"
+            matTooltip="Delete rule"
+            (click)="onDeleteRule($index)">
+            delete
+          </mat-icon>
+        </div>
+      }
+      <button
+        mat-mini-fab
+        class="add-rule-btn"
+        matTooltip="Add new rule"
+        color="accent"
+        (click)="onAddRule()">
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
+
+    <!-- Response section -->
+    <div class="section-label">RESPONSE</div>
+    <div class="response-container">
+      <textarea
+        class="response-editor"
+        [value]="call.response"
+        (change)="onUpdateResponse($any($event.target).value)"
+        spellcheck="false"
+        placeholder="// JavaScript response code..."></textarea>
+    </div>
+  } @else {
+    <vs-empty-call />
+  }
+
+  <!-- FAB: create new call -->
+  <button
+    mat-fab
+    class="new-call-btn"
+    matTooltip="Create new call"
+    color="accent"
+    (click)="onAddCall()">
+    <mat-icon>add</mat-icon>
+  </button>
+</div>

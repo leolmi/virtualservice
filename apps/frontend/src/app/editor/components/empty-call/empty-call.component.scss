@@ -1,0 +1,72 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.empty-call {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 6px;
+  font-size: 1.1rem;
+  font-weight: 300;
+
+  > * {
+    padding: 4px 12px;
+    border-radius: 10px;
+    color: rgba(0, 0, 0, 0.4);
+  }
+
+  .or {
+    font-size: 0.85rem;
+    opacity: 0.6;
+  }
+
+  .hint {
+    font-size: 1rem;
+  }
+
+  .create-link {
+    cursor: pointer;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    transition:
+      color 0.15s,
+      border-color 0.15s;
+    font-size: 1.05rem;
+
+    &:hover {
+      color: var(--vs-accent);
+      border-color: var(--vs-accent);
+    }
+  }
+
+  .file-types {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    margin-top: 4px;
+  }
+
+  .file-type {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.78rem;
+    padding: 2px 8px;
+    color: rgba(0, 0, 0, 0.35);
+
+    .file-type-desc {
+      font-style: italic;
+    }
+
+    .file-type-ext {
+      font-family: 'Courier New', monospace;
+      font-size: 0.72rem;
+      opacity: 0.8;
+    }
+  }
+}

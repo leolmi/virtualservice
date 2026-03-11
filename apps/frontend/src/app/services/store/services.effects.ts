@@ -103,7 +103,7 @@ export class ServicesEffects {
       this.actions$.pipe(
         ofType(ServicesActions.createServiceSuccess),
         tap(({ service }) =>
-          this.router.navigate(['/editor', service._id, 'calls']),
+          this.router.navigate(['/editor', service._id, 'call']),
         ),
       ),
     { dispatch: false },

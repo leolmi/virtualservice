@@ -10,10 +10,9 @@
   <div class="drop-hint">
     <span class="drop-hint-label">drop a file of one of the following types here</span>
     <span class="drop-hint-types">
-      curl text file (bash style) &nbsp;·&nbsp;
-      chrome log (.har) &nbsp;·&nbsp;
-      swagger (SOA 2.0) &nbsp;·&nbsp;
-      postman (collection v2)
+      @for (type of dropFileTypes; track type.description; let last = $last) {
+        {{ type.description }}@if (!last) {&nbsp;·&nbsp;}
+      }
     </span>
   </div>
 

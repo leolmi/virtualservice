@@ -1,0 +1,172 @@
+:host {
+  display: block;
+  height: 100%;
+  overflow: hidden;
+}
+
+.call-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ─── Address box ─────────────────────────────── */
+
+.address-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+
+  .verb-btn {
+    background-color: var(--vs-accent);
+    color: white;
+    font-weight: 700;
+    font-size: 0.8rem;
+    min-width: 76px;
+    letter-spacing: 0.04em;
+  }
+
+  .base-path {
+    font-family: 'Courier New', monospace;
+    font-size: 0.875rem;
+    opacity: 0.55;
+    white-space: nowrap;
+  }
+
+  .path-input {
+    flex: 1;
+    border: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    outline: none;
+    background: transparent;
+    font-size: 0.95rem;
+    padding: 4px 0;
+    font-family: 'Courier New', monospace;
+    color: inherit;
+
+    &:focus {
+      border-bottom-color: var(--vs-accent);
+    }
+  }
+}
+
+/* ─── Section label ───────────────────────────── */
+
+.section-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: rgba(0, 0, 0, 0.4);
+  padding: 8px 16px 4px;
+  flex-shrink: 0;
+}
+
+/* ─── Rules ───────────────────────────────────── */
+
+.rules-container {
+  position: relative;
+  padding-bottom: 48px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+
+  .rules-help {
+    padding: 6px 16px 10px;
+    font-size: 0.85rem;
+    color: rgba(0, 0, 0, 0.45);
+  }
+
+  .rule-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+
+    .rule-icon {
+      font-size: 18px;
+      color: var(--vs-warn-light);
+      flex-shrink: 0;
+    }
+
+    .rule-code {
+      font-weight: 700;
+      font-size: 0.85rem;
+      min-width: 40px;
+      flex-shrink: 0;
+    }
+
+    .rule-message {
+      flex: 1;
+      font-size: 0.85rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .rule-action {
+      cursor: pointer;
+      opacity: 0.5;
+      font-size: 18px;
+      flex-shrink: 0;
+
+      &:hover {
+        opacity: 1;
+        color: var(--vs-warn-light);
+      }
+    }
+  }
+
+  .add-rule-btn {
+    position: absolute;
+    bottom: 8px;
+    right: 16px;
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+  }
+}
+
+/* ─── Response ────────────────────────────────── */
+
+.response-container {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  min-height: 0;
+
+  .response-editor {
+    flex: 1;
+    font-family: 'Courier New', monospace;
+    font-size: 0.875rem;
+    line-height: 1.55;
+    border: none;
+    outline: none;
+    resize: none;
+    padding: 14px 16px;
+    background: #1e1e1e;
+    color: #d4d4d4;
+  }
+}
+
+/* ─── FAB ─────────────────────────────────────── */
+
+.new-call-btn {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+}
+
+/* ─── Verb menu ───────────────────────────────── */
+
+.active-verb {
+  color: var(--vs-accent);
+  font-weight: 700;
+}
+
+.mono {
+  font-family: 'Courier New', monospace;
+}

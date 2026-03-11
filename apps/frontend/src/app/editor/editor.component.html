@@ -1,0 +1,90 @@
+<div class="editor-page">
+  @if (loading()) {
+    <div class="loading-overlay">
+      <mat-spinner diameter="48" />
+    </div>
+  }
+
+  <!-- Calls panel (left 30%) -->
+  <div class="calls-panel">
+    <div class="search-box">
+      <mat-icon class="search-icon">search</mat-icon>
+      <input
+        class="search-input"
+        [value]="search()"
+        (input)="search.set($any($event.target).value)"
+        placeholder="search..." />
+      @if (search()) {
+        <mat-icon class="clear-icon" (click)="search.set('')">close</mat-icon>
+      }
+    </div>
+
+    <div class="calls-list">
+      @for (item of displayCalls(); track item.idx) {
+        <div
+          class="call-item"
+          [class.selected]="item.idx === activeCallIndex()"
+          (click)="onSelectCall(item.idx)">
+          <span class="call-verb">{{ item.call.verb }}</span>
+          <div class="call-path">
+            <span class="path-base">./{{ service()?.path }}/</span>{{ item.call.path }}
+          </div>
+        </div>
+      }
+      @if (!displayCalls().length && !loading()) {
+        <div class="calls-empty">No calls found</div>
+      }
+    </div>
+  </div>
+
+  <!-- Editor area (right, remaining width) -->
+  <div class="editor-area">
+    <!-- Service name + base path inputs -->
+    <div class="service-inputs">
+      <div class="input-group">
+        <label class="input-label">Service name</label>
+        <input
+          class="service-name-input"
+          [value]="service()?.name ?? ''"
+          (change)="onServiceNameChange($any($event.target).value)"
+          placeholder="Service name" />
+      </div>
+      <div class="input-group">
+        <label class="input-label">Base path</label>
+        <input
+          class="base-path-input mono"
+          [value]="service()?.path ?? ''"
+          (change)="onServicePathChange($any($event.target).value)"
+          placeholder="base-path" />
+      </div>
+    </div>
+
+    <!-- Tab header -->
+    <div class="tab-header">
+      @for (tab of tabs; track tab.route) {
+        <button
+          class="tab-btn"
+          [class.active]="activeTab() === tab.route"
+          (click)="navigateToTab(tab.route)">
+          <mat-icon>{{ tab.icon }}</mat-icon>
+          <span>{{ tab.title }}</span>
+        </button>
+      }
+      <span class="flex-spacer"></span>
+      @if (activeCall()) {
+        <button
+          mat-icon-button
+          class="clear-call-btn"
+          matTooltip="Clear selection"
+          (click)="onClearSelection()">
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+    </div>
+
+    <!-- Child route area -->
+    <div class="sub-page">
+      <router-outlet />
+    </div>
+  </div>
+</div>
