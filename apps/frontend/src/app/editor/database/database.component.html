@@ -1,0 +1,48 @@
+<!-- DESCRIPTION -->
+<label class="section-label">DESCRIPTION</label>
+<div class="service-description">
+  @if (!editDescription()) {
+    @if (service()?.description) {
+      <div class="description-rendered" [innerHTML]="service()!.description | markdown"></div>
+    } @else {
+      <span class="empty-desc">this service has no description</span>
+    }
+  } @else {
+    <textarea
+      class="description-editor"
+      [ngModel]="service()?.description ?? ''"
+      (ngModelChange)="onUpdateDescription($event)"
+      placeholder="Write a description (markdown supported)..."
+    ></textarea>
+  }
+  <button
+    class="edit-btn"
+    mat-icon-button
+    [matTooltip]="editDescription() ? 'confirm' : 'edit description'"
+    (click)="onToggleEditDescription()"
+  >
+    <mat-icon>{{ editDescription() ? 'check' : 'edit' }}</mat-icon>
+  </button>
+</div>
+
+<!-- DATABASE -->
+<label class="section-label">DATABASE</label>
+<div class="service-database">
+  <textarea
+    class="dbo-editor"
+    spellcheck="false"
+    autocomplete="off"
+    autocorrect="off"
+    autocapitalize="off"
+    placeholder="// define the service in-memory database here (JavaScript object)&#10;// example: { users: [], counter: 0 }"
+    [ngModel]="service()?.dbo ?? ''"
+    (ngModelChange)="onUpdateDbo($event)"
+  ></textarea>
+
+  @if (dboWarning(); as warn) {
+    <div class="dbo-warning">
+      <mat-icon color="warn" [matTooltip]="warn">warning</mat-icon>
+      <span class="dbo-warning-text">{{ warn }}</span>
+    </div>
+  }
+</div>
