@@ -6,9 +6,8 @@ Icona: `update`;
 
 Layout di riferimento: `apps/frontend/src/assets/help/timed-function.png`;
 
-Visualizza le informazioni della call selezionata;
+Permette di modificare la proprietà `interval` ed editare il testo js della `schedulerFn` del serivio corrente;
 
 ## Struttura della pagina
-da implementare...
 
 Adatta il componente che trovi nel file `C:\Leo\sviluppo\leolmi\apps\virtual-service\src\app\components\editor-function\editor-function.component.html` al progetto corrente;
