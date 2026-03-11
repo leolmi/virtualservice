@@ -1,0 +1,207 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  background: #fff;
+}
+
+// ── Header ─────────────────────────────────────────────────────────────────
+.monitor-header {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 0 16px;
+  height: 52px;
+  border-bottom: 1px solid var(--vs-light);
+  gap: 16px;
+
+  .service-name {
+    flex: 1;
+    font-size: 1.3rem;
+    font-weight: 300;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--vs-dark);
+  }
+
+  .search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 30%;
+    min-width: 200px;
+
+    .search-icon,
+    .clear-icon {
+      position: absolute;
+      color: #bbb;
+      font-size: 1.1rem;
+    }
+    .search-icon { left: 8px; }
+    .clear-icon  {
+      right: 8px;
+      cursor: pointer;
+      &:hover { color: #888; }
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 7px 32px;
+      border: 1px solid var(--vs-light);
+      border-radius: 20px;
+      outline: none;
+      font-size: 0.9rem;
+      background: rgba(10, 10, 10, 0.04);
+      transition: border-color 0.2s;
+
+      &:focus { border-color: var(--vs-primary); }
+    }
+  }
+}
+
+// ── Log list ───────────────────────────────────────────────────────────────
+.monitor-list {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: auto;
+  padding: 0 16px 8px;
+  min-height: 0;
+
+  .list-empty {
+    padding: 40px 0;
+    text-align: center;
+    font-style: italic;
+    opacity: 0.35;
+    font-size: 0.9rem;
+  }
+}
+
+.log-item {
+  display: flex;
+  align-items: center;
+  font-family: 'Courier New', monospace;
+  font-size: 0.82rem;
+  min-height: 22px;
+  padding: 1px 4px;
+  cursor: pointer;
+  border-radius: 2px;
+  gap: 0;
+  user-select: none;
+  transition: background 0.1s;
+
+  &:hover { background: rgba(252, 0, 185, 0.09); }
+
+  &--selected {
+    background: var(--vs-accent) !important;
+    color: #fff;
+  }
+
+  &--error {
+    background: rgba(255, 0, 0, 0.1);
+    &:hover { background: rgba(255, 69, 0, 0.55); color: #fff; }
+    &.log-item--selected { background: crimson !important; }
+  }
+
+  .col {
+    flex-shrink: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding-right: 16px;
+  }
+
+  .col-time    { width: 110px; opacity: 0.65; }
+  .col-elapsed { width: 70px; }
+  .col-origin  { width: 130px; opacity: 0.75; }
+  .col-method  {
+    width: 70px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--vs-accent-light);
+
+    .log-item--selected & { color: inherit; }
+  }
+  .col-path    { flex: 1; padding-right: 0; }
+}
+
+// ── Detail panel ───────────────────────────────────────────────────────────
+.monitor-detail {
+  display: flex;
+  flex-shrink: 0;
+  height: 38%;
+  min-height: 160px;
+  background: var(--vs-dark);
+  color: #d4d4d4;
+  position: relative;
+  border-top: 2px solid var(--vs-accent);
+
+  &--error {
+    border-top-color: crimson;
+    color: lightpink;
+  }
+
+  .detail-pane {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 8px 12px 8px;
+
+    &--request  { border-right: 1px solid rgba(255,255,255,0.1); }
+  }
+
+  .detail-label {
+    flex-shrink: 0;
+    display: block;
+    font-size: 0.68rem;
+    font-variant: small-caps;
+    letter-spacing: 0.06em;
+    color: var(--vs-accent);
+    margin-bottom: 4px;
+
+    .monitor-detail--error & { color: lightcoral; }
+  }
+
+  .pre-wrap {
+    flex: 1;
+    overflow: auto;
+    position: relative;
+
+    pre {
+      font-family: 'Courier New', monospace;
+      font-size: 0.78rem;
+      line-height: 1.35;
+      white-space: pre-wrap;
+      word-break: break-all;
+      margin: 0;
+    }
+  }
+
+  .detail-close {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    color: rgba(255,255,255,0.5);
+    &:hover { color: #fff; }
+  }
+}
+
+// ── Responsive ─────────────────────────────────────────────────────────────
+@media (max-width: 800px) {
+  .monitor-header .search-box { width: 50%; }
+
+  .log-item {
+    .col-origin { display: none; }
+    .col-time   { width: 90px; font-size: 0.75rem; }
+  }
+
+  .monitor-detail {
+    flex-direction: column;
+    height: 55%;
+
+    .detail-pane--request { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); }
+  }
+}

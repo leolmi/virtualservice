@@ -1,0 +1,54 @@
+<!-- Header: service name + search -->
+<div class="monitor-header">
+  <span class="service-name">{{ serviceName() }}</span>
+  <div class="search-box">
+    <mat-icon class="search-icon">search</mat-icon>
+    <input
+      class="search-input"
+      [ngModel]="search()"
+      (ngModelChange)="search.set($event)"
+      placeholder="search..."
+    />
+    @if (search()) {
+      <mat-icon class="clear-icon" (click)="onClearSearch()">close</mat-icon>
+    }
+  </div>
+</div>
+
+<!-- Log list -->
+<div class="monitor-list">
+  @if (filteredItems().length === 0) {
+    <div class="list-empty">no log entries yet — waiting for calls…</div>
+  }
+  @for (item of filteredItems(); track item._id) {
+    <div
+      class="log-item"
+      [class.log-item--error]="!!item.error"
+      [class.log-item--selected]="selectedItem()?._id === item._id"
+      (click)="onSelectItem(item)"
+    >
+      <span class="col col-time">{{ fmtTime(item.time) }}</span>
+      <span class="col col-elapsed">{{ fmtElapsed(item.elapsed) }}</span>
+      <span class="col col-origin">{{ fmtOrigin(item) }}</span>
+      <span class="col col-method">{{ fmtMethod(item) }}</span>
+      <span class="col col-path">./{{ fmtPath(item) }}</span>
+    </div>
+  }
+</div>
+
+<!-- Detail panel -->
+@if (selectedItem()) {
+  <div class="monitor-detail" [class.monitor-detail--error]="hasDetailError()">
+    <div class="detail-pane detail-pane--request">
+      <label class="detail-label">REQUEST</label>
+      <div class="pre-wrap"><pre>{{ detailRequest() }}</pre></div>
+    </div>
+    <div class="detail-pane detail-pane--response">
+      <label class="detail-label">RESPONSE</label>
+      <div class="pre-wrap"><pre>{{ detailResponse() }}</pre></div>
+    </div>
+    <button mat-icon-button class="detail-close" matTooltip="close" (click)="onCloseDetail()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+}
