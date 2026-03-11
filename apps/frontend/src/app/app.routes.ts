@@ -53,5 +53,10 @@ export const appRoutes: Route[] = [
       { path: '', redirectTo: 'call', pathMatch: 'full' },
     ],
   },
-  // { path: 'monitor/:id', loadComponent: () => import('./monitor/monitor.component').then(m => m.MonitorComponent), canActivate: [authGuard] },
+  {
+    path: 'monitor/:id',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./monitor/monitor.component').then((m) => m.MonitorComponent),
+  },
 ];
