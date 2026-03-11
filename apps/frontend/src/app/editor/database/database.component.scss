@@ -1,0 +1,169 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  background: #fff;
+}
+
+// ── Section label ──────────────────────────────────────────────────────────
+.section-label {
+  display: block;
+  flex-shrink: 0;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.45);
+  padding: 6px 16px 2px;
+}
+
+// ── Description box ────────────────────────────────────────────────────────
+.service-description {
+  flex-shrink: 0;
+  position: relative;
+  min-height: 48px;
+  background: rgba(10, 10, 10, 0.06);
+  padding: 10px 52px 10px 16px;
+
+  .empty-desc {
+    display: block;
+    opacity: 0.45;
+    font-style: italic;
+    font-size: 0.9rem;
+    padding: 4px 0;
+  }
+
+  // Rendered markdown
+  .description-rendered {
+    max-height: 240px;
+    overflow-y: auto;
+    font-size: 0.93rem;
+    line-height: 1.6;
+
+    // Basic markdown styling
+    ::ng-deep {
+      h1, h2, h3, h4, h5, h6 {
+        margin: 0.4em 0 0.2em;
+        font-weight: 600;
+        line-height: 1.3;
+      }
+      h1 { font-size: 1.4em; }
+      h2 { font-size: 1.2em; }
+      h3 { font-size: 1.05em; }
+      p  { margin: 0.3em 0; }
+      ul, ol { padding-left: 1.4em; margin: 0.3em 0; }
+      li { margin: 0.15em 0; }
+      code {
+        font-family: 'Courier New', monospace;
+        font-size: 0.88em;
+        background: rgba(0, 0, 0, 0.07);
+        border-radius: 3px;
+        padding: 0 4px;
+      }
+      pre {
+        background: rgba(0, 0, 0, 0.07);
+        border-radius: 4px;
+        padding: 8px 12px;
+        overflow-x: auto;
+        code { background: none; padding: 0; }
+      }
+      blockquote {
+        border-left: 3px solid var(--vs-primary);
+        margin: 0.4em 0;
+        padding: 0 0 0 10px;
+        opacity: 0.7;
+      }
+      a { color: var(--vs-primary); }
+      hr { border: none; border-top: 1px solid var(--vs-light); margin: 0.6em 0; }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 0.9em;
+        th, td { border: 1px solid var(--vs-light); padding: 4px 8px; }
+        th { background: rgba(0,0,0,0.05); font-weight: 600; }
+      }
+    }
+  }
+
+  // Markdown edit textarea
+  .description-editor {
+    width: 100%;
+    min-height: 100px;
+    max-height: 240px;
+    resize: vertical;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+    padding: 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    outline: none;
+    box-sizing: border-box;
+    background: #fff;
+
+    &:focus {
+      border-color: var(--vs-primary);
+    }
+  }
+
+  .edit-btn {
+    position: absolute;
+    right: 10px;
+    top: 8px;
+  }
+}
+
+// ── Database editor ────────────────────────────────────────────────────────
+.service-database {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+  position: relative;
+
+  .dbo-editor {
+    flex: 1;
+    width: 100%;
+    min-height: 0;
+    resize: none;
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 12px 16px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    line-height: 1.55;
+    background: #1e1e1e;
+    color: #d4d4d4;
+    outline: none;
+    box-sizing: border-box;
+    tab-size: 2;
+
+    &::placeholder {
+      color: rgba(212, 212, 212, 0.3);
+    }
+  }
+
+  .dbo-warning {
+    position: absolute;
+    bottom: 12px;
+    left: 16px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(30, 30, 30, 0.9);
+    border: 1px solid #f44336;
+    border-radius: 4px;
+    padding: 4px 10px 4px 8px;
+    max-width: calc(100% - 48px);
+
+    .dbo-warning-text {
+      font-size: 0.8rem;
+      color: #f44336;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}
