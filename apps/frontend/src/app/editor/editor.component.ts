@@ -83,7 +83,7 @@ export class EditorComponent {
 
   readonly tabs: TabDef[] = [
     { route: 'call', icon: 'label', title: 'Call definition' },
-    { route: 'test', icon: 'bug_report', title: 'Call test' },
+    { route: 'test', icon: 'flash_on', title: 'Call test' },
     { route: 'database', icon: 'storage', title: 'Service definition' },
     { route: 'function', icon: 'schedule', title: 'Timed function' },
   ];

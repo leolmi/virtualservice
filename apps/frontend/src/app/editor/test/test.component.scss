@@ -1,0 +1,284 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  background: #fff;
+}
+
+.testing-bar {
+  flex-shrink: 0;
+}
+
+// URL bar
+.call-url {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  font-family: 'Courier New', monospace;
+  font-size: 0.95rem;
+  padding: 4px 4px 4px 16px;
+  background: #fff;
+  border-bottom: 1px solid var(--vs-light);
+  gap: 4px;
+  overflow: hidden;
+
+  .verb {
+    color: var(--vs-accent-light);
+    font-weight: bold;
+    font-size: 1.05rem;
+    text-transform: uppercase;
+    min-width: 70px;
+    flex-shrink: 0;
+  }
+
+  .base-path {
+    opacity: 0.5;
+    flex-shrink: 0;
+  }
+
+  .path-segments {
+    flex: 1;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    .path-sep {
+      opacity: 0.5;
+      margin: 0 1px;
+    }
+
+    .path-seg {
+      &--param {
+        color: var(--vs-accent);
+        font-weight: 600;
+        transition: background 0.15s;
+        border-radius: 3px;
+        padding: 0 2px;
+
+        &.path-seg--active {
+          background: rgba(255, 64, 129, 0.15);
+        }
+      }
+    }
+  }
+
+  .url-actions {
+    display: flex;
+    flex-shrink: 0;
+  }
+}
+
+// Section labels
+.section-label,
+.editor-label {
+  display: block;
+  flex-shrink: 0;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.45);
+  padding: 6px 16px 2px;
+}
+
+// Description box
+.call-description {
+  flex-shrink: 0;
+  position: relative;
+  min-height: 44px;
+  background: rgba(10, 10, 10, 0.06);
+  padding: 10px 48px 10px 16px;
+
+  .description-text {
+    margin: 0;
+    white-space: pre-wrap;
+    font-size: 0.92rem;
+    line-height: 1.5;
+  }
+
+  .empty-desc {
+    opacity: 0.45;
+    font-style: italic;
+    font-size: 0.9rem;
+  }
+
+  .description-editor {
+    width: 100%;
+    min-height: 80px;
+    max-height: 200px;
+    resize: vertical;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+    padding: 8px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    outline: none;
+    box-sizing: border-box;
+
+    &:focus {
+      border-color: var(--vs-primary);
+    }
+  }
+
+  .edit-btn {
+    position: absolute;
+    right: 8px;
+    top: 6px;
+  }
+}
+
+// Main test area
+.call-test {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+
+  // Parameters
+  .call-test-parameters {
+    display: flex;
+    flex-shrink: 0;
+
+    .params-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+
+      &--path {
+        border-right: 2px solid var(--vs-light);
+      }
+      &--query {
+        border-left: 2px solid var(--vs-light);
+      }
+    }
+
+    .parameters {
+      background: rgba(10, 10, 10, 0.06);
+      padding: 8px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .parameter-item {
+      display: flex;
+      align-items: center;
+      padding: 3px 4px;
+
+      label {
+        min-width: 120px;
+        font-family: 'Courier New', monospace;
+        font-size: 0.82rem;
+        color: rgba(0, 0, 0, 0.6);
+        margin-right: 8px;
+        flex-shrink: 0;
+      }
+
+      .param-input {
+        flex: 1;
+        border: none;
+        border-radius: 4px;
+        padding: 5px 8px;
+        font-family: 'Courier New', monospace;
+        font-size: 0.85rem;
+        background: rgba(255, 255, 255, 0.8);
+        outline: none;
+        transition: background 0.15s;
+
+        &:focus,
+        &.param-input--active {
+          background: rgba(207, 233, 255, 0.8);
+        }
+      }
+    }
+
+    .params-col--query .param-input {
+      &:focus,
+      &.param-input--active {
+        background: rgba(255, 207, 242, 0.8);
+      }
+    }
+  }
+
+  // Body editor
+  .call-test-body {
+    flex-shrink: 0;
+    padding: 0 0 4px;
+
+    .body-editor {
+      width: 100%;
+      height: 120px;
+      resize: vertical;
+      border: none;
+      border-top: 1px solid var(--vs-light);
+      border-bottom: 1px solid var(--vs-light);
+      padding: 8px 16px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      background: #1e1e1e;
+      color: #d4d4d4;
+      outline: none;
+      box-sizing: border-box;
+    }
+  }
+
+  // Results
+  .call-test-results {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-height: 60px;
+
+    &--error .results {
+      color: crimson;
+    }
+
+    .results-container {
+      flex: 1;
+      overflow: auto;
+      background: #fff;
+      position: relative;
+      padding: 8px 16px;
+
+      .results {
+        font-family: 'Courier New', monospace;
+        font-size: 0.82rem;
+        line-height: 1.4;
+        white-space: pre-wrap;
+        margin: 0;
+      }
+
+      .results-empty {
+        opacity: 0.35;
+        font-style: italic;
+        font-size: 0.88rem;
+      }
+    }
+  }
+}
+
+// FAB
+.run-btn {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  z-index: 10;
+}
+
+// Responsive
+@media (max-width: 800px) {
+  .call-test {
+    .call-test-parameters {
+      flex-direction: column;
+
+      .params-col--path,
+      .params-col--query {
+        border: none;
+      }
+    }
+  }
+}
