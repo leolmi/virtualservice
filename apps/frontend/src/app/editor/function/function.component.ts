@@ -10,6 +10,8 @@ import * as EditorActions from '../store/editor.actions';
 /** Default interval (seconds) when the toggle is switched ON */
 const DEFAULT_INTERVAL = 10;
 
+import { CodeEditorComponent } from '../../core/components/code-editor/code-editor.component';
+
 @Component({
   selector: 'vs-editor-function',
   standalone: true,
@@ -17,6 +19,7 @@ const DEFAULT_INTERVAL = 10;
     FormsModule,
     MatSlideToggleModule,
     MatTooltipModule,
+    CodeEditorComponent,
   ],
   templateUrl: './function.component.html',
   styleUrl: './function.component.scss',

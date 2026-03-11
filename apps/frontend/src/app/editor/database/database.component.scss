@@ -125,24 +125,7 @@
 
   .dbo-editor {
     flex: 1;
-    width: 100%;
     min-height: 0;
-    resize: none;
-    border: none;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-    padding: 12px 16px;
-    font-family: 'Courier New', monospace;
-    font-size: 0.85rem;
-    line-height: 1.55;
-    background: #1e1e1e;
-    color: #d4d4d4;
-    outline: none;
-    box-sizing: border-box;
-    tab-size: 2;
-
-    &::placeholder {
-      color: rgba(212, 212, 212, 0.3);
-    }
   }
 
   .dbo-warning {

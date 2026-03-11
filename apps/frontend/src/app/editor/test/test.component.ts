@@ -26,6 +26,8 @@ export interface PathSegment {
   paramName?: string;
 }
 
+import { CodeEditorComponent } from '../../core/components/code-editor/code-editor.component';
+
 @Component({
   selector: 'vs-editor-test',
   standalone: true,
@@ -37,6 +39,7 @@ export interface PathSegment {
     MatProgressBarModule,
     MatSnackBarModule,
     FormsModule,
+    CodeEditorComponent,
   ],
   templateUrl: './test.component.html',
   styleUrl: './test.component.scss',

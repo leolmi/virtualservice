@@ -12,6 +12,8 @@ import {
 } from '../store/editor.selectors';
 import * as EditorActions from '../store/editor.actions';
 
+import { CodeEditorComponent } from '../../core/components/code-editor/code-editor.component';
+
 @Component({
   selector: 'vs-editor-call',
   standalone: true,
@@ -21,6 +23,7 @@ import * as EditorActions from '../store/editor.actions';
     MatMenuModule,
     MatTooltipModule,
     EmptyCallComponent,
+    CodeEditorComponent,
   ],
   templateUrl: './call.component.html',
   styleUrl: './call.component.scss',

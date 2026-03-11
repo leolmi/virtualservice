@@ -14,6 +14,8 @@ import * as EditorActions from '../store/editor.actions';
 /** Max characters allowed in the dbo field */
 const DBO_MAX_LENGTH = 100_000;
 
+import { CodeEditorComponent } from '../../core/components/code-editor/code-editor.component';
+
 @Component({
   selector: 'vs-editor-database',
   standalone: true,
@@ -23,6 +25,7 @@ const DBO_MAX_LENGTH = 100_000;
     MatButtonModule,
     MatTooltipModule,
     MarkdownPipe,
+    CodeEditorComponent,
   ],
   templateUrl: './database.component.html',
   styleUrl: './database.component.scss',
