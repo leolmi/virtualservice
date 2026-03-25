@@ -26,7 +26,7 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  max-width: 380px;
+  max-width: 450px;
   gap: 16px;
 
   .side-icon {
@@ -137,6 +137,10 @@
       font-weight: 500;
     }
   }
+}
+
+.login-input {
+  line-height: 36px !important;
 }
 
 /* form ───────────────────────────────────────────────────────── */

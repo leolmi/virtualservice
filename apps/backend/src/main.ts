@@ -7,6 +7,19 @@ import { join } from 'path';
 import { AppModule } from './app.module';
 import { DEFAULT_PORT } from './defaults';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { version } = require('../../../../package.json') as { version: string };
+
+console.log(`
+ _____ _     _           _ _____             _
+|  |  |_|___| |_ _ _ ___| |   __|___ ___ _ _|_|___ ___
+|  |  | |  _|  _| | | .'| |__   | -_|  _| | | |  _| -_|
+ \\___/|_|_| |_| |___|__,|_|_____|___|_|  \\_/|_|___|___|
+
+ v.${version}  by Leo
+
+ `);
+
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
