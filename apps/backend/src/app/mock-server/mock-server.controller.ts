@@ -10,7 +10,7 @@ import { MockServerService } from './mock-server.service';
 export class MockServerController {
   constructor(private readonly mockServerService: MockServerService) {}
 
-  @All('service/*')
+  @All('service/*path')
   async handle(@Req() req: Request, @Res() res: Response): Promise<void> {
     await this.mockServerService.handleRequest(req, res);
   }

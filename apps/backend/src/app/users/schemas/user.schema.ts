@@ -8,22 +8,22 @@ export class User extends Document {
   @Prop({ required: true, unique: true, lowercase: true, trim: true })
   email!: string;
 
-  @Prop({ default: null })
+  @Prop({ type: String, default: null })
   password!: string | null;
 
-  @Prop({ default: null })
+  @Prop({ type: String, default: null })
   googleId!: string | null;
 
   @Prop({ default: false })
   isEmailVerified!: boolean;
 
-  @Prop({ default: null })
+  @Prop({ type: String, default: null })
   emailVerificationToken!: string | null;
 
-  @Prop({ default: null })
+  @Prop({ type: Date, default: null })
   emailVerificationExpires!: Date | null;
 
-  @Prop({ default: null })
+  @Prop({ type: Date, default: null })
   deletionRequestedAt!: Date | null;
 
   @Prop({ default: 'user', enum: ['user', 'admin'] })

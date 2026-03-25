@@ -4,7 +4,7 @@ import { UsersService } from './users.service';
 
 /**
  * Service executed once on application startup.
- * Reads the VIRTUALSERVICE_ADIMN_EMAIL and VIRTUALSERVICE_ADIMN_PASSWORD
+ * Reads the VIRTUALSERVICE_ADMIN_EMAIL and VIRTUALSERVICE_ADMIN_PASSWORD
  * environment variables and ensures the admin superuser exists in MongoDB
  * with those credentials.
  *
@@ -25,14 +25,14 @@ export class AdminBootstrapService implements OnApplicationBootstrap {
   ) {}
 
   async onApplicationBootstrap(): Promise<void> {
-    const email = this.configService.get<string>('VIRTUALSERVICE_ADIMN_EMAIL');
+    const email = this.configService.get<string>('VIRTUALSERVICE_ADMIN_EMAIL');
     const password = this.configService.get<string>(
-      'VIRTUALSERVICE_ADIMN_PASSWORD',
+      'VIRTUALSERVICE_ADMIN_PASSWORD',
     );
 
     if (!email || !password) {
       this.logger.warn(
-        'VIRTUALSERVICE_ADIMN_EMAIL or VIRTUALSERVICE_ADIMN_PASSWORD are not set: ' +
+        'VIRTUALSERVICE_ADMIN_EMAIL or VIRTUALSERVICE_ADMIN_PASSWORD are not set: ' +
           'the admin superuser will not be created/updated.',
       );
       return;

@@ -34,7 +34,7 @@ export class Log extends Document {
   response!: unknown;
 
   /** Tempo di esecuzione in ms */
-  @Prop({ default: null })
+  @Prop({ type: Number, default: null })
   elapsed!: number | null;
 }
 

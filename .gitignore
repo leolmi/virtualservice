@@ -43,9 +43,10 @@ Thumbs.db
 
 .angular
 
-#Claude
+# Claude
 .claude/worktrees
 
-# Environment files (contengono segreti)
+# Environment files — NEVER commit
 .env
-apps/backend/.env
+.env.*
+!.env.example

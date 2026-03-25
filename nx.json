@@ -11,6 +11,11 @@
     "sharedGlobals": []
   },
   "targetDefaults": {
+    "@nx/js:tsc": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"]
+    },
     "@angular/build:application": {
       "cache": true,
       "dependsOn": ["^build"],
