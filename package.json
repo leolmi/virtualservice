@@ -33,6 +33,7 @@
     "@nestjs/mongoose": "^11.0.0",
     "@nestjs/passport": "^11.0.0",
     "@nestjs/platform-express": "^11.0.0",
+    "@nestjs/throttler": "^6.5.0",
     "@ngrx/effects": "^21.0.0",
     "@ngrx/store": "^21.0.0",
     "axios": "^1.6.0",

@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
+import { Throttle, SkipThrottle } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { GoogleAuthGuard } from './guards/google-auth.guard';
@@ -32,6 +33,7 @@ export class AuthController {
     private readonly configService: ConfigService,
   ) {}
 
+  @Throttle({ strict: { ttl: 60_000, limit: 5 } })
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
   async register(
@@ -44,6 +46,7 @@ export class AuthController {
     );
   }
 
+  @Throttle({ strict: { ttl: 60_000, limit: 5 } })
   @UseGuards(LocalAuthGuard)
   @Post('login')
   @HttpCode(HttpStatus.OK)
@@ -62,6 +65,7 @@ export class AuthController {
     return this.authService.verifyEmail(token);
   }
 
+  @Throttle({ strict: { ttl: 60_000, limit: 3 } })
   @Post('resend-verification')
   @HttpCode(HttpStatus.OK)
   async resendVerification(
@@ -70,12 +74,14 @@ export class AuthController {
     return this.authService.resendVerification(email);
   }
 
+  @SkipThrottle()
   @Get('google')
   @UseGuards(GoogleAuthGuard)
   googleAuth(): void {
     // Passport redirect — nessuna logica necessaria qui
   }
 
+  @SkipThrottle()
   @Get('google/callback')
   @UseGuards(GoogleAuthGuard)
   googleCallback(
