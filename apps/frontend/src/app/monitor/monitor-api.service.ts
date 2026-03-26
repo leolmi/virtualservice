@@ -29,18 +29,18 @@ export class MonitorApiService {
   getLogs(serviceId: string, last?: number): Observable<ILogItem[]> {
     const url =
       last !== undefined
-        ? `/api/services/monitor/${serviceId}/${last}`
-        : `/api/services/monitor/${serviceId}`;
+        ? `/services/monitor/${serviceId}/${last}`
+        : `/services/monitor/${serviceId}`;
     return this.http.get<ILogItem[]>(url);
   }
 
   /** Deletes all log entries for the authenticated user */
   clearLogs(): Observable<void> {
-    return this.http.delete<void>('/api/services');
+    return this.http.delete<void>('/services');
   }
 
   /** Resets the in-memory database cache of the given service */
   restartService(serviceId: string): Observable<void> {
-    return this.http.post<void>('/api/services/restart', { _id: serviceId });
+    return this.http.post<void>('/services/restart', { _id: serviceId });
   }
 }

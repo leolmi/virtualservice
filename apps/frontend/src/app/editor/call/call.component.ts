@@ -14,6 +14,7 @@ import {
 import * as EditorActions from '../store/editor.actions';
 import { RuleDialogComponent } from '../components/rule-dialog/rule-dialog.component';
 import { CodeEditorComponent } from '../../core/components/code-editor/code-editor.component';
+import { calcParameters } from '../../core/models/path.helper';
 
 @Component({
   selector: 'vs-editor-call',
@@ -38,7 +39,9 @@ export class CallComponent {
 
   readonly basePath = computed(() => {
     const svc = this.service();
-    return svc ? `./${svc.path}` : './';
+    return svc
+      ? `${window.location.origin}/service/${svc.path}`
+      : `${window.location.origin}/service`;
   });
 
   readonly verbs: HttpVerb[] = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'];
@@ -47,9 +50,10 @@ export class CallComponent {
     this.store.dispatch(EditorActions.updateActiveCall({ changes: { verb } }));
   }
 
-  onUpdatePath(value: string): void {
+  onUpdatePath(path: string): void {
+    const parameters = calcParameters(path);
     this.store.dispatch(
-      EditorActions.updateActiveCall({ changes: { path: value } }),
+      EditorActions.updateActiveCall({ changes: { path, parameters } }),
     );
   }
 

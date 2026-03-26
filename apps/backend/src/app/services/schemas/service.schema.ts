@@ -16,6 +16,10 @@ import {
 
 @Schema({ _id: false })
 export class ServiceCallParameter implements IServiceCallParameter {
+  /** Identificatore univoco del parametro (es. "path-id", "query-name") */
+  @Prop({ required: true })
+  code!: string;
+
   @Prop({ required: true })
   name!: string;
 

@@ -75,7 +75,7 @@ export class AuthEffects implements OnInitEffects {
       this.actions$.pipe(
         ofType(AuthActions.loginWithGoogle),
         tap(() => {
-          window.location.href = '/api/auth/google';
+          window.location.href = '/auth/google';
         }),
       ),
     { dispatch: false },

@@ -13,14 +13,23 @@ export type ResponseType = 'json' | 'text' | 'file' | 'html';
 /** Ambito di utilizzo di un parametro nella chiamata */
 export type ParameterTarget = 'path' | 'query' | 'body' | 'header';
 
+export const PARAM_TARGET_PATH = 'path';
+export const PARAM_TARGET_QUERY = 'query';
+
 // ---------------------------------------------------------------------------
 
 /** Parametro di una chiamata (usato anche per il test nell'editor) */
 export interface IServiceCallParameter {
+  code: string;
   name: string;
   target: ParameterTarget;
   /** Valore di test nell'editor (tipo dinamico — Mixed in Mongoose) */
   value: unknown;
+}
+
+export interface PathSegment {
+  parameter?: IServiceCallParameter;
+  text: string;
 }
 
 /** Regola applicata a una chiamata: valuta un'espressione JS e, se vera, restituisce l'errore configurato */

@@ -8,14 +8,14 @@ export class ServicesApiService {
   private http = inject(HttpClient);
 
   getAll(): Observable<IServiceItem[]> {
-    return this.http.get<IServiceItem[]>('/api/services');
+    return this.http.get<IServiceItem[]>('/services');
   }
 
   save(service: Partial<IServiceItem>): Observable<IServiceItem> {
-    return this.http.post<IServiceItem>('/api/services', service);
+    return this.http.post<IServiceItem>('/services', service);
   }
 
   delete(id: string): Observable<void> {
-    return this.http.delete<void>(`/api/services/${id}`);
+    return this.http.delete<void>(`/services/${id}`);
   }
 }

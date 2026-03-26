@@ -19,7 +19,6 @@
   font-family: monospace;
   background: #fff;
   border-bottom: 1px solid var(--vs-light);
-  gap: 4px;
   overflow: hidden;
   margin-top: 16px;
 
@@ -34,10 +33,11 @@
     text-transform: uppercase;
     flex-shrink: 0;
     height: 100%;
-    padding-top: 10px;
+    padding-top: 11px;
   }
 
   .base-path {
+    margin-left: 8px;
     opacity: 0.5;
     flex-shrink: 0;
   }
@@ -50,17 +50,32 @@
 
     .path-sep {
       opacity: 0.5;
-      margin: 0 1px;
+      //margin: 0 1px;
     }
 
     .path-seg {
-      &--param {
-        color: var(--vs-accent);
-        font-weight: 600;
+      display: inline-block;
+
+      &--param-path,
+      &--param-query {
+        background: rgba(10, 10, 10, 0.05);
+        font-weight: bold;
         transition: background 0.15s;
         border-radius: 3px;
-        padding: 0 2px;
+        padding: 10px 4px;
+        cursor: pointer;
 
+        &:hover {
+          background: rgba(10, 10, 10, 0.15);
+        }
+      }
+
+      &--param-path {
+        &.path-seg--active {
+          background: rgba(64, 169, 255, 0.15);
+        }
+      }
+      &--param-query {
         &.path-seg--active {
           background: rgba(255, 64, 129, 0.15);
         }
@@ -72,19 +87,6 @@
     display: flex;
     flex-shrink: 0;
   }
-}
-
-// Section labels
-.section-label,
-.editor-label {
-  display: block;
-  flex-shrink: 0;
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(0, 0, 0, 0.45);
-  padding: 6px 16px 2px;
 }
 
 // Description box

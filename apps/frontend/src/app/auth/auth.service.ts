@@ -15,11 +15,11 @@ export class AuthService {
     password: string,
   ): Observable<{ token: string; user: IUser }> {
     return this.http
-      .post<{ accessToken: string }>('/api/auth/login', { email, password })
+      .post<{ accessToken: string }>('/auth/login', { email, password })
       .pipe(
         switchMap(({ accessToken }) =>
           this.http
-            .get<IUser>('/api/auth/me', {
+            .get<IUser>('/auth/me', {
               headers: { Authorization: `Bearer ${accessToken}` },
             })
             .pipe(
@@ -30,7 +30,7 @@ export class AuthService {
   }
 
   getMe(token: string): Observable<IUser> {
-    return this.http.get<IUser>('/api/auth/me', {
+    return this.http.get<IUser>('/auth/me', {
       headers: { Authorization: `Bearer ${token}` },
     });
   }

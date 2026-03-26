@@ -140,7 +140,7 @@ export class MonitorComponent implements OnDestroy {
   constructor() {
     // fetch service name for display
     this.http
-      .get<IServiceItem>(`/api/services/${this.serviceId}`)
+      .get<IServiceItem>(`/services/${this.serviceId}`)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({ next: (s) => this.serviceName.set(s.name || this.serviceId) });
 

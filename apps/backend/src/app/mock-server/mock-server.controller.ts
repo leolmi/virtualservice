@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import { MockServerService } from './mock-server.service';
 
 /**
- * Intercetta tutte le richieste su /api/service/* indipendentemente
+ * Intercetta tutte le richieste su /service/* indipendentemente
  * dal metodo HTTP e le delega a MockServerService.
  */
 @Controller()

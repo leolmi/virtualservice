@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -8,6 +8,7 @@ import { AuthModule } from './app/auth/auth.module';
 import { MailModule } from './app/mail/mail.module';
 import { ServicesModule } from './app/services/services.module';
 import { MockServerModule } from './app/mock-server/mock-server.module';
+import { RequestLoggerMiddleware } from './app/common/request-logger.middleware';
 import { DEFAULT_MONGO_URI } from './defaults';
 
 @Module({
@@ -48,4 +49,8 @@ import { DEFAULT_MONGO_URI } from './defaults';
     },
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer): void {
+    consumer.apply(RequestLoggerMiddleware).forRoutes('*');
+  }
+}

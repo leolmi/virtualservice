@@ -4,18 +4,14 @@
     <span class="verb">{{ call.verb }}</span>
     <span class="base-path">{{ basePath() }}/</span>
     <span class="path-segments">
-      @for (seg of pathSegments(); track seg.text) {
-        @if (seg.isParam) {
-          <span
-            class="path-seg path-seg--param"
-            [class.path-seg--active]="activeParamName() === seg.paramName"
-          >{{ seg.text }}</span>
-        } @else {
-          <span class="path-seg">{{ seg.text }}</span>
-        }
-        @if (!$last) {
-          <span class="path-sep">/</span>
-        }
+      @for (seg of pathSegments(); track $index) {
+        <div
+          class="path-seg"
+          (click)="clickOnSegment(seg)"
+          [class.path-seg--param-path]="seg.parameter?.target === 'path'"
+          [class.path-seg--param-query]="seg.parameter?.target === 'query'"
+          [class.path-seg--active]="activeParamCode() === (seg.parameter?.code||'')"
+        >{{ seg.parameter?seg.parameter.name:seg.text }}</div>
       }
     </span>
     <span class="url-actions">
@@ -63,17 +59,17 @@
       <div class="call-test-parameters">
         <!-- Path params -->
         <div class="params-col params-col--path">
-          <label class="editor-label">Path parameters</label>
+          <label class="section-label">Path parameters</label>
           <div class="parameters">
             @for (prm of pathParams(); track prm.name) {
               <div class="parameter-item">
                 <label>{{ prm.name }}</label>
                 <input
                   class="param-input"
-                  [class.param-input--active]="activeParamName() === prm.name"
+                  [class.param-input--active]="activeParamCode() === prm.code"
                   [ngModel]="prm.value"
-                  (ngModelChange)="onUpdateParamValue(prm.name, $event)"
-                  (focusin)="onActivateParam(prm.name)"
+                  (ngModelChange)="onUpdateParamValue(prm.code, $event)"
+                  (focusin)="onActivateParam(prm.code)"
                   (focusout)="onActivateParam(null)"
                 />
               </div>
@@ -82,17 +78,17 @@
         </div>
         <!-- Query params -->
         <div class="params-col params-col--query">
-          <label class="editor-label">Query parameters</label>
+          <label class="section-label">Query parameters</label>
           <div class="parameters">
             @for (prm of queryParams(); track prm.name) {
               <div class="parameter-item">
                 <label>{{ prm.name }}</label>
                 <input
                   class="param-input"
-                  [class.param-input--active]="activeParamName() === prm.name"
+                  [class.param-input--active]="activeParamCode() === prm.code"
                   [ngModel]="prm.value"
-                  (ngModelChange)="onUpdateParamValue(prm.name, $event)"
-                  (focusin)="onActivateParam(prm.name)"
+                  (ngModelChange)="onUpdateParamValue(prm.code, $event)"
+                  (focusin)="onActivateParam(prm.code)"
                   (focusout)="onActivateParam(null)"
                 />
               </div>
@@ -104,7 +100,7 @@
 
     <!-- BODY -->
     @if (hasBody()) {
-      <label class="editor-label">BODY</label>
+      <label class="section-label">BODY</label>
       <div class="call-test-body">
         <vs-code-editor
           class="body-editor"
@@ -115,7 +111,7 @@
     }
 
     <!-- RESULTS -->
-    <label class="editor-label">RESULTS</label>
+    <label class="section-label">RESULTS</label>
     <div class="call-test-results" [class.call-test-results--error]="isError()">
       <div class="results-container">
         @if (resultsString()) {

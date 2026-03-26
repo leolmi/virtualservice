@@ -35,16 +35,16 @@
     }
 
     .interval-input {
-      font-family: 'Courier New', monospace;
+      font-family: "Courier New", monospace;
       font-size: 0.95rem;
       color: var(--vs-accent);
       font-weight: 600;
+      border-radius: 3px;
       border: none;
-      border-bottom: 2px solid var(--vs-light);
-      background: transparent;
+      background: var(--vs-white);
       outline: none;
       width: 100%;
-      padding: 4px 0;
+      padding: 4px;
       transition: border-color 0.2s;
 
       &:focus {

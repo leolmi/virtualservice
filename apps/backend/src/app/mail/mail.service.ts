@@ -46,7 +46,7 @@ export class MailService {
       'BASE_URL',
       DEFAULT_BASE_URL,
     );
-    const verifyUrl = `${baseUrl}/api/auth/verify-email?token=${verificationToken}`;
+    const verifyUrl = `${baseUrl}/auth/verify-email?token=${verificationToken}`;
     const from = this.configService.get<string>('SMTP_FROM', DEFAULT_SMTP_FROM);
 
     try {

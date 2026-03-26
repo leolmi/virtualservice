@@ -9,24 +9,21 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { FormsModule } from '@angular/forms';
-
 import { EmptyCallComponent } from '../components/empty-call/empty-call.component';
 import {
   selectEditorActiveCall,
   selectEditorService,
 } from '../store/editor.selectors';
 import * as EditorActions from '../store/editor.actions';
-import { HttpVerb, IServiceCallParameter } from '@virtualservice/shared/model';
+import {
+  HttpVerb,
+  IServiceCallParameter,
+  PathSegment,
+} from '@virtualservice/shared/model';
+import { CodeEditorComponent } from '../../core/components/code-editor/code-editor.component';
+import { getPathSegments } from '../../core/models/path.helper';
 
 const VERBS_WITH_BODY: HttpVerb[] = ['POST', 'PUT', 'PATCH'];
-
-export interface PathSegment {
-  text: string;
-  isParam: boolean;
-  paramName?: string;
-}
-
-import { CodeEditorComponent } from '../../core/components/code-editor/code-editor.component';
 
 @Component({
   selector: 'vs-editor-test',
@@ -58,24 +55,26 @@ export class TestComponent {
   readonly results = signal<unknown>(null);
   readonly isError = signal(false);
   readonly editDescription = signal(false);
-  readonly activeParamName = signal<string | null>(null);
+  readonly activeParamCode = signal<string | null>(null);
 
+  /** Full URL shown in the UI */
   readonly basePath = computed(() => {
     const svc = this.service();
-    return svc ? `./${svc.path}` : '';
+    return svc
+      ? `${window.location.origin}/service/${svc.path}`
+      : `${window.location.origin}/service`;
+  });
+
+  /** Relative path used for HTTP requests */
+  private readonly requestBasePath = computed(() => {
+    const svc = this.service();
+    return svc ? `/service/${svc.path}` : '/service';
   });
 
   readonly pathSegments = computed<PathSegment[]>(() => {
     const call = this.activeCall();
     if (!call) return [];
-    return call.path
-      .split('/')
-      .filter(Boolean)
-      .map((seg) =>
-        seg.startsWith(':')
-          ? { text: seg, isParam: true, paramName: seg.slice(1) }
-          : { text: seg, isParam: false },
-      );
+    return getPathSegments(call.path);
   });
 
   readonly pathParams = computed<IServiceCallParameter[]>(() =>
@@ -101,41 +100,54 @@ export class TestComponent {
     return typeof r === 'string' ? r : JSON.stringify(r, null, 2);
   });
 
-  private buildUrl(): string {
+  private buildUrl(absolute = false): string {
     const call = this.activeCall();
     if (!call) return '';
-    let callPath = call.path;
-    for (const p of this.pathParams()) {
-      callPath = callPath.replace(`:${p.name}`, encodeURIComponent(String(p.value ?? '')));
-    }
-    const base = `${this.basePath()}/${callPath}`.replace(/\/+/g, '/');
-    const qp = this.queryParams();
-    if (qp.length === 0) return base;
-    const qs = qp
-      .map((p) => `${encodeURIComponent(p.name)}=${encodeURIComponent(String(p.value ?? ''))}`)
-      .join('&');
-    return `${base}?${qs}`;
+    const segments = getPathSegments(call.path);
+    let callPath = '';
+    segments.forEach((seg) => {
+      if (seg.parameter) {
+        const value = call.parameters.find(
+          (p) => p.code === seg.parameter?.code,
+        )?.value;
+        callPath += encodeURIComponent(String(value));
+      } else {
+        callPath += seg.text;
+      }
+    });
+    const prefix = absolute ? this.basePath() : this.requestBasePath();
+    return `${prefix}/${callPath}`;
   }
 
   onUpdateDescription(value: string): void {
-    this.store.dispatch(EditorActions.updateActiveCall({ changes: { description: value } }));
+    this.store.dispatch(
+      EditorActions.updateActiveCall({ changes: { description: value } }),
+    );
   }
 
   onUpdateBody(value: string): void {
-    this.store.dispatch(EditorActions.updateActiveCall({ changes: { body: value } }));
+    this.store.dispatch(
+      EditorActions.updateActiveCall({ changes: { body: value } }),
+    );
   }
 
-  onUpdateParamValue(name: string, value: string): void {
+  onUpdateParamValue(code: string, value: string): void {
     const call = this.activeCall();
     if (!call) return;
     const updated = call.parameters.map((p) =>
-      p.name === name ? { ...p, value } : p,
+      p.code === code ? { ...p, value } : p,
     );
-    this.store.dispatch(EditorActions.updateActiveCall({ changes: { parameters: updated } }));
+    this.store.dispatch(
+      EditorActions.updateActiveCall({ changes: { parameters: updated } }),
+    );
   }
 
-  onActivateParam(name: string | null): void {
-    this.activeParamName.set(name);
+  clickOnSegment(seg: PathSegment): void {
+    if (seg.parameter) this.activeParamCode.set(seg.parameter.code);
+  };
+
+  onActivateParam(code: string | null): void {
+    this.activeParamCode.set(code || '\t');
   }
 
   onToggleEditDescription(): void {
@@ -143,14 +155,14 @@ export class TestComponent {
   }
 
   onCopyUrl(): void {
-    this.clipboard.copy(this.buildUrl());
+    this.clipboard.copy(this.buildUrl(true));
     this.snackBar.open('URL copied', undefined, { duration: 1500 });
   }
 
   onCopyCurl(): void {
     const call = this.activeCall();
     if (!call) return;
-    const url = this.buildUrl();
+    const url = this.buildUrl(true);
     let curl = `curl -X ${call.verb} "${url}"`;
     if (this.hasBody() && call.body) {
       curl += ` -H "Content-Type: application/json" -d '${call.body}'`;
@@ -162,13 +174,14 @@ export class TestComponent {
   onRunTest(): void {
     const call = this.activeCall();
     if (!call || this.testing()) return;
-    const url = this.buildUrl();
+    const url = this.buildUrl(true);
     this.testing.set(true);
     this.results.set(null);
     this.isError.set(false);
 
     const body = this.hasBody() && call.body ? call.body : undefined;
 
+    console.log('TESTING', url);
     this.http
       .request(call.verb, url, { body, responseType: 'text' })
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -191,7 +204,9 @@ export class TestComponent {
               // keep as string
             }
           }
-          this.results.set(errData ?? { status: err.status, message: err.message });
+          this.results.set(
+            errData ?? { status: err.status, message: err.message },
+          );
           this.isError.set(true);
         },
       });

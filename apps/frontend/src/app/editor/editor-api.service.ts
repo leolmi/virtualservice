@@ -8,10 +8,10 @@ export class EditorApiService {
   private http = inject(HttpClient);
 
   getById(id: string): Observable<IServiceItem> {
-    return this.http.get<IServiceItem>(`/api/services/${id}`);
+    return this.http.get<IServiceItem>(`/services/${id}`);
   }
 
   save(service: IServiceItem): Observable<IServiceItem> {
-    return this.http.post<IServiceItem>('/api/services', service);
+    return this.http.post<IServiceItem>('/services', service);
   }
 }

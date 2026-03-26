@@ -23,8 +23,6 @@ console.log(`
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  app.setGlobalPrefix('api');
-
   // cookie-parser: popola req.cookies usato nello scope delle espressioni mock
   app.use(cookieParser());
 
@@ -36,7 +34,7 @@ async function bootstrap(): Promise<void> {
     }),
   );
 
-  // CORS permissivo: gli endpoint /api/service/* devono essere raggiungibili
+  // CORS permissivo: gli endpoint /service/* devono essere raggiungibili
   // da qualsiasi dominio esterno (mock service pubblici)
   app.enableCors({
     origin: '*',
@@ -46,7 +44,7 @@ async function bootstrap(): Promise<void> {
   });
 
   // Inizializza NestJS e registra tutte le rotte API prima di aggiungere
-  // il serving statico, così il fallback SPA non interferisce con /api/*
+  // il serving statico, così il fallback SPA non interferisce con le rotte NestJS
   await app.init();
 
   // Serving del frontend Angular (solo in produzione, quando il build esiste)
@@ -67,7 +65,7 @@ async function bootstrap(): Promise<void> {
 
   const port = process.env['PORT'] ?? DEFAULT_PORT;
   await app.listen(port);
-  console.log(`Backend listening on http://localhost:${port}/api`);
+  console.log(`Backend listening on http://localhost:${port}`);
 }
 
 bootstrap();
