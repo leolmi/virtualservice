@@ -2,6 +2,9 @@
   display: block;
   flex: 1;
   overflow: auto;
+
+  --vs-side-icon-size: 120px;
+  --vs-help-button-size: 70px;
 }
 
 /* ── page layout ─────────────────────────────────────────── */
@@ -19,6 +22,20 @@
   align-items: flex-start;
   justify-content: center;
   padding: 48px 40px;
+  position: relative;
+
+  .side-separator {
+    border-bottom: 1px solid var(--vs-dark);
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+  }
+}
+
+.narrow {
+  .side-panel {
+    padding: 48px 0;
+  }
 }
 
 .side-content {
@@ -26,38 +43,41 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  max-width: 450px;
+  max-width: calc(100% - 32px);
   gap: 16px;
+  height: 100%;
 
   .side-icon {
-    font-size: 64px;
-    width: 64px;
-    height: 64px;
+    font-size: var(--vs-side-icon-size);
+    width: var(--vs-side-icon-size);
+    height: var(--vs-side-icon-size);
     color: var(--vs-dark);
   }
 
   .side-title {
-    font-size: 1.1rem;
-    font-weight: 400;
+    font-size: 1.6rem;
+    font-weight: 100;
     letter-spacing: 0.08em;
     color: var(--vs-dark);
-    margin: 0;
+    margin: 0 0 20px;
   }
 
   .side-desc {
-    font-size: 0.85rem;
+    font-weight: 100;
+    font-size: 1rem;
     color: var(--vs-dark);
-    line-height: 1.6;
+    line-height: 2;
     margin: 0;
 
     a.side-link {
-      color: var(--vs-primary);
+      color: var(--vs-accent-light);
       text-decoration: none;
     }
   }
 
   .code-box {
     width: 100%;
+    position: relative;
     background-color: var(--vs-dark);
     color: var(--vs-light);
     font-family: 'Courier New', monospace;
@@ -66,41 +86,54 @@
     border-radius: 2px;
     text-align: left;
     word-break: break-all;
+    border-radius: 6px;
+    text-align: center;
+    margin: 20px 0;
+    --mat-icon-button-icon-color: currentColor;
 
     .code-path {
-      color: var(--vs-accent);
-    }
-
-    .code-method {
       color: var(--vs-accent-light);
     }
 
     .code-base {
       color: var(--vs-light);
     }
+
+    .copy-code-btn {
+      position: absolute;
+      top: 0;
+      right: 0;
+      opacity: .5;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
   }
 
   .side-help {
-    font-size: 32px;
-    width: 32px;
-    height: 32px;
+    font-size: var(--vs-help-button-size);
+    width: var(--vs-help-button-size);
+    height: var(--vs-help-button-size);
     color: var(--vs-dark);
-    border: 2px solid var(--vs-dark);
-    border-radius: 50%;
     margin-top: auto;
     cursor: pointer;
+
+    &:hover {
+      color: var(--vs-accent);
+    }
   }
 }
 
 /* ── center panel (W2 = ~170px in wide mode) ───────────────── */
 .center-panel {
-  width: 340px;
+  width: 400px;
   flex-shrink: 0;
   background-color: var(--vs-dark);
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  padding: 40px 24px 20px;
+  padding: 60px 60px 20px;
   position: relative;
 }
 
@@ -133,7 +166,7 @@
     line-height: 1.5;
 
     .center-accent {
-      color: var(--vs-primary);
+      color: var(--vs-accent-light);
       font-weight: 500;
     }
   }
@@ -205,6 +238,12 @@ form {
   margin: 0 0 8px;
 }
 
+.btn-content {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
 .submit-btn {
   color: var(--vs-light) !important;
   border-color: rgba(221, 221, 221, 0.4) !important;
@@ -224,6 +263,7 @@ form {
   .google-icon {
     width: 18px;
     height: 18px;
+    margin-right: 10px;
   }
 }
 

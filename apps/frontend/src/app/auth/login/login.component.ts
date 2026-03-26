@@ -15,6 +15,8 @@ import { map } from 'rxjs';
 import { login, loginWithGoogle } from '../store/auth.actions';
 import { selectAuthLoading, selectAuthError } from '../store/auth.selectors';
 import { APP_VERSION } from '../../core/tokens/app.tokens';
+import { Clipboard, ClipboardModule } from '@angular/cdk/clipboard';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'vs-login',
@@ -25,6 +27,8 @@ import { APP_VERSION } from '../../core/tokens/app.tokens';
     MatInputModule,
     MatButtonModule,
     MatIconModule,
+    ClipboardModule,
+    MatSnackBarModule,
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
@@ -32,14 +36,14 @@ import { APP_VERSION } from '../../core/tokens/app.tokens';
 export class LoginComponent {
   private store = inject(Store);
   private fb = inject(FormBuilder);
+  private clipboard = inject(Clipboard);
+  private snack = inject(MatSnackBar);
   private breakpoints = inject(BreakpointObserver);
 
   readonly version = inject(APP_VERSION);
 
   isNarrow = toSignal(
-    this.breakpoints
-      .observe('(max-width: 800px)')
-      .pipe(map((r) => r.matches)),
+    this.breakpoints.observe('(max-width: 800px)').pipe(map((r) => r.matches)),
     { initialValue: false },
   );
 
@@ -60,5 +64,10 @@ export class LoginComponent {
 
   onGoogleLogin(): void {
     this.store.dispatch(loginWithGoogle());
+  }
+
+  copyText(txt: string): void {
+    this.clipboard.copy(txt);
+    this.snack.open('Text copied successfully', 'ok', { duration: 3000 });
   }
 }

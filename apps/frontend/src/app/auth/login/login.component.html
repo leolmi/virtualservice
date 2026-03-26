@@ -12,10 +12,13 @@
       </p>
       <div class="code-box">
         <span class="code-base">https://virtualservice.app/service/</span>
-        <span class="code-path">yourpath</span>/<span class="code-method">yourmethod</span>
+        <span class="code-path">yourpath/yourmethod</span>
       </div>
       <mat-icon class="side-help">help_outline</mat-icon>
     </div>
+    @if (isNarrow()) {
+      <div class="side-separator"></div>
+    }
   </div>
 
   <!-- CENTER panel: login form -->
@@ -25,8 +28,7 @@
         <img src="assets/cloud-white.svg" class="center-logo" alt="logo" />
         <h1 class="center-title">Virtual Service</h1>
         <p class="center-subtitle">
-          build a develop web service
-          <strong class="center-accent">REST</strong> in a few moments
+          build a develop web service REST in a few moments
         </p>
       </div>
     }
@@ -79,8 +81,10 @@
         class="full-width google-btn"
         (click)="onGoogleLogin()"
       >
-        <img src="assets/google-logo.svg" class="google-icon" alt="Google" />
-        Authenticate with Google
+        <div class="btn-content">
+          <img src="assets/google-logo.svg" class="google-icon" alt="Google" />
+          Authenticate with Google
+        </div>
       </button>
     </div>
 
@@ -90,14 +94,19 @@
   <!-- RIGHT panel: LOCAL -->
   <div class="side-panel side-right">
     <div class="side-content">
-      <mat-icon class="side-icon">desktop_windows</mat-icon>
+      <mat-icon class="side-icon">computer</mat-icon>
       <h2 class="side-title">LOCAL</h2>
       <p class="side-desc">
         Download one or more servers created on editor online as json files.<br />
         Install the
-        <a href="#" class="side-link">virtual service client</a>:
+        <a href="https://www.npmjs.com/package/virtualservice-local" class="side-link">virtual service client</a>:
       </p>
-      <div class="code-box">npm i virtualservice-local -g</div>
+      <div class="code-box">
+        <span>npm i virtualservice-local -g</span>
+        <button class="copy-code-btn" mat-icon-button (click)="copyText('npm i virtualservice-local -g')">
+          <mat-icon>content_copy</mat-icon>
+        </button>
+      </div>
       <p class="side-desc">Start one or more servers locally without anything else:</p>
       <div class="code-box">vs "my/local/path/myserver.json"</div>
       <mat-icon class="side-help">help_outline</mat-icon>
