@@ -3,19 +3,18 @@
   flex-direction: column;
   height: 100%;
   overflow: hidden;
-  background: #fff;
+  background: transparent;
 }
 
 // ── Section label ──────────────────────────────────────────────────────────
 .section-label {
   display: block;
   flex-shrink: 0;
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
   color: rgba(0, 0, 0, 0.45);
-  padding: 6px 16px 2px;
+  padding: 16px 0 2px;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 // ── Description box ────────────────────────────────────────────────────────
@@ -109,8 +108,8 @@
 
   .edit-btn {
     position: absolute;
-    right: 10px;
-    top: 8px;
+    right: 0;
+    top: 4px;
   }
 }
 

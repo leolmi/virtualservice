@@ -5,16 +5,17 @@
       <button mat-flat-button class="verb-btn" [matMenuTriggerFor]="verbMenu">
         {{ call.verb }}
       </button>
-      <span class="base-path">{{ basePath() }}/</span>
+      <span class="base-path mono section-input">{{ basePath() }}/</span>
       <input
-        class="path-input mono"
+        class="path-input mono section-input"
+        spellcheck="false"
         [value]="call.path"
         (change)="onUpdatePath($any($event.target).value)"
         placeholder="call-path" />
       <button
         mat-icon-button
         matTooltip="Delete call"
-        color="warn"
+        class="btn-delete-call warn"
         (click)="onDeleteCall()">
         <mat-icon>delete</mat-icon>
       </button>

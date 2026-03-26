@@ -2,6 +2,8 @@
   display: block;
   width: 250px;
   flex-shrink: 0;
+
+  --vs-tile-active-button-size: 40px;
 }
 
 .tile {
@@ -30,16 +32,23 @@
 }
 
 /* Override Material header layout */
-::ng-deep .tile .mat-mdc-card-header {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 4px;
-  padding: 8px 8px 0;
+::ng-deep .tile {
+  .mat-mdc-card-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 8px 0;
 
-  .mat-mdc-card-header-text {
-    display: none;
+    .mat-mdc-card-header-text {
+      display: none;
+    }
   }
+
+  .mat-mdc-card-actions {
+    border-top: 1px solid rgba(10, 10, 10, .1);
+  }
+
 }
 
 .title-block {
@@ -66,9 +75,16 @@
 
 .active-btn {
   flex-shrink: 0;
+  padding: 0;
+
+  .mat-icon {
+    height: var(--vs-tile-active-button-size);
+    width: var(--vs-tile-active-button-size);
+    font-size: var(--vs-tile-active-button-size);
+  }
 
   .active-icon {
-    color: var(--vs-primary);
+    color: var(--vs-accent);
   }
 }
 
@@ -96,8 +112,7 @@ mat-card-content {
 
   .call-count {
     font-size: 0.75rem;
-    font-weight: 500;
-    color: var(--vs-accent-light);
+    color: var(--vs-accent);
     margin-top: auto;
   }
 }

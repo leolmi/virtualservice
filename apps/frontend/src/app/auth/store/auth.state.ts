@@ -5,6 +5,8 @@ export interface AuthState {
   token: string | null;
   loading: boolean;
   error: string | null;
+  /** True once the session restore attempt has completed (success or failure) */
+  sessionRestored: boolean;
 }
 
 export const initialAuthState: AuthState = {
@@ -12,4 +14,5 @@ export const initialAuthState: AuthState = {
   token: null,
   loading: false,
   error: null,
+  sessionRestored: false,
 };

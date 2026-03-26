@@ -14,3 +14,7 @@ export const selectAuthLoading = createSelector(
   (s) => s.loading,
 );
 export const selectAuthError = createSelector(selectAuthState, (s) => s.error);
+export const selectSessionRestored = createSelector(
+  selectAuthState,
+  (s) => s.sessionRestored,
+);

@@ -44,7 +44,8 @@
       <div class="input-group">
         <label class="input-label">Service name</label>
         <input
-          class="service-name-input"
+          class="service-name-input section-input"
+          spellcheck="false"
           [value]="service()?.name ?? ''"
           (change)="onServiceNameChange($any($event.target).value)"
           placeholder="Service name" />
@@ -52,7 +53,8 @@
       <div class="input-group">
         <label class="input-label">Base path</label>
         <input
-          class="base-path-input mono"
+          class="base-path-input mono section-input"
+          spellcheck="false"
           [value]="service()?.path ?? ''"
           (change)="onServicePathChange($any($event.target).value)"
           placeholder="base-path" />

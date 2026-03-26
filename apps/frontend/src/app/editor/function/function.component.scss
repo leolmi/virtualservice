@@ -3,19 +3,7 @@
   flex-direction: column;
   height: 100%;
   overflow: hidden;
-  background: #fff;
-}
-
-// ── Section label ──────────────────────────────────────────────────────────
-.section-label {
-  display: block;
-  flex-shrink: 0;
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(0, 0, 0, 0.45);
-  padding: 6px 16px 2px;
+  background: transparent;
 }
 
 // ── Options bar ────────────────────────────────────────────────────────────

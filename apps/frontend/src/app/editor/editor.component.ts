@@ -114,6 +114,7 @@ export class EditorComponent {
           icon: 'save',
           tooltip: 'Save',
           enabled: !!svc && dirty && !saving,
+          accent: true,
           action: () => this.onSave(),
         },
         {

@@ -34,7 +34,12 @@ export class ToolbarComponent {
     { initialValue: false },
   );
 
-  isNarrow = computed(() => this.toolbarService.forceLow() || this.isNarrowBreakpoint());
+  isNarrow = computed(() => this.toolbarService.forceLow() || this.isNarrowBreakpoint(),);
+
+  isForceLow = computed(() => this.toolbarService.forceLow());
+
+  /** True only when the viewport is physically narrow — drives command display mode */
+  isSmallScreen = computed(() => this.isNarrowBreakpoint());
 
   user = this.store.selectSignal(selectUser);
 

@@ -1,11 +1,11 @@
 <mat-toolbar class="vs-toolbar" [class.narrow]="isNarrow()">
 
   <!-- Brand -->
-  <div class="brand">
+  <div class="brand" >
     <img class="brand-logo" src="assets/cloud-white.svg" alt="Virtual Service" />
-    @if (!isNarrow()) {
+    @if (!isSmallScreen()) {
       <div class="brand-divider"></div>
-      <div class="brand-text">
+      <div class="brand-text" [class.small]="isForceLow()">
         <span class="brand-title">Virtual Service</span>
         <span class="brand-desc">
           build a develop web service REST in a few moments
@@ -21,12 +21,12 @@
     <div class="user-section">
       <mat-icon class="user-avatar">account_circle</mat-icon>
 
-      @if (!isNarrow()) {
+      @if (!isSmallScreen()) {
         <span class="user-name">{{ user()!.email }}</span>
       }
 
-      @if (!isNarrow()) {
-        <!-- Wide mode: render commands as icon buttons -->
+      @if (!isSmallScreen()) {
+        <!-- Wide / forceLow mode: render commands as icon buttons -->
         @for (cmd of visibleCommands(); track cmd.id) {
           @if (cmd.type === 'separator') {
             <div class="cmd-separator"></div>
@@ -34,6 +34,7 @@
             <button
               mat-icon-button
               class="cmd-btn"
+              [class.accent]="!!cmd.accent"
               [matTooltip]="cmd.tooltip ?? ''"
               [disabled]="cmd.enabled === false"
               (click)="cmd.action?.()">
@@ -42,20 +43,25 @@
           }
         }
       } @else {
-        <!-- Narrow mode: commands in popup menu -->
+        <!-- Small screen: commands in popup menu -->
         @if (buttonCommands().length > 0) {
           <button mat-icon-button [matMenuTriggerFor]="cmdMenu" class="cmd-btn">
             <mat-icon>more_vert</mat-icon>
           </button>
           <mat-menu #cmdMenu="matMenu">
-            @for (cmd of buttonCommands(); track cmd.id) {
-              <button
-                mat-menu-item
-                [disabled]="cmd.enabled === false"
-                (click)="cmd.action?.()">
-                <mat-icon>{{ cmd.icon }}</mat-icon>
-                <span>{{ cmd.tooltip }}</span>
-              </button>
+            @for (cmd of visibleCommands(); track cmd.id) {
+              @if (cmd.type === 'separator') {
+                <div class="separator"></div>
+              } @else {
+                <button
+                  mat-menu-item
+                  [class.accent]="!!cmd.accent"
+                  [disabled]="cmd.enabled === false"
+                  (click)="cmd.action?.()">
+                  <mat-icon>{{ cmd.icon }}</mat-icon>
+                  <span>{{ cmd.tooltip }}</span>
+                </button>
+              }
             }
           </mat-menu>
         }

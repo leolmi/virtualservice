@@ -20,18 +20,29 @@ html {
 }
 
 :root {
+  --vs-white: #fff;
   --vs-light: #ddd;
   --vs-dark: #263238;
+  --vs-more-dark: rgba(0, 0, 0, 0.3);
   --vs-primary: cornflowerblue;
   --vs-accent: #ff4081;
   --vs-accent-light: #fc00ba;
   --vs-accent-transp: #ff408150;
   --vs-warn-light: #f44336;
   --vs-warn: brown;
-  --vs-light-grey: #0a0a0a33;
+  --vs-grey: rgba(10, 10, 10, 0.4);
+  --vs-light-grey: rgba(10, 10, 10, 0.1);
 
   --toolbar-height-wide: 140px;
   --toolbar-height-narrow: 60px;
+
+  --mat-sys-primary-container: #ff408150;
+  --mat-sys-primary: #ff4081;
+  --mat-sys-on-primary-container: #ff4081;
+  --mat-slide-toggle-selected-track-color: #ff4081;
+  --mat-slide-toggle-selected-hover-track-color: #ff4081;
+  --mat-slide-toggle-selected-focus-track-color: #ff4081;
+  --mat-slide-toggle-selected-pressed-track-color: #ff4081;
 }
 
 *,
@@ -53,4 +64,45 @@ body {
 
 .accent-text {
   color: var(--vs-primary);
+}
+
+// ── Section label ──────────────────────────────────────────────────────────
+
+.section-label {
+  display: block;
+  flex-shrink: 0;
+  color: rgba(0, 0, 0, 0.45);
+  padding: 16px 0 2px;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.section-input {
+  border: none;
+  outline: none;
+  background: var(--vs-white);
+  color: var(--vs-dark);
+  font-family: inherit;
+  font-size: 1em;
+  padding: 8px;
+  line-height: 24px;
+}
+
+.mat-mdc-icon-button {
+  &.warn {
+    --mat-icon-button-icon-color: var(--vs-warn-light);
+  }
+  &.accent {
+    --mat-icon-button-icon-color: var(--vs-accent);
+  }
+}
+
+.mat-mdc-menu-content {
+  .separator {
+    width: 100%;
+    height: 1px;
+    margin: 4px 0;
+    background: rgba(10, 10, 10, 0.1);
+  }
 }

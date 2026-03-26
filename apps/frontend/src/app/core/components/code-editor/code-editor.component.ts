@@ -18,12 +18,11 @@ import { EditorState } from '@codemirror/state';
 import { EditorView, keymap } from '@codemirror/view';
 import { indentWithTab } from '@codemirror/commands';
 import { javascript } from '@codemirror/lang-javascript';
-import { oneDark } from '@codemirror/theme-one-dark';
 
 /**
  * Lightweight CodeMirror 6 wrapper.
  *
- * Features: JavaScript syntax highlighting, one-dark theme, line numbers,
+ * Features: JavaScript syntax highlighting, light theme, line numbers,
  * bracket matching, code folding, search (Ctrl+F), Tab key indentation.
  *
  * Binding:
@@ -81,7 +80,6 @@ export class CodeEditorComponent implements AfterViewInit, OnChanges, OnDestroy 
           extensions: [
             basicSetup,
             javascript(),
-            oneDark,
             keymap.of([indentWithTab]),
             EditorView.updateListener.of((update) => {
               if (update.docChanged) {

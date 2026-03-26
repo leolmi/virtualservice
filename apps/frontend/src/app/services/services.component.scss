@@ -1,6 +1,9 @@
 :host {
   display: block;
   height: 100%;
+
+  --mat-card-elevated-container-shape: 2px;
+  --mat-button-outlined-label-text-color: var(--vs-accent);
 }
 
 .services-page {

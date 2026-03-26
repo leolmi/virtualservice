@@ -51,6 +51,15 @@
           font-weight: 500;
         }
       }
+
+      &.small {
+        .brand-title {
+          font-size: 1.35rem;
+        }
+        .brand-desc {
+          display: none;
+        }
+      }
     }
   }
 
@@ -71,6 +80,7 @@
       height: 28px;
       line-height: 28px;
       opacity: 0.85;
+      margin-right: 6px;
     }
 
     .user-name {
@@ -80,6 +90,7 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      margin-right: 16px;
     }
 
     .cmd-separator {
@@ -91,10 +102,19 @@
 
     .cmd-btn {
       color: var(--vs-light);
-      opacity: 0.85;
+      opacity: 0.8;
 
       &:hover {
         opacity: 1;
+      }
+
+      &[disabled] {
+        opacity: 0.2;
+      }
+      &:not([disabled]) {
+        &.accent {
+          color: var(--vs-accent);
+        }
       }
     }
   }
