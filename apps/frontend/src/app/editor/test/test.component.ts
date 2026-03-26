@@ -62,7 +62,7 @@ export class TestComponent {
 
   readonly basePath = computed(() => {
     const svc = this.service();
-    return svc ? `/service/${svc.path}` : '';
+    return svc ? `./${svc.path}` : '';
   });
 
   readonly pathSegments = computed<PathSegment[]>(() => {

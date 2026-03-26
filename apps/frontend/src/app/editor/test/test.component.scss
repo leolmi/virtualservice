@@ -17,20 +17,24 @@
   align-items: center;
   flex-shrink: 0;
   font-family: monospace;
-  font-size: 0.95rem;
-  padding: 4px 4px 4px 16px;
   background: #fff;
   border-bottom: 1px solid var(--vs-light);
   gap: 4px;
   overflow: hidden;
+  margin-top: 16px;
 
   .verb {
-    color: var(--vs-accent-light);
+    background-color: var(--vs-accent);
+    color: var(--vs-white);
+    text-align: center;
     font-weight: bold;
-    font-size: 1.05rem;
+    font-size: 15px;
+    min-width: 100px;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
-    min-width: 70px;
     flex-shrink: 0;
+    height: 100%;
+    padding-top: 10px;
   }
 
   .base-path {

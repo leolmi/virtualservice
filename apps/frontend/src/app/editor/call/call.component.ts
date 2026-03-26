@@ -5,7 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
-import { HttpVerb } from '@virtualservice/shared/model';
+import { HttpVerb, IServiceCallRule } from '@virtualservice/shared/model';
 import { EmptyCallComponent } from '../components/empty-call/empty-call.component';
 import {
   selectEditorActiveCall,
@@ -64,7 +64,19 @@ export class CallComponent {
   }
 
   onAddRule(): void {
-    this.store.dispatch(EditorActions.addRule());
+    const newRule: IServiceCallRule = {
+      expression: '',
+      path: '',
+      error: 'Error',
+      code: 400,
+    };
+    this.dialog
+      .open(RuleDialogComponent, { data: newRule, width: '600px' })
+      .afterClosed()
+      .subscribe((result: IServiceCallRule | null) => {
+        if (!result) return;
+        this.store.dispatch(EditorActions.addRule({ rule: result }));
+      });
   }
 
   onEditRule(ruleIndex: number): void {

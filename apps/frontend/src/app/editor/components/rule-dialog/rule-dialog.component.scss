@@ -2,7 +2,6 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
-  min-width: 520px;
   padding-top: 4px;
 }
 
@@ -41,9 +40,9 @@
 .field-input {
   flex: 1;
   border: none;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-  background: transparent;
-  padding: 5px 0;
+  background: var(--vs-light-grey);
+  padding: 8px;
+  border-radius: 6px;
   font-size: 0.95rem;
   outline: none;
   color: inherit;

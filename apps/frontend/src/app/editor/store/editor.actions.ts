@@ -30,7 +30,10 @@ export const updateActiveCall = createAction(
 export const addCall = createAction('[Editor] Add Call');
 export const deleteActiveCall = createAction('[Editor] Delete Active Call');
 
-export const addRule = createAction('[Editor] Add Rule');
+export const addRule = createAction(
+  '[Editor] Add Rule',
+  props<{ rule: IServiceCallRule }>(),
+);
 export const deleteRule = createAction(
   '[Editor] Delete Rule',
   props<{ ruleIndex: number }>(),

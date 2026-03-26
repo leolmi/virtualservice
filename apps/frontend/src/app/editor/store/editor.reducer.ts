@@ -76,12 +76,11 @@ export const editorReducer = createReducer(
     };
   }),
 
-  on(EditorActions.addRule, (state) => {
+  on(EditorActions.addRule, (state, { rule }) => {
     if (!state.service || state.activeCallIndex === null) return state;
     const idx = state.activeCallIndex;
     const call = state.service.calls[idx];
-    const newRule = { expression: '', path: '', error: 'Error', code: 400 };
-    const updatedCall = { ...call, rules: [...call.rules, newRule] };
+    const updatedCall = { ...call, rules: [...call.rules, rule] };
     const calls = state.service.calls.map((c, i) =>
       i === idx ? updatedCall : c,
     );

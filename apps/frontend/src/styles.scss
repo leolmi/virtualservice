@@ -36,6 +36,7 @@ html {
   --toolbar-height-wide: 140px;
   --toolbar-height-narrow: 60px;
 
+  --mat-slide-toggle-handle-surface-color: white;
   --mat-sys-primary-container: #ff408150;
   --mat-sys-primary: #ff4081;
   --mat-sys-on-primary-container: #ff4081;
@@ -43,6 +44,10 @@ html {
   --mat-slide-toggle-selected-hover-track-color: #ff4081;
   --mat-slide-toggle-selected-focus-track-color: #ff4081;
   --mat-slide-toggle-selected-pressed-track-color: #ff4081;
+
+  --mat-fab-hover-container-elevation-shadow: 0;
+  --mat-fab-container-elevation-shadow: 0;
+  --mat-fab-focus-container-elevation-shadow: 0;
 }
 
 *,
