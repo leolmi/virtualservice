@@ -245,16 +245,25 @@ form {
 }
 
 .submit-btn {
-  color: var(--vs-light) !important;
-  border-color: rgba(221, 221, 221, 0.4) !important;
+  color: var(--vs-accent) !important;
+  border-color: var(--vs-accent-transp) !important;
   letter-spacing: 0.05em;
   margin-bottom: 4px;
+
+  &[disabled] {
+    color: var(--vs-light) !important;
+    border-color: var(--vs-light) !important;
+    opacity: .3;
+  }
+  &:hover {
+    border-color: var(--vs-accent) !important;
+  }
 }
 
 .google-btn {
   background-color: transparent;
   color: var(--vs-accent) !important;
-  border-color: var(--vs-accent) !important;
+  border-color: var(--vs-accent-transp) !important;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -264,6 +273,10 @@ form {
     width: 18px;
     height: 18px;
     margin-right: 10px;
+  }
+
+  &:hover {
+    border-color: var(--vs-accent) !important;
   }
 }
 

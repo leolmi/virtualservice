@@ -70,7 +70,7 @@
           mat-stroked-button
           type="submit"
           class="full-width submit-btn"
-          [disabled]="loading()"
+          [disabled]="loading() || form.invalid"
         >
           {{ loading() ? 'Loading…' : 'Submit' }}
         </button>
