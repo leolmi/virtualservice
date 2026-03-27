@@ -53,7 +53,7 @@ export class HelpComponent implements OnInit, OnDestroy {
     this.toolbar.set([
       {
         id: 'back',
-        icon: 'arrow_back',
+        icon: 'undo',
         tooltip: 'Back',
         action: () => this.location.back(),
       },
