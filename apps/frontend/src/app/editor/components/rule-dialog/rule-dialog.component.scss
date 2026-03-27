@@ -57,8 +57,34 @@
   }
 }
 
-.code-input {
-  max-width: 90px;
+// ── mat-select per il codice HTTP ───────────────────────────────────────────
+.code-field {
+  flex: 1;
+  --mat-form-field-container-height: 32px;
+  --mat-form-field-container-text-line-height: 1em;
+  --mat-form-field-container-vertical-padding: 4px;
+  --mat-form-field-filled-container-color: var(--vs-light-grey);
+  ::ng-deep {
+    .mdc-line-ripple {
+      display: none;
+    }
+    .mdc-text-field--filled {
+      border-radius: 5px !important;
+    }
+    .mdc-text-field {
+      padding-left: 8px;
+    }
+  }
+}
+
+.opt-code {
+  margin-right: 8px;
+  color: var(--vs-accent);
+}
+
+.opt-label {
+  color: inherit;
+  opacity: 0.75;
 }
 
 // ── CodeMirror expression area ──────────────────────────────────────────────

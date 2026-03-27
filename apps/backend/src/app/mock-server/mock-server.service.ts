@@ -200,7 +200,7 @@ export class MockServerService {
 
     // 8. Valuta le regole in sequenza
     const serviceId = service._id.toString();
-    for (const rule of call.rules) {
+    for (const [index, rule] of call.rules.entries()) {
       const ruleScope = buildRuleScope(scope, rule, req);
       let ruleResult: CalcResult;
       try {
@@ -210,7 +210,7 @@ export class MockServerService {
         );
         if (this.debugActive) {
           this.logger.debug(
-            `calc "${rule.expression}" result="${ruleResult.value}"  error="${ruleResult.error}"`,
+            `[Rule ${index+1}] calc code "${rule.expression}" -> result="${ruleResult.value}" error="${ruleResult.error}"`,
           );
         }
       } catch (err) {

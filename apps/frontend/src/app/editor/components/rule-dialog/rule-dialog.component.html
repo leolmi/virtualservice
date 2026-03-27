@@ -5,10 +5,25 @@
 
     <div class="field-row">
       <span class="field-label">Code</span>
-      <input
-        type="number"
-        class="field-input code-input"
-        [(ngModel)]="rule.code" />
+      <mat-form-field appearance="fill" class="code-field">
+        <mat-select [(ngModel)]="rule.code">
+          <mat-select-trigger>
+            <span class="opt-code">{{ rule.code }}</span>
+            <span class="opt-label">{{ getLabel(rule.code) }}</span>
+          </mat-select-trigger>
+
+          @for (group of statusGroups; track group.category) {
+            <mat-optgroup [label]="group.category">
+              @for (s of group.codes; track s.code) {
+                <mat-option [value]="s.code">
+                  <span class="opt-code">{{ s.code }}</span>
+                  <span class="opt-label">{{ s.label }}</span>
+                </mat-option>
+              }
+            </mat-optgroup>
+          }
+        </mat-select>
+      </mat-form-field>
     </div>
 
     <div class="field-row">
@@ -19,15 +34,6 @@
         [(ngModel)]="rule.error"
         placeholder="Error message returned to the caller" />
     </div>
-
-<!--    <div class="field-row">-->
-<!--      <span class="field-label">Path</span>-->
-<!--      <input-->
-<!--        type="text"-->
-<!--        class="field-input mono"-->
-<!--        [(ngModel)]="rule.path"-->
-<!--        placeholder="e.g. body.name" />-->
-<!--    </div>-->
 
     <div class="field-col">
       <span class="field-label">Validation expression</span>

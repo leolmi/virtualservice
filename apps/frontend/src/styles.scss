@@ -116,6 +116,13 @@ body {
   }
 }
 
+.mat-mdc-optgroup-label {
+  min-height: 24px;
+}
+.mat-mdc-option {
+  min-height: 32px;
+}
+
 .mat-mdc-menu-content {
   .separator {
     width: 100%;
