@@ -58,6 +58,20 @@ export class AuthEffects implements OnInitEffects {
     ),
   );
 
+  /** Se la sessione è ripristinata con successo e l'utente è ancora su /login, reindirizza a /services */
+  restoreSessionSuccess$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(AuthActions.restoreSessionSuccess),
+        tap(() => {
+          if (this.router.url.startsWith('/login')) {
+            this.router.navigate(['/services']);
+          }
+        }),
+      ),
+    { dispatch: false },
+  );
+
   loginSuccess$ = createEffect(
     () =>
       this.actions$.pipe(

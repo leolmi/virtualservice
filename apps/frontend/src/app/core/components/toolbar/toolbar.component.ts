@@ -10,6 +10,7 @@ import { map } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { selectUser } from '../../../auth/store/auth.selectors';
 import { ToolbarService } from '../../services/toolbar.service';
+import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'vs-toolbar',
@@ -20,6 +21,7 @@ import { ToolbarService } from '../../services/toolbar.service';
     MatButtonModule,
     MatTooltipModule,
     MatMenuModule,
+    NgClass
   ],
   templateUrl: './toolbar.component.html',
   styleUrl: './toolbar.component.scss',

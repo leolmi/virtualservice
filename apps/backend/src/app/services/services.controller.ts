@@ -49,7 +49,11 @@ export class ServicesController {
   /**
    * Log delle chiamate al servizio :id (con filtro opzionale su :last).
    * DEVE essere dichiarato PRIMA di :id per evitare conflitti di routing.
+   * @SkipThrottle: endpoint di polling, protetto da JWT.
+   * Entrambi i throttler (default + strict) vengono bypassati esplicitamente:
+   * senza argomenti @SkipThrottle() skippa solo 'default' in @nestjs/throttler v6.
    */
+  @SkipThrottle({ default: true, strict: true })
   @Get('monitor/:id/:last')
   async monitorWithLast(
     @Param('id') id: string,
@@ -60,13 +64,15 @@ export class ServicesController {
     return this.logService.findByService(id, req.user.userId, isNaN(lastTs) ? undefined : lastTs);
   }
 
+  /** @SkipThrottle: endpoint di polling, protetto da JWT. */
+  @SkipThrottle({ default: true, strict: true })
   @Get('monitor/:id')
   async monitor(@Param('id') id: string, @Req() req: RequestWithUser) {
     return this.logService.findByService(id, req.user.userId);
   }
 
   /** Verifica disponibilità del path (globale su tutti i servizi) */
-  @SkipThrottle()
+  @SkipThrottle({ default: true, strict: true })
   @Get('check-path')
   async checkPath(
     @Query('path') path: string,

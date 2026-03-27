@@ -8,5 +8,5 @@ export interface ToolbarCommand {
   enabled?: boolean;
   visible?: boolean;
   action?: () => void;
-  accent?: boolean;
+  color?: string;
 }

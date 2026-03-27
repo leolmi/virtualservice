@@ -28,6 +28,7 @@ html {
   --vs-accent: #ff4081;
   --vs-accent-light: #fc00ba;
   --vs-accent-transp: #ff408150;
+  --vs-success: #359335;
   --vs-warn-light: #f44336;
   --vs-warn: brown;
   --vs-grey: rgba(10, 10, 10, 0.4);
@@ -101,11 +102,17 @@ body {
 }
 
 .mat-mdc-icon-button {
-  &.warn {
+  &.color-warn {
     --mat-icon-button-icon-color: var(--vs-warn-light);
+    --mat-icon-color: var(--vs-warn-light);
   }
-  &.accent {
+  &.color-accent {
     --mat-icon-button-icon-color: var(--vs-accent);
+    --mat-icon-color: var(--vs-accent);
+  }
+  &.color-success {
+    --mat-icon-button-icon-color: var(--vs-success);
+    --mat-icon-color: var(--vs-success);
   }
 }
 

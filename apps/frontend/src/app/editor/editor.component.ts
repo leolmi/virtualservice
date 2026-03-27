@@ -120,7 +120,7 @@ export class EditorComponent {
           icon: 'save',
           tooltip: 'Save',
           enabled: !!svc && !!svc.name?.trim() && dirty && !saving,
-          accent: true,
+          color: 'accent',
           action: () => this.onSave(),
         },
         {

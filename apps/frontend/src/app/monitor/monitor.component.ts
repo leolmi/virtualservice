@@ -2,6 +2,7 @@ import {
   Component,
   computed,
   DestroyRef,
+  effect,
   inject,
   OnDestroy,
   signal,
@@ -106,6 +107,7 @@ export class MonitorComponent implements OnDestroy {
   readonly items = signal<ILogItem[]>([]);
   readonly search = signal('');
   readonly selectedItem = signal<ILogItem | null>(null);
+  readonly polling = signal<boolean>(true);
 
   readonly filteredItems = computed(() => {
     const q = this.search().trim().toLowerCase();
@@ -144,16 +146,17 @@ export class MonitorComponent implements OnDestroy {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({ next: (s) => this.serviceName.set(s.name || this.serviceId) });
 
-    // toolbar
+    // toolbar — rebuilt reactively whenever user or polling state changes
     this.toolbarService.setForceLow(true);
-    // rebuild toolbar whenever user changes (admin check)
-    const setupToolbar = () => {
+    effect(() => {
       const u = this.user();
+      const isPolling = this.polling();
       const commands: ToolbarCommand[] = [
         {
           id: 'clearlog',
           icon: 'delete',
           tooltip: 'Clear log',
+          color: 'warn',
           action: () => this.onClearLog(),
         },
         {
@@ -161,6 +164,23 @@ export class MonitorComponent implements OnDestroy {
           icon: 'settings_backup_restore',
           tooltip: 'Restart service',
           action: () => this.onRestart(),
+        },
+        { type: 'separator' },
+        {
+          id: 'poll-stop',
+          icon: 'visibility',
+          tooltip: 'Stop polling',
+          color: 'success',
+          visible: isPolling,
+          action: () => this.onStopPolling(),
+        },
+        {
+          id: 'poll-start',
+          icon: 'visibility_off',
+          tooltip: 'Resume polling',
+          color: 'warn',
+          visible: !isPolling,
+          action: () => this.onStartPolling(),
         },
         { type: 'separator' },
         {
@@ -194,21 +214,45 @@ export class MonitorComponent implements OnDestroy {
         },
       ];
       this.toolbarService.set(commands);
-    };
-    setupToolbar();
+    });
 
     // initial load + start polling
     this.loadLogs(false);
-    this.pollTimer = setInterval(() => this.loadLogs(true), POLL_MS);
+    this.startPollingTimer();
 
     this.destroyRef.onDestroy(() => {
-      if (this.pollTimer) clearInterval(this.pollTimer);
+      this.clearPollingTimer();
       this.toolbarService.setForceLow(false);
       this.toolbarService.clear();
     });
   }
 
   ngOnDestroy(): void { /* lifecycle hook so interval is cleared via destroyRef */ }
+
+  // ── polling control ───────────────────────────────────────────────────────
+
+  private startPollingTimer(): void {
+    if (this.pollTimer) return;
+    this.pollTimer = setInterval(() => this.loadLogs(true), POLL_MS);
+  }
+
+  private clearPollingTimer(): void {
+    if (this.pollTimer) {
+      clearInterval(this.pollTimer);
+      this.pollTimer = null;
+    }
+  }
+
+  onStopPolling(): void {
+    this.clearPollingTimer();
+    this.polling.set(false);
+  }
+
+  onStartPolling(): void {
+    this.polling.set(true);
+    this.loadLogs(true);       // fetch immediato al riavvio
+    this.startPollingTimer();
+  }
 
   // ── data loading ──────────────────────────────────────────────────────────
 

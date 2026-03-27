@@ -73,7 +73,6 @@ export class ServicesComponent {
         tooltip: 'Management',
         action: () => this.router.navigate(['/management']),
       });
-      commands.push({ type: 'separator' });
     }
 
     commands.push({
