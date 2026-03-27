@@ -4,7 +4,7 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, isValidObjectId } from 'mongoose';
+import { FilterQuery, Model, isValidObjectId } from 'mongoose';
 import { Service, ServiceDocument } from './schemas/service.schema';
 import { ServiceCacheService } from '../mock-server/service-cache.service';
 
@@ -59,6 +59,19 @@ export class ServicesService {
       creationDate: Date.now(),
       lastChange: Date.now(),
     });
+  }
+
+  /** Verifica che il path non sia già usato da un altro servizio (escluso quello corrente) */
+  async isPathAvailable(
+    path: string,
+    excludeServiceId?: string,
+  ): Promise<{ available: boolean }> {
+    const query: FilterQuery<ServiceDocument> = { path };
+    if (excludeServiceId && isValidObjectId(excludeServiceId)) {
+      query['_id'] = { $ne: excludeServiceId };
+    }
+    const existing = await this.serviceModel.findOne(query).exec();
+    return { available: !existing };
   }
 
   /** Elimina un servizio (solo se l'owner corrisponde) */

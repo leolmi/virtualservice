@@ -1,0 +1,42 @@
+<h2 mat-dialog-title>Edit base path</h2>
+
+<mat-dialog-content>
+  <p class="hint">
+    The base path uniquely identifies this service across all users.
+    It must be non-empty and not already in use.
+  </p>
+
+  <div class="path-field">
+    <span class="path-prefix">./</span>
+    <input
+      class="path-input mono"
+      spellcheck="false"
+      [value]="path()"
+      (input)="onPathInput($any($event.target).value)"
+      placeholder="my-service-path"
+      autocomplete="off" />
+
+    @if (checking()) {
+      <mat-spinner diameter="18" class="status-spinner" />
+    } @else if (error() === null && path().trim() && path().trim() !== data.currentPath) {
+      <mat-icon class="status-ok">check_circle</mat-icon>
+    }
+  </div>
+
+  @if (error() === 'empty') {
+    <p class="error-msg">Path cannot be empty.</p>
+  } @else if (error() === 'invalid') {
+    <p class="error-msg">Only letters, digits, <code>-</code> <code>_</code> <code>.</code> and internal <code>/</code> are allowed.</p>
+  } @else if (error() === 'taken') {
+    <p class="error-msg">This path is already in use.</p>
+  } @else if (error() === 'unavailable') {
+    <p class="error-msg">Could not verify path availability. Please try again.</p>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">Cancel</button>
+  <button mat-flat-button color="primary" [disabled]="!canApply()" (click)="apply()">
+    Apply
+  </button>
+</mat-dialog-actions>

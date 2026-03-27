@@ -4,6 +4,7 @@ import {
   Post,
   Delete,
   Param,
+  Query,
   Body,
   Req,
   UseGuards,
@@ -11,6 +12,7 @@ import {
   HttpStatus,
   InternalServerErrorException,
 } from '@nestjs/common';
+import { SkipThrottle } from '@nestjs/throttler';
 import { JwtAuthGuard } from '@virtualservice/auth';
 import { RolesGuard, Roles } from '@virtualservice/auth';
 import { ServicesService } from './services.service';
@@ -61,6 +63,16 @@ export class ServicesController {
   @Get('monitor/:id')
   async monitor(@Param('id') id: string, @Req() req: RequestWithUser) {
     return this.logService.findByService(id, req.user.userId);
+  }
+
+  /** Verifica disponibilità del path (globale su tutti i servizi) */
+  @SkipThrottle()
+  @Get('check-path')
+  async checkPath(
+    @Query('path') path: string,
+    @Query('serviceId') serviceId: string,
+  ) {
+    return this.servicesService.isPathAvailable(path, serviceId);
   }
 
   /** Servizio per id (solo se l'utente ne è l'owner) */

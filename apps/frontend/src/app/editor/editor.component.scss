@@ -160,15 +160,34 @@
     }
 
     input {
-
       &.service-name-input {
         font-weight: 600;
         font-size: 1.05rem;
       }
+    }
 
-      &.base-path-input {
+    .base-path-display {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      padding: 8px;
+      background: var(--vs-white);
+
+      .base-path-value {
         font-family: 'Courier New', monospace;
         font-size: 0.95rem;
+        color: var(--vs-dark);
+        flex: 1;
+      }
+
+      .edit-path-icon {
+        opacity: 0.35;
+        transition: opacity 0.15s;
+      }
+
+      &:hover .edit-path-icon {
+        opacity: 0.8;
       }
     }
   }

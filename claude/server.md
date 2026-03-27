@@ -152,7 +152,7 @@ dove
 	
 Caso particolare: se il metodo della request è **OPTIONS** è sufficiente che esista una qualsiasi chiamata nel servizio attivo (proprietà del servizio **active** = true) con quel valore di path per restituire una risposta positiva ma priva di dati;
 
-Se il servizio individuato ha il valore della property **active** a false è necessario rispondere con un errore 500 con descrizione "Service not active!"
+Se il servizio individuato ha il valore della property **active** a false è necessario rispondere con un errore 503 con descrizione "Service not active!"
 
 Se non viene individuato o il servizio o la chiamata deve essere restituito un errore 404;
 	

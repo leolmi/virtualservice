@@ -70,7 +70,13 @@ Verticalmente è divisa in tre fasce:
 - in alto una banda di altezza fissa con due box affiancati di pari larghezza che occupano tutta la larghezza disponibile:
   - quello di sinistra con il testo in grassetto e leggermente più grande che permette di modificare la proprietà `name` del 
     servizio con label `Service name`;
-  - quello a destra con il carattere `monospace` che permette di modificare la proprietà `path` del servizio con label `Base path`;
+  - quello a destra con il carattere `monospace` che mostra la proprietà `path` del servizio con label `Base path`.
+    Il campo non è editabile direttamente: al click si apre un dialog dedicato (`BasePathDialogComponent`) che gestisce la modifica con le seguenti regole:
+    - **non può essere vuoto**;
+    - **solo caratteri compatibili con URL path HTTP**: lettere (`a-z`, `A-Z`), cifre (`0-9`), trattino (`-`), underscore (`_`), punto (`.`) e slash interno (`/`);
+    - **nessuno spazio**: il valore viene trimmato automaticamente prima della validazione;
+    - **nessuno slash agli estremi**: gli slash iniziali e finali vengono eliminati automaticamente;
+    - **unicità globale**: il path deve essere unico tra tutti i servizi di tutti gli utenti (verifica via `GET /api/services/check-path`);
 - subito sotto la precedente un header stile tabs-header che mostra le 4 possibili rotte children. Con sfondo `--vs-light-grey`. 
   Ogni rotta disponibile è rappresentata con un pulsante che mostra l'icona ed il titolo della pagina corrispondente. 
   La pagina attiva mostra il corrispondente pulsante con sfondo in colore `--vs-accent` ed il testo chiaro.

@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { IServiceItem } from '../services/store/services.state';
 
@@ -13,5 +13,10 @@ export class EditorApiService {
 
   save(service: IServiceItem): Observable<IServiceItem> {
     return this.http.post<IServiceItem>('/services', service);
+  }
+
+  checkPath(path: string, serviceId: string): Observable<{ available: boolean }> {
+    const params = new HttpParams().set('path', path).set('serviceId', serviceId);
+    return this.http.get<{ available: boolean }>('/services/check-path', { params });
   }
 }

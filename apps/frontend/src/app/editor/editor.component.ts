@@ -13,6 +13,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import {
+  BasePathDialogComponent,
+} from './components/base-path-dialog/base-path-dialog.component';
 
 import { ToolbarService } from '../core/services/toolbar.service';
 import { ToolbarCommand } from '../core/models/toolbar-command.model';
@@ -44,6 +48,7 @@ interface TabDef {
     MatTooltipModule,
     MatProgressSpinnerModule,
     MatSnackBarModule,
+    MatDialogModule,
   ],
   templateUrl: './editor.component.html',
   styleUrl: './editor.component.scss',
@@ -54,6 +59,7 @@ export class EditorComponent {
   private route = inject(ActivatedRoute);
   private toolbarService = inject(ToolbarService);
   private snackBar = inject(MatSnackBar);
+  private dialog = inject(MatDialog);
 
   private readonly user = this.store.selectSignal(selectUser);
 
@@ -113,7 +119,7 @@ export class EditorComponent {
           id: 'save',
           icon: 'save',
           tooltip: 'Save',
-          enabled: !!svc && dirty && !saving,
+          enabled: !!svc && !!svc.name?.trim() && dirty && !saving,
           accent: true,
           action: () => this.onSave(),
         },
@@ -184,8 +190,18 @@ export class EditorComponent {
     this.store.dispatch(EditorActions.updateService({ changes: { name: value } }));
   }
 
-  onServicePathChange(value: string): void {
-    this.store.dispatch(EditorActions.updateService({ changes: { path: value } }));
+  openPathDialog(): void {
+    const svc = this.service();
+    if (!svc) return;
+    const ref = this.dialog.open(BasePathDialogComponent, {
+      width: '420px',
+      data: { currentPath: svc.path, serviceId: svc._id },
+    });
+    ref.afterClosed().subscribe((newPath: string | null) => {
+      if (newPath) {
+        this.store.dispatch(EditorActions.updateService({ changes: { path: newPath } }));
+      }
+    });
   }
 
   navigateToTab(route: string): void {

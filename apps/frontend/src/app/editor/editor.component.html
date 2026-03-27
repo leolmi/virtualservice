@@ -52,12 +52,10 @@
       </div>
       <div class="input-group">
         <label class="input-label">Base path</label>
-        <input
-          class="base-path-input mono section-input"
-          spellcheck="false"
-          [value]="service()?.path ?? ''"
-          (change)="onServicePathChange($any($event.target).value)"
-          placeholder="base-path" />
+        <div class="base-path-display" (click)="openPathDialog()">
+          <span class="mono base-path-value">{{ service()?.path || '—' }}</span>
+          <mat-icon class="edit-path-icon">edit</mat-icon>
+        </div>
       </div>
     </div>
 

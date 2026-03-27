@@ -87,6 +87,9 @@ export class MockServerService {
     };
 
     // 1. Estrai servicePath e callPath dall'URL
+    // http://host:port/service/part1/part2/part3/partN?param1=34&param5=543
+    // match[1] = part1               (servicePath)
+    // match[2] = part2/part3/partN   (callPath)
     const match = /^[^?]*\/service\/([^/?]+)\/?(.*?)(?:\?.*)?$/g.exec(req.path);
     if (!match) {
       await respond(404, { error: 'Not found' });
@@ -157,7 +160,10 @@ export class MockServerService {
       const ruleScope = buildRuleScope(scope, rule, req);
       let ruleResult: CalcResult;
       try {
-        ruleResult = await calc(rule.expression, ruleScope as Record<string, unknown>);
+        ruleResult = await calc(
+          rule.expression,
+          ruleScope as Record<string, unknown>,
+        );
       } catch (err) {
         this.logger.error(
           `[Service ${serviceId}] Eccezione nella valutazione della regola:`,
@@ -197,7 +203,11 @@ export class MockServerService {
       this.applyResponseExtras(call, res);
       const fileError = this.serveFile(call, res);
       if (fileError) {
-        await respond(500, { error: fileError }, { service, call: callSnapshot, error: fileError });
+        await respond(
+          500,
+          { error: fileError },
+          { service, call: callSnapshot, error: fileError },
+        );
       } else {
         await respond(200, null, { service, call: callSnapshot, isFile: true });
       }
@@ -214,7 +224,11 @@ export class MockServerService {
         `[Service ${serviceId}] Eccezione nel calcolo della response:`,
         err,
       );
-      await respond(500, { error: errMsg }, { service, call: callSnapshot, error: errMsg });
+      await respond(
+        500,
+        { error: errMsg },
+        { service, call: callSnapshot, error: errMsg },
+      );
       return;
     }
 
@@ -225,7 +239,11 @@ export class MockServerService {
 
     // 12. Invia la risposta
     this.applyResponseExtras(call, res);
-    const { statusCode, body } = this.buildResponsePayload(respResult, call, res);
+    const { statusCode, body } = this.buildResponsePayload(
+      respResult,
+      call,
+      res,
+    );
     await respond(statusCode, body, { service, call: callSnapshot });
   }
 
