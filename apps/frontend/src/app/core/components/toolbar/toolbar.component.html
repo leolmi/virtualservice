@@ -3,15 +3,15 @@
   <!-- Brand -->
   <div class="brand" >
     <img class="brand-logo" src="assets/cloud-white.svg" alt="Virtual Service" />
-    @if (!isSmallScreen()) {
-      <div class="brand-divider"></div>
-      <div class="brand-text" [class.small]="isForceLow()">
-        <span class="brand-title">Virtual Service</span>
+    <div class="brand-divider"></div>
+    <div class="brand-text" [class.small]="isForceLow()">
+      <span class="brand-title">Virtual Service</span>
+      @if (!isSmallScreen()) {
         <span class="brand-desc">
           build a develop web service REST in a few moments
         </span>
-      </div>
-    }
+      }
+    </div>
   </div>
 
   <span class="flex-spacer"></span>

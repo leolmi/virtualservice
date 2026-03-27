@@ -67,7 +67,7 @@
           [class.active]="activeTab() === tab.route"
           (click)="navigateToTab(tab.route)">
           <mat-icon>{{ tab.icon }}</mat-icon>
-          <span>{{ tab.title }}</span>
+          <span class="layout-narrow-hidden">{{ tab.title }}</span>
         </button>
       }
       <span class="flex-spacer"></span>

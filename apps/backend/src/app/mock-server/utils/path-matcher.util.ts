@@ -21,9 +21,12 @@ export function matchCallPath(
   actual: string,
 ): PathMatchResult {
   const markerNames: string[] = [];
+  const pathTemplate = template.split('?')[0]||'';
   // Costruisce una regex sostituendo ogni {name} con un gruppo di cattura
-  const regexSource = template
-    .replace(/[.+?^${}()|[\]\\]/g, (ch) => (ch === '{' || ch === '}' ? ch : `\\${ch}`))
+  const regexSource = pathTemplate
+    .replace(/[.+?^${}()|[\]\\]/g, (ch) =>
+      ch === '{' || ch === '}' ? ch : `\\${ch}`,
+    )
     .replace(/\{([^}]+)\}/g, (_match, name: string) => {
       markerNames.push(name);
       return '([^/]+)';
@@ -43,15 +46,30 @@ export function matchCallPath(
 }
 
 /**
+ * Motivo per cui una call è stata scartata durante il match.
+ * - verb_mismatch: il verb della call non corrisponde a quello della request
+ * - path_mismatch: il template di path non corrisponde al path effettivo
+ */
+export type SkipReason =
+  | { type: 'verb_mismatch'; expected: string; actual: string }
+  | { type: 'path_mismatch'; template: string; actual: string };
+
+/** Callback opzionale invocata per ogni call scartata (usata per il debug logging) */
+export type OnSkipFn = (call: IServiceCall, reason: SkipReason) => void;
+
+/**
  * Trova la ServiceCall migliore per il path e il verb forniti.
  *
  * Priorità: path espliciti (senza marcatori) prima di quelli con marcatori.
  * Restituisce null se nessun match è trovato.
+ *
+ * @param onSkip  Callback opzionale invocata per ogni call scartata, utile per debug logging.
  */
 export function findBestMatch(
   calls: IServiceCall[],
   actualPath: string,
   verb: string,
+  onSkip?: OnSkipFn,
 ): MatchedCall | null {
   // Separa le call in esplicite (senza marcatori) e con marcatori
   const explicit = calls.filter((c) => !hasPathMarkers(c.path));
@@ -61,12 +79,17 @@ export function findBestMatch(
 
   for (const call of ordered) {
     // Verifica verb
-    if (call.verb.toUpperCase() !== verb.toUpperCase()) continue;
+    if (call.verb.toUpperCase() !== verb.toUpperCase()) {
+      onSkip?.(call, { type: 'verb_mismatch', expected: call.verb, actual: verb });
+      continue;
+    }
 
     const result = matchCallPath(call.path, actualPath);
     if (result.matched) {
       return { call, pathValues: result.pathValues };
     }
+
+    onSkip?.(call, { type: 'path_mismatch', template: call.path, actual: actualPath });
   }
 
   return null;

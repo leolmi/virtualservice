@@ -232,6 +232,7 @@ nx affected:graph           # Only affected projects
 | `GOOGLE_CLIENT_SECRET`| backend   | Google OAuth client secret         |
 | `BASE_URL`            | backend   | Public base URL of the app         |
 | `PORT`                | backend   | Port the NestJS server listens on  |
+| `MOCK_PATH_DEBUG`     | backend   | `true` abilita il debug logging del path matching nel MockServerService (console, livello DEBUG) |
 
 > Local values go in `apps/backend/.env` (gitignored). Never commit secrets.
 

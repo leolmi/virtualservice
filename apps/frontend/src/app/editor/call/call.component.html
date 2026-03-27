@@ -5,7 +5,8 @@
       <button mat-flat-button class="verb-btn" [matMenuTriggerFor]="verbMenu">
         {{ call.verb }}
       </button>
-      <span class="base-path mono section-input">{{ basePath() }}/</span>
+      <span class="base-path mono section-input layout-narrow-hidden">{{ basePath() }}/</span>
+      <span class="base-path mono section-input layout-wide-hidden">./</span>
       <input
         class="path-input mono section-input"
         spellcheck="false"
