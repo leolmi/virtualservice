@@ -280,13 +280,27 @@ form {
   }
 }
 
-.version-label {
-  display: block;
-  text-align: center;
-  font-size: 0.7rem;
-  color: rgba(221, 221, 221, 0.35);
+.link-to {
+  color: var(--vs-accent-light);
+  text-decoration: none;
+}
+
+.login-footer {
   margin-top: auto;
   padding-top: 24px;
+  text-align: center;
+}
+
+.version-label {
+  display: block;
+  font-size: 0.7rem;
+  color: rgba(221, 221, 221, 0.35);
+  margin-bottom: 8px;
+}
+
+.legal-link {
+  font-size: 0.8rem;
+  width: 100%;
 }
 
 /* ── narrow mode (≤800px) ──────────────────────────────────── */

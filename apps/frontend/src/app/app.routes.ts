@@ -14,6 +14,11 @@ export const appRoutes: Route[] = [
       import('./help/help.component').then((m) => m.HelpComponent),
   },
   {
+    path: 'legal',
+    loadComponent: () =>
+      import('./legal/legal.component').then((m) => m.LegalComponent),
+  },
+  {
     path: 'services',
     canActivate: [authGuard],
     loadComponent: () =>
