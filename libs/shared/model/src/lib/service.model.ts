@@ -85,7 +85,7 @@ export interface ILog {
   /** Errore emesso durante l'elaborazione (se presente) */
   error?: unknown;
   /** Snapshot della ServiceCall corrispondente alla richiesta */
-  call: unknown;
+  call?: unknown;
   /** Dati serializzabili della request Express */
   request: unknown;
   /** Dati serializzabili della response Express */

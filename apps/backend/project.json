@@ -14,9 +14,9 @@
         "assets": [
           "apps/backend/src/assets",
           {
-            "glob": "calc.js",
+            "glob": "calc-worker.js",
             "input": "apps/backend/src/app/mock-server/workers",
-            "output": "app/mock-server/workers"
+            "output": "src/app/mock-server/workers"
           }
         ]
       }

@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -10,6 +10,7 @@ import { EmptyCallComponent } from '../components/empty-call/empty-call.componen
 import {
   selectEditorActiveCall,
   selectEditorService,
+  selectServiceBasePath,
 } from '../store/editor.selectors';
 import * as EditorActions from '../store/editor.actions';
 import { RuleDialogComponent } from '../components/rule-dialog/rule-dialog.component';
@@ -36,13 +37,7 @@ export class CallComponent {
 
   readonly activeCall = this.store.selectSignal(selectEditorActiveCall);
   readonly service = this.store.selectSignal(selectEditorService);
-
-  readonly basePath = computed(() => {
-    const svc = this.service();
-    return svc
-      ? `${window.location.origin}/service/${svc.path}`
-      : `${window.location.origin}/service`;
-  });
+  readonly basePath = this.store.selectSignal(selectServiceBasePath);
 
   readonly verbs: HttpVerb[] = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'];
 

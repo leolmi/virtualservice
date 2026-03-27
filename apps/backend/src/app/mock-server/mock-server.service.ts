@@ -66,30 +66,33 @@ export class MockServerService {
           ? { status: statusCode, body: '[file]' }
           : { status: statusCode, body };
 
-        this.logService.create({
-          time: startTime,
-          owner: opts.service.owner,
-          serviceId: opts.service._id.toString(),
-          call: opts.call ?? null,
-          request: requestInfo,
-          response: responseInfo,
-          error: opts.error ?? null,
-          elapsed,
-        }).catch((err: unknown) =>
-          this.logger.error('Errore nel salvataggio del log:', err),
-        );
+        this.logService
+          .create({
+            time: startTime,
+            owner: opts.service.owner,
+            serviceId: opts.service._id.toString(),
+            call: opts.call ?? null,
+            request: requestInfo,
+            response: responseInfo,
+            error: opts.error ?? null,
+            elapsed,
+          })
+          .catch((err: unknown) =>
+            this.logger.error('Errore nel salvataggio del log:', err),
+          );
       }
 
       if (opts?.isFile) return; // il file è già stato inviato da serveFile()
-      res.status(statusCode).json(body);
+      res.status(statusCode).send(body);
     };
 
     // 1. Estrai servicePath e callPath dall'URL
-    const match = req.path.match(SERVICE_PATH_RE);
+    const match = /^[^?]*\/service\/([^/?]+)\/?(.*?)(?:\?.*)?$/g.exec(req.path);
     if (!match) {
       await respond(404, { error: 'Not found' });
       return;
     }
+
     const servicePath = match[1];
     const callPath = match[2] ?? '';
 
@@ -103,13 +106,13 @@ export class MockServerService {
       return;
     }
 
-    // 4. Verifica che il servizio sia attivo
+    // 3. Verifica che il servizio sia attivo
     if (!service.active) {
       await respond(503, { error: 'Service not active!' }, { service });
       return;
     }
 
-    // 5. Gestione OPTIONS: risponde 200 se esiste una call con quel path
+    // 4. Gestione OPTIONS: risponde 200 se esiste una call con quel path
     if (req.method.toUpperCase() === 'OPTIONS') {
       const found = findAnyMatchByPath(
         service.calls as unknown as IServiceCall[],
@@ -123,7 +126,7 @@ export class MockServerService {
       return;
     }
 
-    // 6. Trova la call per path + verb (espliciti prima dei marcatori)
+    // 5. Trova la call per path + verb (espliciti prima dei marcatori)
     const matched = findBestMatch(
       service.calls as unknown as IServiceCall[],
       callPath,
@@ -142,13 +145,13 @@ export class MockServerService {
     const { call, pathValues } = matched;
     const callSnapshot = { ...call };
 
-    // 8. Inizializza la cache (prima invocazione) e ottieni il db corrente
+    // 6. Inizializza la cache (prima invocazione) e ottieni il db corrente
     const db = await this.cacheService.initIfNeeded(service);
 
-    // 9. Costruisci lo scope base
+    // 7. Costruisci lo scope base
     const scope = buildScope(req, db, pathValues);
 
-    // 10. Valuta le regole in sequenza
+    // 8. Valuta le regole in sequenza
     const serviceId = service._id.toString();
     for (const rule of call.rules) {
       const ruleScope = buildRuleScope(scope, rule, req);
@@ -189,7 +192,7 @@ export class MockServerService {
       }
     }
 
-    // 11. File download
+    // 9. File download
     if (call.respType === 'file') {
       this.applyResponseExtras(call, res);
       const fileError = this.serveFile(call, res);
@@ -201,7 +204,7 @@ export class MockServerService {
       return;
     }
 
-    // 12. Calcola la risposta
+    // 10. Calcola la risposta
     let respResult: CalcResult;
     try {
       respResult = await calc(call.response, scope as Record<string, unknown>);
@@ -215,12 +218,12 @@ export class MockServerService {
       return;
     }
 
-    // 13. Aggiorna db cache
+    // 11. Aggiorna db cache
     if (respResult.db) {
       this.cacheService.updateDb(serviceId, respResult.db);
     }
 
-    // 14. Invia la risposta
+    // 12. Invia la risposta
     this.applyResponseExtras(call, res);
     const { statusCode, body } = this.buildResponsePayload(respResult, call, res);
     await respond(statusCode, body, { service, call: callSnapshot });
@@ -275,23 +278,14 @@ export class MockServerService {
     const value = result.value;
 
     if (typeof value !== 'string') {
+      // Oggetti/array: res.send() imposterà automaticamente Content-Type json
       return { statusCode: 200, body: value };
     }
 
-    // Stringa: imposta Content-Type prima di rispondere
-    switch (call.respType) {
-      case 'json':
-        res.type('json');
-        return { statusCode: 200, body: JSON.stringify(value) };
-      case 'text':
-        res.type('text');
-        return { statusCode: 200, body: String(value) };
-      case 'html':
-        res.type('html');
-        return { statusCode: 200, body: value };
-      default:
-        return { statusCode: 200, body: value };
-    }
+    // Stringa: imposta il Content-Type corretto prima di rispondere
+    setContentType(call, res);
+
+    return { statusCode: 200, body: value };
   }
 
   /**
@@ -317,3 +311,18 @@ export class MockServerService {
     return null;
   }
 }
+
+
+const setContentType = (call: IServiceCall, res: Response) => {
+  switch (call.respType) {
+    case 'json':
+      res.type('json');
+      break;
+    case 'text':
+      res.type('text');
+      break;
+    case 'html':
+      res.type('html');
+      break;
+  }
+};

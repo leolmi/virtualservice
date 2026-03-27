@@ -1,5 +1,6 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { EditorState } from './editor.state';
+import { environment } from '../../../environments/environment';
 
 export const selectEditorState = createFeatureSelector<EditorState>('editor');
 
@@ -32,4 +33,12 @@ export const selectEditorActiveCall = createSelector(
   selectEditorService,
   selectEditorActiveCallIndex,
   (svc, idx) => (svc && idx !== null ? (svc.calls[idx] ?? null) : null),
+);
+
+export const selectServiceBasePath = createSelector(
+  selectEditorService,
+  (svc) => {
+    const origin = environment.backendOrigin || window.location.origin;
+    return svc ? `${origin}/service/${svc.path}` : `${origin}/service`;
+  }
 );

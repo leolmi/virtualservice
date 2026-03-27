@@ -14,7 +14,7 @@ const calc = (
   scope: Record<string, unknown>,
   tmo = 0,
 ): Promise<CalcResult> => {
-  return new Promise((res, rej) => {
+  return new Promise((resolve, reject) => {
     const timeout: number =
       tmo ||
       (parseInt(process.env['CALC_CODE_EXECUTING_TIMEOUT'] ?? '10000', 10) ||
@@ -42,30 +42,53 @@ const calc = (
       },
     };
 
-    const calcSource = path.join(__dirname, 'calc.js');
+    const calcSource = path.join(__dirname, 'calc-worker.js');
     let tm: ReturnType<typeof setTimeout> | null = null;
+    let settled = false;
 
-    const worker = new Worker(calcSource, workerOptions);
+    const settle = (fn: () => void): void => {
+      if (settled) return;
+      settled = true;
+      if (tm) clearTimeout(tm);
+      fn();
+    };
+
+    let worker: Worker;
+    try {
+      worker = new Worker(calcSource, workerOptions);
+    } catch (err) {
+      reject(
+        new Error(
+          `Failed to start calc worker: ${err instanceof Error ? err.message : String(err)}`,
+        ),
+      );
+      return;
+    }
 
     worker.on('message', (m: CalcResult) => {
-      if (tm) clearTimeout(tm);
-      res(m);
+      settle(() => resolve(m));
     });
 
     worker.on('error', (err: Error) => {
-      if (tm) clearTimeout(tm);
-      rej(err);
+      settle(() => reject(err));
     });
 
     worker.on('exit', (code: number) => {
-      if (tm) clearTimeout(tm);
-      if (code !== 0) {
-        rej(new Error(`Calc stopped with exit code ${code}`));
-      }
+      // Se la promise è già risolta (message/error) non fare nulla.
+      // Se il worker esce senza aver inviato un messaggio → reject.
+      settle(() =>
+        reject(
+          new Error(
+            code !== 0
+              ? `Calc stopped with exit code ${code}`
+              : 'Calc worker exited without producing a result',
+          ),
+        ),
+      );
     });
 
     tm = setTimeout(() => {
-      rej(new Error('Calc execution timed out!'));
+      settle(() => reject(new Error('Calc execution timed out!')));
       void worker.terminate();
     }, timeout);
   });

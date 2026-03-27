@@ -22,8 +22,8 @@ export class Log extends Document {
   error!: unknown;
 
   /** Snapshot della ServiceCall al momento della richiesta */
-  @Prop({ type: MongooseSchema.Types.Mixed, required: true })
-  call!: unknown;
+  @Prop({ type: MongooseSchema.Types.Mixed })
+  call: unknown;
 
   /** Dati serializzabili della request (method, path, query, body, headers) */
   @Prop({ type: MongooseSchema.Types.Mixed, required: true })

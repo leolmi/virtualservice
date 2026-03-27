@@ -5,7 +5,8 @@ import {
   PathSegment,
 } from '@virtualservice/shared/model';
 
-export const parameterCode = (target: string, name: string) => `${target}-${name}`;
+export const parameterCode = (target: string, name: string) =>
+  `${target}-${name}`;
 
 export const getPathSegments = (path: string): PathSegment[] => {
   let target = PARAM_TARGET_PATH;
