@@ -67,10 +67,21 @@ export class AuthService {
   async findOrCreateGoogleUser(
     email: string,
     googleId: string,
+    avatarUrl?: string,
   ): Promise<UserDocument> {
     // Cerca prima per googleId
     const existingByGoogle = await this.usersService.findByGoogleId(googleId);
-    if (existingByGoogle) return existingByGoogle;
+    if (existingByGoogle) {
+      // Aggiorna l'avatar se è cambiato
+      if (avatarUrl && existingByGoogle.avatarUrl !== avatarUrl) {
+        return this.usersService.linkGoogleAccount(
+          existingByGoogle._id.toString(),
+          googleId,
+          avatarUrl,
+        );
+      }
+      return existingByGoogle;
+    }
 
     // Cerca per email (account locale esistente)
     const existingByEmail = await this.usersService.findByEmail(email);
@@ -79,11 +90,12 @@ export class AuthService {
       return this.usersService.linkGoogleAccount(
         existingByEmail._id.toString(),
         googleId,
+        avatarUrl,
       );
     }
 
     // Crea nuovo account Google
-    return this.usersService.createGoogleUser(email, googleId);
+    return this.usersService.createGoogleUser(email, googleId, avatarUrl);
   }
 
   googleCallback(user: UserDocument): { accessToken: string } {

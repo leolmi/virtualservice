@@ -69,10 +69,12 @@ export class UsersService {
   async createGoogleUser(
     email: string,
     googleId: string,
+    avatarUrl?: string,
   ): Promise<UserDocument> {
     return this.userModel.create({
       email: email.toLowerCase(),
       googleId,
+      avatarUrl: avatarUrl ?? null,
       isEmailVerified: true,
     });
   }
@@ -80,9 +82,12 @@ export class UsersService {
   async linkGoogleAccount(
     userId: string,
     googleId: string,
+    avatarUrl?: string,
   ): Promise<UserDocument> {
+    const update: Record<string, unknown> = { googleId };
+    if (avatarUrl !== undefined) update['avatarUrl'] = avatarUrl;
     const user = await this.userModel
-      .findByIdAndUpdate(userId, { googleId }, { new: true })
+      .findByIdAndUpdate(userId, update, { new: true })
       .exec();
     if (!user) throw new NotFoundException('User not found');
     return user;

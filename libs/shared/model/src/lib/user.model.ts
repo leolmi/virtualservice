@@ -5,6 +5,7 @@ export interface IUser {
   email: string;
   password?: string;
   googleId?: string;
+  avatarUrl?: string;
   isEmailVerified: boolean;
   emailVerificationToken?: string;
   emailVerificationExpires?: Date;

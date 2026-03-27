@@ -32,10 +32,13 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       return;
     }
 
+    const avatarUrl = profile.photos?.[0]?.value;
+
     try {
       const user: UserDocument = await this.authService.findOrCreateGoogleUser(
         email,
         profile.id,
+        avatarUrl,
       );
       done(null, user);
     } catch (error) {

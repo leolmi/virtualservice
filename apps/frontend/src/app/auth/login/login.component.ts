@@ -38,6 +38,8 @@ export class LoginComponent {
   private store = inject(Store);
   private fb = inject(FormBuilder);
   private router = inject(Router);
+
+  readonly NPM_LOCAL_URL = 'https://www.npmjs.com/package/virtualservice-local';
   private clipboard = inject(Clipboard);
   private snack = inject(MatSnackBar);
   private breakpoints = inject(BreakpointObserver);
@@ -73,7 +75,7 @@ export class LoginComponent {
   }
 
   goToLocal(): void {
-
+    window.open(this.NPM_LOCAL_URL, '_blank', 'noopener,noreferrer');
   }
 
   copyText(txt: string): void {

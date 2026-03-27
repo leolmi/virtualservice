@@ -82,6 +82,15 @@
       margin-right: 6px;
     }
 
+    .user-avatar-img {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      object-fit: cover;
+      opacity: 0.9;
+      margin-right: 6px;
+    }
+
     .user-name {
       font-size: 0.85rem;
       opacity: 0.85;

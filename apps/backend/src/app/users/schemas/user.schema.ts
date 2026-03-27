@@ -14,6 +14,9 @@ export class User extends Document {
   @Prop({ type: String, default: null })
   googleId!: string | null;
 
+  @Prop({ type: String, default: null })
+  avatarUrl!: string | null;
+
   @Prop({ default: false })
   isEmailVerified!: boolean;
 

@@ -21,7 +21,11 @@
 
     <!-- Avatar e email: solo se loggato -->
     @if (user()) {
-      <mat-icon class="user-avatar">account_circle</mat-icon>
+      @if (user()!.avatarUrl) {
+        <img class="user-avatar-img" [src]="user()!.avatarUrl" [alt]="user()!.email" referrerpolicy="no-referrer" />
+      } @else {
+        <mat-icon class="user-avatar">account_circle</mat-icon>
+      }
       @if (!isSmallScreen()) {
         <span class="user-name">{{ user()!.email }}</span>
       }
