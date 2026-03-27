@@ -43,9 +43,10 @@
       }
       @for (rule of call.rules; track $index) {
         <div class="rule-item">
-          <mat-icon class="rule-icon">error</mat-icon>
+          <mat-icon class="rule-icon">verified_user</mat-icon>
           <div class="rule-code">{{ rule.code }}</div>
           <div class="rule-message">{{ rule.error }}</div>
+          <div class="rule-exp">{{ rule.expression }}</div>
           <mat-icon
             class="rule-action"
             matTooltip="Edit rule"

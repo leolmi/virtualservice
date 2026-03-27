@@ -36,7 +36,7 @@ const LOGGED_HEADERS = [
 @Injectable()
 export class MockServerService {
   private readonly logger = new Logger(MockServerService.name);
-  private readonly debugPathMatch: boolean;
+  private readonly debugActive: boolean;
 
   constructor(
     @InjectModel(Service.name)
@@ -45,8 +45,8 @@ export class MockServerService {
     private readonly logService: LogService,
     private readonly configService: ConfigService,
   ) {
-    this.debugPathMatch =
-      this.configService.get<string>('MOCK_PATH_DEBUG') === 'true';
+    this.debugActive =
+      this.configService.get<string>('VIRTUALSERVICE_DEBUG') === 'true';
   }
 
   async handleRequest(req: Request, res: Response): Promise<void> {
@@ -134,27 +134,27 @@ export class MockServerService {
     }
 
     // 5. Trova la call per path + verb (espliciti prima dei marcatori)
-    const onSkip: OnSkipFn | undefined = this.debugPathMatch
+    const onSkip: OnSkipFn | undefined = this.debugActive
       ? (call, reason) => {
           if (reason.type === 'verb_mismatch') {
             this.logger.debug(
               `  ✗ [${call.verb}] "${call.path}" — verb mismatch` +
-              ` (request is ${reason.actual}, call expects ${reason.expected})`,
+                ` (request is ${reason.actual}, call expects ${reason.expected})`,
             );
           } else {
             this.logger.debug(
               `  ✗ [${call.verb}] "${call.path}" — path mismatch` +
-              ` (template "${reason.template}" does not match "${reason.actual}")`,
+                ` (template "${reason.template}" does not match "${reason.actual}")`,
             );
           }
         }
       : undefined;
 
-    if (this.debugPathMatch) {
+    if (this.debugActive) {
       const total = (service.calls as IServiceCall[]).length;
       this.logger.debug(
         `[PATH-MATCH] service="${servicePath}" | incoming="${callPath}" [${req.method}]` +
-        ` | evaluating ${total} call(s)`,
+          ` | evaluating ${total} call(s)`,
       );
     }
 
@@ -165,7 +165,7 @@ export class MockServerService {
       onSkip,
     );
 
-    if (this.debugPathMatch) {
+    if (this.debugActive) {
       if (matched) {
         const pv = Object.keys(matched.pathValues).length
           ? ` pathValues=${JSON.stringify(matched.pathValues)}`
@@ -204,7 +204,15 @@ export class MockServerService {
       const ruleScope = buildRuleScope(scope, rule, req);
       let ruleResult: CalcResult;
       try {
-        ruleResult = await calc(rule.expression, ruleScope as Record<string, unknown>);
+        ruleResult = await calc(
+          rule.expression,
+          ruleScope as Record<string, unknown>,
+        );
+        if (this.debugActive) {
+          this.logger.debug(
+            `calc "${rule.expression}" result="${ruleResult.value}"  error="${ruleResult.error}"`,
+          );
+        }
       } catch (err) {
         this.logger.error(
           `[Service ${serviceId}] Eccezione nella valutazione della regola:`,
@@ -244,7 +252,11 @@ export class MockServerService {
       this.applyResponseExtras(call, res);
       const fileError = this.serveFile(call, res);
       if (fileError) {
-        await respond(500, { error: fileError }, { service, call: callSnapshot, error: fileError });
+        await respond(
+          500,
+          { error: fileError },
+          { service, call: callSnapshot, error: fileError },
+        );
       } else {
         await respond(200, null, { service, call: callSnapshot, isFile: true });
       }
@@ -261,7 +273,11 @@ export class MockServerService {
         `[Service ${serviceId}] Eccezione nel calcolo della response:`,
         err,
       );
-      await respond(500, { error: errMsg }, { service, call: callSnapshot, error: errMsg });
+      await respond(
+        500,
+        { error: errMsg },
+        { service, call: callSnapshot, error: errMsg },
+      );
       return;
     }
 
@@ -272,7 +288,11 @@ export class MockServerService {
 
     // 12. Invia la risposta
     this.applyResponseExtras(call, res);
-    const { statusCode, body } = this.buildResponsePayload(respResult, call, res);
+    const { statusCode, body } = this.buildResponsePayload(
+      respResult,
+      call,
+      res,
+    );
     await respond(statusCode, body, { service, call: callSnapshot });
   }
 
@@ -303,9 +323,7 @@ export class MockServerService {
       Object.entries(call.headers).forEach(([k, v]) => res.setHeader(k, v));
     }
     if (call.cookies) {
-      Object.entries(call.cookies).forEach(([k, v]) =>
-        res.cookie(k, v),
-      );
+      Object.entries(call.cookies).forEach(([k, v]) => res.cookie(k, v));
     }
   }
 

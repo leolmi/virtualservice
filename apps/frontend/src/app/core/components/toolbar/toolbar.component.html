@@ -27,7 +27,7 @@
 
       @if (!isSmallScreen()) {
         <!-- Wide / forceLow mode: render commands as icon buttons -->
-        @for (cmd of visibleCommands(); track cmd.id) {
+        @for (cmd of visibleCommands(); track $index) {
           @if (cmd.type === 'separator') {
             <div class="cmd-separator"></div>
           } @else {
@@ -49,7 +49,7 @@
             <mat-icon>more_vert</mat-icon>
           </button>
           <mat-menu #cmdMenu="matMenu">
-            @for (cmd of visibleCommands(); track cmd.id) {
+            @for (cmd of visibleCommands(); track $index) {
               @if (cmd.type === 'separator') {
                 <div class="separator"></div>
               } @else {

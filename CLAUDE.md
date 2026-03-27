@@ -224,15 +224,15 @@ nx affected:graph           # Only affected projects
 
 ## Environment Variables
 
-| Variable              | Used by   | Description                        |
-|-----------------------|-----------|------------------------------------|
-| `MONGO_URI`           | backend   | MongoDB connection string          |
-| `JWT_SECRET`          | backend   | Secret for signing JWT tokens      |
-| `GOOGLE_CLIENT_ID`    | backend   | Google OAuth client ID             |
-| `GOOGLE_CLIENT_SECRET`| backend   | Google OAuth client secret         |
-| `BASE_URL`            | backend   | Public base URL of the app         |
-| `PORT`                | backend   | Port the NestJS server listens on  |
-| `MOCK_PATH_DEBUG`     | backend   | `true` abilita il debug logging del path matching nel MockServerService (console, livello DEBUG) |
+| Variable               | Used by   | Description                        |
+|------------------------|-----------|------------------------------------|
+| `MONGO_URI`            | backend   | MongoDB connection string          |
+| `JWT_SECRET`           | backend   | Secret for signing JWT tokens      |
+| `GOOGLE_CLIENT_ID`     | backend   | Google OAuth client ID             |
+| `GOOGLE_CLIENT_SECRET` | backend   | Google OAuth client secret         |
+| `BASE_URL`             | backend   | Public base URL of the app         |
+| `PORT`                 | backend   | Port the NestJS server listens on  |
+| `VIRTUALSERVICE_DEBUG` | backend   | `true` abilita il debug logging del path matching nel MockServerService (console, livello DEBUG) |
 
 > Local values go in `apps/backend/.env` (gitignored). Never commit secrets.
 

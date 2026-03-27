@@ -79,7 +79,7 @@
     }
 
     .rule-icon {
-      color: var(--vs-warn-light);
+      color: var(--vs-accent);
       flex-shrink: 0;
     }
 
@@ -91,11 +91,18 @@
     }
 
     .rule-message {
-      flex: 1;
       font-size: 0.85rem;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+    }
+
+    .rule-exp {
+      flex: 1;
+      font-size: 0.7rem;
+      opacity: .5;
+      text-overflow: ellipsis;
+      font-family: monospace;
     }
 
     .rule-action {
