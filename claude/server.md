@@ -3,6 +3,8 @@ Per le definizioni delle classi si fa riferimento al file **model.md**.
 
 L'host dell'applicazione distribuita è al momento: "https://virtualservice.herokuapp.com"
 
+---
+
 ## Espressioni e dati string-js
 
 Le espressioni sono considerate nell'ambito dell'applicazione script javascript.
@@ -130,8 +132,7 @@ if (isMainThread) {
 }
 ````
 
-
-
+---
 
 ## Entry-Points
 
@@ -165,6 +166,7 @@ Quindi si verificano le regole associate alla chiamata e per ogni regola **Servi
 
 Se infine nessuna regola è verificata si restituisce la response, vedi sezione *response*
 
+---
 
 ## scope d'espressione
 Lo scope (oggetto generico javascript) per l'esecuzione delle espressioni deve essere esattamente coerente con quello utilizzato dal client nella fase di costruzione del mock da parte dell'utente, quindi dovrà in entrambi i casi contenere sempre le stesse proprietà.
@@ -181,6 +183,8 @@ Al momento contiene queste proprietà:
 	dove 
 	  - `get`: metodo della libreria lodash;
 	  - `_getData = (req: Request) => ['POST','PUT','PATCH'].includes(req.method) ? req.body : req.query;`
+
+---
 
 ## calcolo espressioni
 
@@ -204,10 +208,13 @@ per la classe `ServiceCallRule`:
 	
 Il db aggiornato (se non in presenza di errori) deve andare sempre a sostituire quello nella cache.
 
+---
+
 ## CORS
 
 Per quanto riguarda il cors l'applicazione, intendendo gli endpoint pubblici del backend, deve essere invocabile da qualsiasi contesto esterno quindi il cors deve poter permettere ogni possibile interazione da domini esterni.
 
+---
 
 ## call-path
 La call-path, come parte dell'url, in fase di analisi della chiamata utente è una porzione di url che può contenere separatori "/", ma non query-string;
@@ -232,6 +239,8 @@ pathValue = {
 
 Se due call-path di uno stesso servizio collidono si verificano prima i path espliciti ossia quelli senza marcatori.
 
+---
+
 ## response
 La response potrà essere un download di file se la proprietà **respType** della chiamata ha il valore "file", oppure calcolata col valore della proprietà **response** negli altri casi.
 
@@ -246,6 +255,7 @@ Calcolo dell'espressione **response** (value si intende il risultato dell'esecuz
 	- text → .toString() con Content-Type: text/plain
 	- html → stringa con Content-Type: text/html
 
+---
 
 ## file download
 
@@ -255,6 +265,7 @@ Ogni altro path o nel caso il file non esistesse in quel path, deve generare un 
 
 Gli headers sono onere dell'utente che crea e valorizza la classe `ServiceCall`, magari degli warning in fare di editing possono indicare la strada corretta in relazione al documento scelto.
 
+---
 
 ## metodi per la fase di editing
 
@@ -289,6 +300,7 @@ rotte in DELETE:
 - `/services`: (valida per utente autenticato) elimina tutto il log per l'utente loggato, ossia elimina tutte le righe di 
     log che hanno come `owner` l'identificativo dell'utente loggato;
 
+---
 
 ## Logging
 
@@ -302,9 +314,64 @@ sottoforma di errore oppure no;
 Per i campi request e response che conterranno alcune informazioni serializzabili rispettivamente della request e della response express trova
 i valori significativi evitando che contengano una quantità eccessiva di dati.
 
+---
 
 ## Templates
 
 per im  il momento non implementare la funzionalità dei template pubblici, la vedremo in seguito. L'importante è che il server sia predisposto
 con gli endpoint necessari che al momento risponderanno con un errore 500 dalla descrizione ":( not implemented yet".
+
+---
+
+## Path Matcher
+
+Aspetto fondamentale dell'applicazione è quello del  match dei path in ingresso (request su `/service/...`) sui path dei
+servizi definiti dagli utenti.
+
+Ipotiziamo la struttura del'href di una chiamata generica:
+````
+protocol[:port]/service/path-1/path-N?query-param-1=value-1&query-param-M=value-M
+````
+dove:
+- `protocol`: `http` o `https` rappresenta il protocol della chiamata, nel nostro caso `http` per le chiamate locali
+  fatte in fase di sviluppo, `https` sull'app rilasciata;
+- `port`: indicato come opzionale perché esplicitato solo nello sviluppo locale;
+- `service`: prima voce del path che indirizza le chiamate del backend verso il gestore delle chiamate sui documenti
+  generati dagli utenti;
+- `path-X`: N voci del path che permetteranno di individuare il servizio definito dall'utente;
+- `query-param-Y=value-Y`: parametri di query;
+
+Definite le parti componenti la chiamata generica, vediamo come impostare il matching con i documenti utente.
+
+esclusa la parte fissa `protocol[:port]/service/` si considera il resto del path per cercare tra i documenti quello che 
+matcha la chiamata.
+
+Dato che nei documenti l'utente potrebbe aver strutturato il path con elementi dinamici del tipo `{name}`, questi 
+possono corrispondere ad un qualsiasi valore per posizione nel path che non contenga ulteriori separatori di path `/`;
+Per fare un esempio, se il path di chiamata è `part-1/par-2/part-3/part-4` e l'utente ha generato un servizio 
+con base path `part-1` e una call con path `part-2/{dynamic}/part-4`, questo rappresenta un match valido poiché:
+- `part-1` corrispondono per uguaglianza stretta al primo elemento del path;
+- `part-2` corrispondono per uguaglianza stretta al secondo elemento del path;
+- `part-3` e `{dynamic}`: corrispondono perché il bookmark accetta un qualsiasi valore di path, e in particolare
+  in questo caso il parametro di path `dynamic` assume il valore `part-3` ossia il nome del fragment presente 
+  nell'url in sua corrispondenza.
+- `part-4` corrispondono per uguaglianza stretta al quarto elemento del path;
+
+Il match quindi nel path è posizionale.
+
+> Sono prioritari i match per uguaglianza stretta.
+
+se l'utente avesse definito 2 call del tipo:
+- `call1`: `part-1/par-2/{dynamic}/part-4` ossia quella appena vista;
+- `call2`: `part-1/par-2/part-3/part-4` quindi simile ma senza parti dinamiche;
+
+Il match deve dare la precedenza alla call con tutte uguaglianze strette;
+
+I parametri di query non partecipano al match, ma vengono considerati solo dopo che il primo match ha dato
+esito positivo. In tal caso sono utilizzati per valorizzare lo scope per il calcolo della response.
+
+
+
+
+
 

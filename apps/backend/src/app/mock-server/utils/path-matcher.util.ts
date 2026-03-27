@@ -1,13 +1,13 @@
 import { IServiceCall } from '@virtualservice/shared/model';
 import { MatchedCall, PathMatchResult } from '../interfaces/scope.interface';
 
-const MARKER_RE = /\{([^}]+)\}/g;
 
 /**
- * Restituisce true se il template contiene almeno un marcatore `{name}`.
+ * Restituisce true se il template contiene almeno un marcatore `{name}` nel path.
  */
-function hasMarkers(template: string): boolean {
-  return MARKER_RE.test(template);
+function hasPathMarkers(template: string): boolean {
+  const parts = template.split('?');
+  return /\{([^}]+)}/g.test(parts[0]||'');
 }
 
 /**
@@ -54,8 +54,8 @@ export function findBestMatch(
   verb: string,
 ): MatchedCall | null {
   // Separa le call in esplicite (senza marcatori) e con marcatori
-  const explicit = calls.filter((c) => !hasMarkers(c.path));
-  const withMarkers = calls.filter((c) => hasMarkers(c.path));
+  const explicit = calls.filter((c) => !hasPathMarkers(c.path));
+  const withMarkers = calls.filter((c) => hasPathMarkers(c.path));
 
   const ordered = [...explicit, ...withMarkers];
 
@@ -80,8 +80,8 @@ export function findAnyMatchByPath(
   calls: IServiceCall[],
   actualPath: string,
 ): MatchedCall | null {
-  const explicit = calls.filter((c) => !hasMarkers(c.path));
-  const withMarkers = calls.filter((c) => hasMarkers(c.path));
+  const explicit = calls.filter((c) => !hasPathMarkers(c.path));
+  const withMarkers = calls.filter((c) => hasPathMarkers(c.path));
 
   for (const call of [...explicit, ...withMarkers]) {
     const result = matchCallPath(call.path, actualPath);
