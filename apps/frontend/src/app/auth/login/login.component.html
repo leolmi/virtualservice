@@ -14,7 +14,7 @@
         <span class="code-base">https://virtualservice.app/service/</span>
         <span class="code-path">yourpath/yourmethod</span>
       </div>
-      <mat-icon class="side-help">help_outline</mat-icon>
+      <mat-icon class="side-help" (click)="goToHelp()">help_outline</mat-icon>
     </div>
     @if (isNarrow()) {
       <div class="side-separator"></div>
@@ -109,7 +109,7 @@
       </div>
       <p class="side-desc">Start one or more servers locally without anything else:</p>
       <div class="code-box">vs "my/local/path/myserver.json"</div>
-      <mat-icon class="side-help">help_outline</mat-icon>
+      <mat-icon class="side-help" (click)="goToLocal()">help_outline</mat-icon>
     </div>
   </div>
 </div>

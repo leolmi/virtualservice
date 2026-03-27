@@ -1,4 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
+import { NgClass } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -10,18 +11,17 @@ import { map } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { selectUser } from '../../../auth/store/auth.selectors';
 import { ToolbarService } from '../../services/toolbar.service';
-import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'vs-toolbar',
   standalone: true,
   imports: [
+    NgClass,
     MatToolbarModule,
     MatIconModule,
     MatButtonModule,
     MatTooltipModule,
     MatMenuModule,
-    NgClass
   ],
   templateUrl: './toolbar.component.html',
   styleUrl: './toolbar.component.scss',

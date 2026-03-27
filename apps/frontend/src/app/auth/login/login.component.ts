@@ -4,6 +4,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -36,6 +37,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 export class LoginComponent {
   private store = inject(Store);
   private fb = inject(FormBuilder);
+  private router = inject(Router);
   private clipboard = inject(Clipboard);
   private snack = inject(MatSnackBar);
   private breakpoints = inject(BreakpointObserver);
@@ -64,6 +66,14 @@ export class LoginComponent {
 
   onGoogleLogin(): void {
     this.store.dispatch(loginWithGoogle());
+  }
+
+  goToHelp(): void {
+    this.router.navigate(['/help']);
+  }
+
+  goToLocal(): void {
+
   }
 
   copyText(txt: string): void {

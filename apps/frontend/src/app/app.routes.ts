@@ -9,16 +9,15 @@ export const appRoutes: Route[] = [
       import('./auth/login/login.component').then((m) => m.LoginComponent),
   },
   {
+    path: 'help',
+    loadComponent: () =>
+      import('./help/help.component').then((m) => m.HelpComponent),
+  },
+  {
     path: 'services',
     canActivate: [authGuard],
     loadComponent: () =>
       import('./services/services.component').then((m) => m.ServicesComponent),
-  },
-  {
-    path: 'help',
-    canActivate: [authGuard],
-    loadComponent: () =>
-      import('./help/help.component').then((m) => m.HelpComponent),
   },
   {
     path: 'editor/:id',

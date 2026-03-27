@@ -16,57 +16,59 @@
 
   <span class="flex-spacer"></span>
 
-  <!-- User section (visible only when logged in) -->
-  @if (user()) {
-    <div class="user-section">
-      <mat-icon class="user-avatar">account_circle</mat-icon>
+  <!-- Right section: user info + commands -->
+  <div class="user-section">
 
+    <!-- Avatar e email: solo se loggato -->
+    @if (user()) {
+      <mat-icon class="user-avatar">account_circle</mat-icon>
       @if (!isSmallScreen()) {
         <span class="user-name">{{ user()!.email }}</span>
       }
+    }
 
-      @if (!isSmallScreen()) {
-        <!-- Wide / forceLow mode: render commands as icon buttons -->
-        @for (cmd of visibleCommands(); track $index) {
-          @if (cmd.type === 'separator') {
-            <div class="cmd-separator"></div>
-          } @else {
-            <button
-              mat-icon-button
-              class="cmd-btn"
-              [ngClass]="'color-'+cmd.color"
-              [matTooltip]="cmd.tooltip ?? ''"
-              [disabled]="cmd.enabled === false"
-              (click)="cmd.action?.()">
-              <mat-icon>{{ cmd.icon }}</mat-icon>
-            </button>
-          }
-        }
-      } @else {
-        <!-- Small screen: commands in popup menu -->
-        @if (buttonCommands().length > 0) {
-          <button mat-icon-button [matMenuTriggerFor]="cmdMenu" class="cmd-btn">
-            <mat-icon>more_vert</mat-icon>
+    @if (!isSmallScreen()) {
+      <!-- Wide / forceLow: bottoni icona inline -->
+      @for (cmd of visibleCommands(); track $index) {
+        @if (cmd.type === 'separator') {
+          <div class="cmd-separator"></div>
+        } @else {
+          <button
+            mat-icon-button
+            class="cmd-btn"
+            [ngClass]="'color-'+cmd.color"
+            [matTooltip]="cmd.tooltip ?? ''"
+            [disabled]="cmd.enabled === false"
+            (click)="cmd.action?.()">
+            <mat-icon>{{ cmd.icon }}</mat-icon>
           </button>
-          <mat-menu #cmdMenu="matMenu">
-            @for (cmd of visibleCommands(); track $index) {
-              @if (cmd.type === 'separator') {
-                <div class="separator"></div>
-              } @else {
-                <button
-                  mat-menu-item
-                  [ngClass]="'color-'+cmd.color"
-                  [disabled]="cmd.enabled === false"
-                  (click)="cmd.action?.()">
-                  <mat-icon>{{ cmd.icon }}</mat-icon>
-                  <span>{{ cmd.tooltip }}</span>
-                </button>
-              }
-            }
-          </mat-menu>
         }
       }
-    </div>
-  }
+    } @else {
+      <!-- Small screen: comandi nel menu popup -->
+      @if (buttonCommands().length > 0) {
+        <button mat-icon-button [matMenuTriggerFor]="cmdMenu" class="cmd-btn">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #cmdMenu="matMenu">
+          @for (cmd of visibleCommands(); track $index) {
+            @if (cmd.type === 'separator') {
+              <div class="separator"></div>
+            } @else {
+              <button
+                mat-menu-item
+                [ngClass]="'color-'+cmd.color"
+                [disabled]="cmd.enabled === false"
+                (click)="cmd.action?.()">
+                <mat-icon>{{ cmd.icon }}</mat-icon>
+                <span>{{ cmd.tooltip }}</span>
+              </button>
+            }
+          }
+        </mat-menu>
+      }
+    }
+
+  </div>
 
 </mat-toolbar>

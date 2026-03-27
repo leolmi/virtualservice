@@ -1,5 +1,5 @@
 import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { Location } from '@angular/common';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
@@ -30,7 +30,7 @@ const SECTION_IDS = [
   styleUrl: './help.component.scss',
 })
 export class HelpComponent implements OnInit, OnDestroy {
-  private readonly router = inject(Router);
+  private readonly location = inject(Location);
   private readonly toolbar = inject(ToolbarService);
   private readonly bp = inject(BreakpointObserver);
 
@@ -49,17 +49,19 @@ export class HelpComponent implements OnInit, OnDestroy {
   };
 
   ngOnInit(): void {
+    this.toolbar.setForceLow(true);
     this.toolbar.set([
       {
         id: 'back',
-        icon: 'view_module',
-        tooltip: 'Back to services',
-        action: () => this.router.navigate(['/services']),
+        icon: 'arrow_back',
+        tooltip: 'Back',
+        action: () => this.location.back(),
       },
     ]);
   }
 
   ngOnDestroy(): void {
+    this.toolbar.setForceLow(false);
     this.toolbar.clear();
   }
 

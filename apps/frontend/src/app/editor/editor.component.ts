@@ -57,7 +57,7 @@ export class EditorComponent {
   private store = inject(Store);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
-  private toolbarService = inject(ToolbarService);
+  private toolbar = inject(ToolbarService);
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
 
@@ -106,7 +106,7 @@ export class EditorComponent {
   constructor() {
     const id = this.route.snapshot.paramMap.get('id')!;
     this.store.dispatch(EditorActions.loadEditor({ id }));
-    this.toolbarService.setForceLow(true);
+    this.toolbar.setForceLow(true);
 
     effect(() => {
       const svc = this.service();
@@ -162,13 +162,13 @@ export class EditorComponent {
           action: () => this.store.dispatch(logout()),
         },
       ];
-      this.toolbarService.set(commands);
+      this.toolbar.set(commands);
     });
 
     inject(DestroyRef).onDestroy(() => {
       this.store.dispatch(EditorActions.clearEditor());
-      this.toolbarService.setForceLow(false);
-      this.toolbarService.clear();
+      this.toolbar.setForceLow(false);
+      this.toolbar.clear();
     });
   }
 
