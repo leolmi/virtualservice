@@ -14,10 +14,17 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import { basicSetup } from 'codemirror';
-import { EditorState } from '@codemirror/state';
+import { Annotation, EditorState } from '@codemirror/state';
 import { EditorView, keymap } from '@codemirror/view';
 import { indentWithTab } from '@codemirror/commands';
 import { javascript } from '@codemirror/lang-javascript';
+
+/**
+ * Annotazione usata per marcare i dispatch programmatici (ngOnChanges).
+ * L'updateListener la controlla per non emettere valueChange su aggiornamenti
+ * esterni — evita il falso dirty quando si cambia la call selezionata.
+ */
+const ExternalChange = Annotation.define<boolean>();
 
 /**
  * Lightweight CodeMirror 6 wrapper.
@@ -82,11 +89,15 @@ export class CodeEditorComponent implements AfterViewInit, OnChanges, OnDestroy 
             javascript(),
             keymap.of([indentWithTab]),
             EditorView.updateListener.of((update) => {
-              if (update.docChanged) {
-                const text = update.state.doc.toString();
-                // Re-enter Angular zone so data-binding and store dispatch work
-                this.zone.run(() => this.valueChange.emit(text));
-              }
+              if (!update.docChanged) return;
+              // Ignora i dispatch programmatici (ngOnChanges) per non sporcare dirty
+              const isExternal = update.transactions.some(
+                (tr) => tr.annotation(ExternalChange),
+              );
+              if (isExternal) return;
+              const text = update.state.doc.toString();
+              // Re-enter Angular zone so data-binding and store dispatch work
+              this.zone.run(() => this.valueChange.emit(text));
             }),
           ],
         }),
@@ -102,6 +113,7 @@ export class CodeEditorComponent implements AfterViewInit, OnChanges, OnDestroy 
     if (incoming === this.view.state.doc.toString()) return;
     this.view.dispatch({
       changes: { from: 0, to: this.view.state.doc.length, insert: incoming },
+      annotations: ExternalChange.of(true),
     });
   }
 
