@@ -167,7 +167,7 @@ export class TestComponent {
     this.results.set(null);
     this.isError.set(false);
 
-    const body = this.hasBody() && call.body ? call.body : undefined;
+    const body = this.hasBody() && call.body ? parseBody(call.body) : undefined;
 
     this.http
       .request(call.verb, url, { body, responseType: 'text' })
@@ -197,5 +197,13 @@ export class TestComponent {
           this.isError.set(true);
         },
       });
+  }
+}
+
+const parseBody = (body: string): any => {
+  try {
+    return JSON.parse(body);
+  } catch (e) {
+    return {};
   }
 }
