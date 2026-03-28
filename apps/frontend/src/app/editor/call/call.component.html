@@ -72,13 +72,29 @@
     </div>
 
     <!-- Response section -->
-    <div class="section-label">RESPONSE</div>
-    <div class="response-container">
+    <div class="section-label response-label">
+      RESPONSE
+      <button
+        mat-icon-button
+        class="help-btn"
+        [class.active]="helpOpen()"
+        matTooltip="Expression scope help"
+        (click)="toggleHelp()">
+        <mat-icon>{{ helpOpen() ? 'help' : 'help_outline' }}</mat-icon>
+      </button>
+    </div>
+    <div class="response-container" [class.with-help]="helpOpen()">
       <vs-code-editor
         class="response-editor"
         [value]="call.response"
         (valueChange)="onUpdateResponse($event)"
       />
+      @if (helpOpen()) {
+        <vs-expression-help
+          class="response-help"
+          [context]="helpContext()"
+        />
+      }
     </div>
   } @else {
     <vs-empty-call />

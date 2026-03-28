@@ -195,8 +195,10 @@ export class MockServerService {
     // 6. Inizializza la cache (prima invocazione) e ottieni il db corrente
     const db = await this.cacheService.initIfNeeded(service);
 
-    // 7. Costruisci lo scope base
-    const scope = buildScope(req, db, pathValues);
+    // 7. Costruisci lo scope base (i query-params vengono rimappati sugli alias)
+    const scope = buildScope(req, db, pathValues, call.parameters);
+    this.logger.debug('EXPRESSION SCOPE', JSON.stringify(scope, null, 2));
+    this.logger.debug('CALL PARAMETERS', JSON.stringify(call.parameters, null, 2));
 
     // 8. Valuta le regole in sequenza
     const serviceId = service._id.toString();

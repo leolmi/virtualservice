@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -16,6 +16,9 @@ import * as EditorActions from '../store/editor.actions';
 import { RuleDialogComponent } from '../components/rule-dialog/rule-dialog.component';
 import { CodeEditorComponent } from '../../core/components/code-editor/code-editor.component';
 import { calcParameters } from '../../core/models/path.helper';
+import { ExpressionHelpComponent } from '../../core/components/expression-help/expression-help.component';
+import { ExpressionHelpContext } from '../../core/models/expression-help.model';
+import { getScopeContext } from './call.scope';
 
 @Component({
   selector: 'vs-editor-call',
@@ -27,6 +30,7 @@ import { calcParameters } from '../../core/models/path.helper';
     MatTooltipModule,
     EmptyCallComponent,
     CodeEditorComponent,
+    ExpressionHelpComponent,
   ],
   templateUrl: './call.component.html',
   styleUrl: './call.component.scss',
@@ -40,6 +44,19 @@ export class CallComponent {
   readonly basePath = this.store.selectSignal(selectServiceBasePath);
 
   readonly verbs: HttpVerb[] = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'];
+
+  readonly helpOpen = signal(false);
+
+  readonly helpContext = computed<ExpressionHelpContext | null>(() => {
+    const call = this.activeCall();
+    const service = this.service();
+
+    return getScopeContext(call, service);
+  });
+
+  toggleHelp(): void {
+    this.helpOpen.update((v) => !v);
+  }
 
   onUpdateVerb(verb: HttpVerb): void {
     this.store.dispatch(EditorActions.updateActiveCall({ changes: { verb } }));

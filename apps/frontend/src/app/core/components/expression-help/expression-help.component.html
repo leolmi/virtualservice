@@ -1,0 +1,57 @@
+@if (context(); as ctx) {
+  <div class="help-container">
+    @if (ctx.title) {
+      <div class="help-header">
+        <mat-icon>code</mat-icon>
+        <span class="mono">{{ ctx.title }}</span>
+      </div>
+    }
+    <div class="help-body">
+      @for (v of ctx.variables; track v.name) {
+        <div class="var-block">
+          <div class="var-header">
+            <span class="var-name mono">{{ v.name }}</span>
+            <span class="var-type">{{ v.type }}</span>
+            @if (v.tag) {
+              <span class="var-tag">{{ v.tag }}</span>
+            }
+          </div>
+          <div class="var-desc">{{ v.description }}</div>
+
+          @if (v.properties?.length) {
+            <div class="var-props">
+              @for (prop of v.properties!; track prop.name) {
+                <div class="prop-row">
+                  <span class="prop-name mono">{{ v.name }}.{{ prop.name }}</span>
+                  @if (prop.type) {
+                    <span class="prop-type">{{ prop.type }}</span>
+                  }
+                  <span class="prop-desc">{{ prop.description }}</span>
+                </div>
+              }
+            </div>
+          }
+
+          @if (v.examples?.length) {
+            <div class="var-examples">
+              @for (ex of v.examples!; track $index) {
+                <div class="ex-item">
+                  <div class="ex-desc">{{ ex.description }}</div>
+                  <pre class="ex-code">{{ ex.code }}</pre>
+                  @if (ex.result) {
+                    <div class="ex-result">→ {{ ex.result }}</div>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+} @else {
+  <div class="help-empty">
+    <mat-icon>help_outline</mat-icon>
+    <span>No context available</span>
+  </div>
+}

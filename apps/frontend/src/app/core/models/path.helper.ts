@@ -28,22 +28,49 @@ export const getPathSegments = (path: string): PathSegment[] => {
     });
 };
 
+/**
+ * Estrae i parametri da un path di call.
+ *
+ * Formato atteso:
+ *   path params  → segmenti del tipo  {alias}          es. "users/{id}/items/{type}"
+ *   query params → segmenti del tipo  key={alias}      es. "?page={pg}&sort={ord}"
+ *
+ * Per i query params `name` è l'alias usato nello scope, `key` è il nome reale
+ * del parametro nell'URL. Se viene usato il formato legacy `{alias}` (senza key)
+ * allora key === name.
+ */
 export const calcParameters = (path: string): IServiceCallParameter[] => {
-  const pos = path.indexOf('?');
+  const qPos = path.indexOf('?');
   const params: IServiceCallParameter[] = [];
-  const rgx = /\{(.*?)}/gm;
-  let m;
 
-  while ((m = rgx.exec(path)) !== null) {
-    if (m.index === rgx.lastIndex) {
-      rgx.lastIndex++;
-    }
-    const target = m.index < pos ? PARAM_TARGET_PATH : PARAM_TARGET_QUERY;
+  // ── Path parameters (prima di ?) ────────────────────────────────────────
+  const pathPart = qPos >= 0 ? path.slice(0, qPos) : path;
+  const pathRgx = /\{([^}]+)}/gm;
+  let m: RegExpExecArray | null;
+  while ((m = pathRgx.exec(pathPart)) !== null) {
     params.push(<IServiceCallParameter>{
-      code: `${target}-${m[1]}`,
+      code: parameterCode(PARAM_TARGET_PATH, m[1]),
       name: m[1],
-      target,
+      target: PARAM_TARGET_PATH,
     });
   }
+
+  // ── Query parameters (dopo ?) ────────────────────────────────────────────
+  if (qPos >= 0) {
+    const queryPart = path.slice(qPos + 1);
+    // Cerca sia "key={alias}" sia il formato legacy "{alias}" (senza key)
+    const queryRgx = /(?:([^=&{}]+)=)?\{([^}]+)}/g;
+    while ((m = queryRgx.exec(queryPart)) !== null) {
+      const key = m[1];       // nome URL (es. 'pollo'); undefined se formato legacy
+      const alias = m[2];     // alias scope (es. 'ciccio')
+      params.push(<IServiceCallParameter>{
+        code: parameterCode(PARAM_TARGET_QUERY, alias),
+        name: alias,
+        key: key ?? alias,    // se manca il key, il key coincide con l'alias
+        target: PARAM_TARGET_QUERY,
+      });
+    }
+  }
+
   return params;
 };

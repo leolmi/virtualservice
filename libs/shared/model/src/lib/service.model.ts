@@ -21,8 +21,18 @@ export const PARAM_TARGET_QUERY = 'query';
 /** Parametro di una chiamata (usato anche per il test nell'editor) */
 export interface IServiceCallParameter {
   code: string;
+  /**
+   * Alias usato nello scope delle espressioni (es. 'ciccio' in ?pollo={ciccio}).
+   * Per i path params coincide con il nome del marcatore.
+   */
   name: string;
   target: ParameterTarget;
+  /**
+   * Chiave reale del query-param nell'URL (es. 'pollo' in ?pollo={ciccio}).
+   * Assente o uguale a `name` se non c'è aliasing.
+   * Non usato per i path params (il matching è posizionale).
+   */
+  key?: string;
   /** Valore di test nell'editor (tipo dinamico — Mixed in Mongoose) */
   value: unknown;
 }

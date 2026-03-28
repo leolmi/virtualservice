@@ -26,18 +26,37 @@
 </div>
 
 <!-- DATABASE -->
-<label class="section-label">DATABASE</label>
-<div class="service-database">
-  <vs-code-editor
-    class="dbo-editor"
-    [value]="service()?.dbo ?? ''"
-    (valueChange)="onUpdateDbo($event)"
-  />
+<label class="section-label database-label">
+  DATABASE
+  <button
+    mat-icon-button
+    class="help-btn"
+    [class.active]="helpOpen()"
+    matTooltip="Expression scope help"
+    (click)="toggleHelp()">
+    <mat-icon>{{ helpOpen() ? 'help' : 'help_outline' }}</mat-icon>
+  </button>
+</label>
+<div class="service-database" [class.with-help]="helpOpen()">
+  <div class="dbo-editor-wrap">
+    <vs-code-editor
+      class="dbo-editor"
+      [value]="service()?.dbo ?? ''"
+      (valueChange)="onUpdateDbo($event)"
+    />
 
-  @if (dboWarning(); as warn) {
-    <div class="dbo-warning">
-      <mat-icon color="warn" [matTooltip]="warn">warning</mat-icon>
-      <span class="dbo-warning-text">{{ warn }}</span>
-    </div>
+    @if (dboWarning(); as warn) {
+      <div class="dbo-warning">
+        <mat-icon color="warn" [matTooltip]="warn">warning</mat-icon>
+        <span class="dbo-warning-text">{{ warn }}</span>
+      </div>
+    }
+  </div>
+
+  @if (helpOpen()) {
+    <vs-expression-help
+      class="database-help"
+      [context]="helpContext()"
+    />
   }
 </div>

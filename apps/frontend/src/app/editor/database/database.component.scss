@@ -17,6 +17,27 @@
   letter-spacing: 0.05em;
 }
 
+.database-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: 0;
+
+  .help-btn {
+    opacity: 0.35;
+    color: var(--vs-dark);
+
+    &:hover {
+      opacity: 0.7;
+    }
+
+    &.active {
+      opacity: 1;
+      color: var(--vs-primary);
+    }
+  }
+}
+
 // ── Description box ────────────────────────────────────────────────────────
 .service-description {
   flex-shrink: 0;
@@ -117,10 +138,18 @@
 .service-database {
   flex: 1;
   display: flex;
-  flex-direction: column;
   overflow: hidden;
   min-height: 0;
-  position: relative;
+
+  .dbo-editor-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    min-height: 0;
+    min-width: 0;
+  }
 
   .dbo-editor {
     flex: 1;
@@ -147,5 +176,12 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
+  }
+
+  .database-help {
+    width: 50%;
+    flex-shrink: 0;
+    border-left: 1px solid rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
   }
 }

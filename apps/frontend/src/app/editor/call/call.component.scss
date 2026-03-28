@@ -127,6 +127,29 @@
   }
 }
 
+/* ─── Response label ──────────────────────────── */
+
+.response-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: 0;
+
+  .help-btn {
+    opacity: 0.35;
+    color: var(--vs-dark);
+
+    &:hover {
+      opacity: 0.7;
+    }
+
+    &.active {
+      opacity: 1;
+      color: var(--vs-primary);
+    }
+  }
+}
+
 /* ─── Response ────────────────────────────────── */
 
 .response-container {
@@ -138,6 +161,14 @@
   .response-editor {
     flex: 1;
     min-height: 0;
+    min-width: 0;
+  }
+
+  .response-help {
+    width: 50%;
+    flex-shrink: 0;
+    border-left: 1px solid rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
   }
 }
 

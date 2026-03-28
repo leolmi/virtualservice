@@ -1,0 +1,182 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.help-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* ─── Header ───────────────────────────────── */
+
+.help-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background-color: var(--vs-dark);
+  color: var(--vs-light);
+  flex-shrink: 0;
+  font-size: 0.78rem;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    opacity: 0.6;
+  }
+}
+
+/* ─── Body ─────────────────────────────────── */
+
+.help-body {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* ─── Variable block ───────────────────────── */
+
+.var-block {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.var-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 3px;
+  flex-wrap: wrap;
+}
+
+.var-name {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--vs-accent);
+}
+
+.var-type {
+  font-family: 'Courier New', monospace;
+  font-size: 0.67rem;
+  color: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.05);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+.var-tag {
+  font-size: 0.65rem;
+  color: var(--vs-accent-light);
+  background: rgba(252, 0, 186, 0.08);
+  padding: 1px 5px;
+  border-radius: 3px;
+  border: 1px solid rgba(252, 0, 186, 0.2);
+}
+
+.var-desc {
+  font-size: 0.77rem;
+  color: rgba(0, 0, 0, 0.55);
+  line-height: 1.4;
+  margin-bottom: 6px;
+}
+
+/* ─── Sub-properties ───────────────────────── */
+
+.var-props {
+  margin: 4px 0 6px;
+  border-left: 2px solid rgba(0, 0, 0, 0.1);
+  padding-left: 8px;
+}
+
+.prop-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 2px 0;
+  font-size: 0.76rem;
+  flex-wrap: wrap;
+}
+
+.prop-name {
+  color: var(--vs-accent);
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+.prop-type {
+  font-family: 'Courier New', monospace;
+  font-size: 0.65rem;
+  color: rgba(0, 0, 0, 0.38);
+}
+
+.prop-desc {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+/* ─── Examples ─────────────────────────────── */
+
+.var-examples {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ex-item {
+  .ex-desc {
+    font-size: 0.72rem;
+    color: rgba(0, 0, 0, 0.45);
+    margin-bottom: 2px;
+  }
+
+  pre.ex-code {
+    font-family: 'Courier New', monospace;
+    font-size: 0.74rem;
+    background-color: var(--vs-dark);
+    color: #aed581;
+    padding: 5px 10px;
+    border-radius: 3px;
+    margin: 0;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+  .ex-result {
+    font-size: 0.71rem;
+    color: rgba(0, 0, 0, 0.4);
+    font-family: 'Courier New', monospace;
+    margin-top: 1px;
+    padding-left: 4px;
+  }
+}
+
+/* ─── Empty state ──────────────────────────── */
+
+.help-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 8px;
+  color: rgba(0, 0, 0, 0.25);
+
+  mat-icon {
+    font-size: 36px;
+    width: 36px;
+    height: 36px;
+  }
+
+  span {
+    font-size: 0.8rem;
+  }
+}

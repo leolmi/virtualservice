@@ -25,11 +25,27 @@
 </div>
 
 <!-- FUNCTION -->
-<label class="section-label">FUNCTION</label>
-<div class="service-function">
+<label class="section-label function-label">
+  FUNCTION
+  <button
+    mat-icon-button
+    class="help-btn"
+    [class.active]="helpOpen()"
+    matTooltip="Expression scope help"
+    (click)="toggleHelp()">
+    <mat-icon>{{ helpOpen() ? 'help' : 'help_outline' }}</mat-icon>
+  </button>
+</label>
+<div class="service-function" [class.with-help]="helpOpen()">
   <vs-code-editor
     class="fn-editor"
     [value]="service()?.schedulerFn ?? ''"
     (valueChange)="onSchedulerFnChange($event)"
   />
+  @if (helpOpen()) {
+    <vs-expression-help
+      class="function-help"
+      [context]="helpContext()"
+    />
+  }
 </div>
