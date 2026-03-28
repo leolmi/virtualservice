@@ -23,6 +23,9 @@ export class ServiceCallParameter implements IServiceCallParameter {
   @Prop({ required: true })
   name!: string;
 
+  @Prop({ default: '' })
+  key!: string;
+
   @Prop({
     required: true,
     enum: ['path', 'query', 'body', 'header'] satisfies ParameterTarget[],

@@ -72,5 +72,7 @@ export const calcParameters = (path: string): IServiceCallParameter[] => {
     }
   }
 
+  console.log('CALCULATED PARAMS', params);
+
   return params;
 };
