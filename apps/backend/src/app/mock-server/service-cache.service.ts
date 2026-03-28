@@ -1,16 +1,31 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { ServiceDocument } from '../services/schemas/service.schema';
 import calc from './workers/calc';
+
+/** Default 1 MB */
+const DEFAULT_DB_SIZE_LIMIT = 1024 * 1024;
 
 interface CacheEntry {
   db: Record<string, unknown>;
   timer?: ReturnType<typeof setTimeout>;
+  /** true quando il db ha superato il limite di dimensione */
+  dbOverflow: boolean;
 }
 
 @Injectable()
 export class ServiceCacheService {
   private readonly logger = new Logger(ServiceCacheService.name);
   private readonly cache = new Map<string, CacheEntry>();
+  private readonly dbSizeLimit: number;
+
+  constructor(private readonly configService: ConfigService) {
+    const envLimit = this.configService.get<string>(
+      'VIRTUALSERVICE_DB_SIZE_LIMIT',
+    );
+    this.dbSizeLimit = envLimit ? parseInt(envLimit, 10) : DEFAULT_DB_SIZE_LIMIT;
+    this.logger.log(`DB size limit per servizio: ${this.dbSizeLimit} bytes`);
+  }
 
   /**
    * Restituisce il db corrente dalla cache.
@@ -26,7 +41,7 @@ export class ServiceCacheService {
 
     // Inizializza il db calcolando l'espressione dbo
     const db = await this.evalDbo(id, service.dbo);
-    const entry: CacheEntry = { db };
+    const entry: CacheEntry = { db, dbOverflow: false };
     this.cache.set(id, entry);
 
     // Avvia lo scheduler se interval è valido
@@ -52,6 +67,11 @@ export class ServiceCacheService {
       clearTimeout(entry.timer);
     }
     this.cache.delete(serviceId);
+  }
+
+  /** Restituisce true se il db del servizio ha superato il limite di dimensione */
+  isDbOverflow(serviceId: string): boolean {
+    return this.cache.get(serviceId)?.dbOverflow ?? false;
   }
 
   /** Valuta l'espressione dbo e restituisce il db iniziale */
@@ -80,9 +100,22 @@ export class ServiceCacheService {
   }
 
   /**
+   * Misura la dimensione approssimativa in byte di un oggetto db.
+   * Usa JSON.stringify; in caso di strutture circolari restituisce Infinity.
+   */
+  private measureDbSize(db: Record<string, unknown>): number {
+    try {
+      return Buffer.byteLength(JSON.stringify(db), 'utf8');
+    } catch {
+      return Infinity;
+    }
+  }
+
+  /**
    * Avvia lo scheduler con setTimeout ricorsivo.
    * Al termine di ogni esecuzione (con o senza errore) ri-schedula.
    * Se l'esecuzione produce un db aggiornato, lo salva in cache.
+   * Se il db supera il limite di dimensione, lo scheduler viene fermato.
    */
   private startScheduler(service: ServiceDocument, entry: CacheEntry): void {
     const id = service._id.toString();
@@ -103,7 +136,21 @@ export class ServiceCacheService {
               result.error,
             );
           } else if (result.db) {
-            entry.db = result.db;
+            // Controlla la dimensione prima di accettare il nuovo db
+            const newDb = result.db as Record<string, unknown>;
+            const size = this.measureDbSize(newDb);
+
+            if (size > this.dbSizeLimit) {
+              entry.dbOverflow = true;
+              this.logger.error(
+                `[Service ${id}] DB size limit superato (${size} bytes > ${this.dbSizeLimit} bytes). ` +
+                `schedulerFn fermata, db congelato. Riavviare il servizio per ripristinare.`,
+              );
+              // Non aggiorna il db, non ri-schedula: il timer si ferma qui
+              return;
+            }
+
+            entry.db = newDb;
           }
         } catch (err) {
           this.logger.error(

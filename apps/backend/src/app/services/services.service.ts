@@ -2,19 +2,39 @@ import {
   Injectable,
   NotFoundException,
   ForbiddenException,
+  BadRequestException,
+  Logger,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model, isValidObjectId } from 'mongoose';
 import { Service, ServiceDocument } from './schemas/service.schema';
 import { ServiceCacheService } from '../mock-server/service-cache.service';
 
+/** Default 64 KB per singolo campo espressione */
+const DEFAULT_EXPRESSION_SIZE_LIMIT = 64 * 1024;
+
+interface ExpressionViolation {
+  field: string;
+  size: number;
+}
+
 @Injectable()
 export class ServicesService {
+  private readonly logger = new Logger(ServicesService.name);
+  private readonly expressionSizeLimit: number;
+
   constructor(
     @InjectModel(Service.name)
     private readonly serviceModel: Model<ServiceDocument>,
     private readonly cacheService: ServiceCacheService,
-  ) {}
+    private readonly configService: ConfigService,
+  ) {
+    const envLimit = this.configService.get<string>('VIRTUALSERVICE_EXPRESSION_SIZE_LIMIT');
+    this.expressionSizeLimit = envLimit
+      ? parseInt(envLimit, 10)
+      : DEFAULT_EXPRESSION_SIZE_LIMIT;
+  }
 
   /** Restituisce tutti i servizi dell'utente */
   async findAll(ownerId: string): Promise<ServiceDocument[]> {
@@ -37,6 +57,8 @@ export class ServicesService {
     dto: Record<string, unknown>,
     ownerId: string,
   ): Promise<ServiceDocument> {
+    this.validateExpressionSizes(dto);
+
     const existingId = dto['_id'] as string | undefined;
 
     if (existingId && isValidObjectId(existingId)) {
@@ -102,5 +124,50 @@ export class ServicesService {
     // Cancella la cache (timer + db) e reinizializza immediatamente
     this.cacheService.clearService(id);
     await this.cacheService.initIfNeeded(service);
+  }
+
+  /**
+   * Valida la dimensione dei campi espressione nel DTO.
+   * Campi controllati: schedulerFn, dbo, calls[].response, calls[].rules[].expression
+   * Lancia BadRequestException se un campo supera il limite.
+   */
+  private validateExpressionSizes(dto: Record<string, unknown>): void {
+    const limit = this.expressionSizeLimit;
+    const violations: ExpressionViolation[] = [];
+
+    const checkField = (value: unknown, field: string): void => {
+      if (typeof value === 'string' && Buffer.byteLength(value, 'utf8') > limit) {
+        violations.push({ field, size: Buffer.byteLength(value, 'utf8') });
+      }
+    };
+
+    // Campi a livello di servizio
+    checkField(dto['schedulerFn'], 'schedulerFn');
+    checkField(dto['dbo'], 'dbo');
+
+    // Campi nelle calls
+    const calls = dto['calls'];
+    if (Array.isArray(calls)) {
+      calls.forEach((call: Record<string, unknown>, ci: number) => {
+        checkField(call['response'], `calls[${ci}].response`);
+
+        const rules = call['rules'];
+        if (Array.isArray(rules)) {
+          rules.forEach((rule: Record<string, unknown>, ri: number) => {
+            checkField(rule['expression'], `calls[${ci}].rules[${ri}].expression`);
+          });
+        }
+      });
+    }
+
+    if (violations.length > 0) {
+      const details = violations
+        .map((v) => `${v.field} (${v.size} bytes)`)
+        .join(', ');
+      this.logger.warn(`Expression size limit exceeded: ${details}`);
+      throw new BadRequestException(
+        `Expression size limit exceeded (max ${limit} bytes): ${details}`,
+      );
+    }
   }
 }
