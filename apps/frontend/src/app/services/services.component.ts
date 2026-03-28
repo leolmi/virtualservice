@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -6,23 +6,18 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-
 import { DROP_FILE_TYPES } from '../core/constants/drop-file-types';
-import { ToolbarService } from '../core/services/toolbar.service';
-import { ToolbarCommand } from '../core/models/toolbar-command.model';
-import { selectUser } from '../auth/store/auth.selectors';
-import { logout } from '../auth/store/auth.actions';
 import {
-  selectStarredServices,
   selectOtherServices,
-  selectServicesLoading,
   selectServicesError,
+  selectServicesLoading,
+  selectStarredServices,
 } from './store/services.selectors';
 import {
+  createService,
+  deleteService,
   loadServices,
   saveService,
-  deleteService,
-  createService,
 } from './store/services.actions';
 import { IServiceItem } from './store/services.state';
 import { ServiceTileComponent } from './service-tile/service-tile.component';
@@ -44,7 +39,6 @@ import { ServiceTileComponent } from './service-tile/service-tile.component';
 export class ServicesComponent {
   private store = inject(Store);
   private router = inject(Router);
-  private toolbarService = inject(ToolbarService);
   private snackBar = inject(MatSnackBar);
 
   readonly loading = this.store.selectSignal(selectServicesLoading);
@@ -58,38 +52,6 @@ export class ServicesComponent {
 
   constructor() {
     this.store.dispatch(loadServices());
-    this.setupToolbar();
-    inject(DestroyRef).onDestroy(() => this.toolbarService.clear());
-  }
-
-  private setupToolbar(): void {
-    const user = this.store.selectSignal(selectUser)();
-    const commands: ToolbarCommand[] = [];
-
-    if (user?.role === 'admin') {
-      commands.push({
-        id: 'management',
-        icon: 'settings',
-        tooltip: 'Management',
-        action: () => this.router.navigate(['/management']),
-      });
-    }
-
-    commands.push({
-      id: 'help',
-      icon: 'help_outline',
-      tooltip: 'Help',
-      action: () => this.router.navigate(['/help']),
-    });
-    commands.push({ type: 'separator' });
-    commands.push({
-      id: 'logout',
-      icon: 'power_settings_new',
-      tooltip: 'Logout',
-      action: () => this.store.dispatch(logout()),
-    });
-
-    this.toolbarService.set(commands);
   }
 
   onToggleActive(service: IServiceItem): void {

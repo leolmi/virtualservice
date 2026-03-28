@@ -17,11 +17,9 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import {
   BasePathDialogComponent,
 } from './components/base-path-dialog/base-path-dialog.component';
-
 import { ToolbarService } from '../core/services/toolbar.service';
 import { ToolbarCommand } from '../core/models/toolbar-command.model';
-import { selectUser } from '../auth/store/auth.selectors';
-import { logout } from '../auth/store/auth.actions';
+
 import {
   selectEditorService,
   selectEditorActiveCallIndex,
@@ -60,8 +58,6 @@ export class EditorComponent {
   private toolbar = inject(ToolbarService);
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
-
-  private readonly user = this.store.selectSignal(selectUser);
 
   readonly service = this.store.selectSignal(selectEditorService);
   readonly activeCallIndex = this.store.selectSignal(selectEditorActiveCallIndex);
@@ -112,7 +108,6 @@ export class EditorComponent {
       const svc = this.service();
       const dirty = this.dirty();
       const saving = this.saving();
-      const user = this.user();
 
       const commands: ToolbarCommand[] = [
         {
@@ -143,23 +138,6 @@ export class EditorComponent {
           icon: 'view_module',
           tooltip: 'My services list',
           action: () => this.router.navigate(['/services']),
-        },
-        { type: 'separator' },
-        ...(user?.role === 'admin'
-          ? [
-              {
-                id: 'management',
-                icon: 'settings',
-                tooltip: 'Management',
-                action: () => this.router.navigate(['/management']),
-              },
-            ]
-          : []),
-        {
-          id: 'logout',
-          icon: 'power_settings_new',
-          tooltip: 'Logout',
-          action: () => this.store.dispatch(logout()),
         },
       ];
       this.toolbar.set(commands);

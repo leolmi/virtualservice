@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, effect, inject } from '@angular/core';
 import {
   FormBuilder,
   ReactiveFormsModule,
@@ -14,7 +14,7 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { login, loginWithGoogle } from '../store/auth.actions';
-import { selectAuthLoading, selectAuthError } from '../store/auth.selectors';
+import { selectAuthLoading, selectAuthError, selectIsLoggedIn, selectSessionRestored } from '../store/auth.selectors';
 import { APP_VERSION } from '../../core/tokens/app.tokens';
 import { Clipboard, ClipboardModule } from '@angular/cdk/clipboard';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
@@ -39,6 +39,21 @@ export class LoginComponent {
   private store = inject(Store);
   private fb = inject(FormBuilder);
   private router = inject(Router);
+
+  constructor() {
+    // Se la sessione è stata ripristinata e l'utente risulta autenticato,
+    // redirect a /services. Copre la race condition in cui restoreSessionSuccess
+    // scatta prima che il router abbia completato la navigazione verso /login.
+    // Controlla sessionRestored per NON interferire col flusso di login normale
+    // (dove loginSuccess$ si occupa di saveSession + navigate).
+    const isLoggedIn = this.store.selectSignal(selectIsLoggedIn);
+    const sessionRestored = this.store.selectSignal(selectSessionRestored);
+    effect(() => {
+      if (sessionRestored() && isLoggedIn()) {
+        this.router.navigate(['/services']);
+      }
+    });
+  }
 
   readonly NPM_LOCAL_URL = 'https://www.npmjs.com/package/virtualservice-local';
   private clipboard = inject(Clipboard);

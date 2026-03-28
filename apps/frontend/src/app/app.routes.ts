@@ -1,5 +1,6 @@
 import { Route } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
+import { adminGuard } from './core/guards/admin.guard';
 
 export const appRoutes: Route[] = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -62,5 +63,11 @@ export const appRoutes: Route[] = [
     canActivate: [authGuard],
     loadComponent: () =>
       import('./monitor/monitor.component').then((m) => m.MonitorComponent),
+  },
+  {
+    path: 'management',
+    canActivate: [adminGuard],
+    loadComponent: () =>
+      import('./management/management.component').then((m) => m.ManagementComponent),
   },
 ];

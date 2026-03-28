@@ -1,16 +1,20 @@
 import { Component, computed, inject } from '@angular/core';
 import { NgClass } from '@angular/common';
+import { Router } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatDialog } from '@angular/material/dialog';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { selectUser } from '../../../auth/store/auth.selectors';
+import { logout } from '../../../auth/store/auth.actions';
 import { ToolbarService } from '../../services/toolbar.service';
+import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'vs-toolbar',
@@ -29,6 +33,8 @@ import { ToolbarService } from '../../services/toolbar.service';
 export class ToolbarComponent {
   private breakpoints = inject(BreakpointObserver);
   private store = inject(Store);
+  private router = inject(Router);
+  private dialog = inject(MatDialog);
   private toolbarService = inject(ToolbarService);
 
   private isNarrowBreakpoint = toSignal(
@@ -45,6 +51,8 @@ export class ToolbarComponent {
 
   user = this.store.selectSignal(selectUser);
 
+  isAdmin = computed(() => this.user()?.role === 'admin');
+
   commands = this.toolbarService.commands;
 
   visibleCommands = computed(() =>
@@ -54,4 +62,39 @@ export class ToolbarComponent {
   buttonCommands = computed(() =>
     this.visibleCommands().filter((c) => c.type !== 'separator'),
   );
+
+  // ─── User menu actions ──────────────────────────────────────────────────────
+
+  onAdminArea(): void {
+    this.router.navigate(['/management']);
+  }
+
+  onHelp(): void {
+    this.router.navigate(['/help']);
+  }
+
+  onChangePassword(): void {
+    this.router.navigate(['/management'], { fragment: 'password' });
+  }
+
+  onDeleteAccount(): void {
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        data: {
+          title: 'Delete account',
+          message:
+            'Are you sure you want to delete your account and all your services? This action cannot be undone.',
+        },
+      })
+      .afterClosed()
+      .subscribe((confirmed) => {
+        if (confirmed) {
+          this.router.navigate(['/management'], { fragment: 'delete' });
+        }
+      });
+  }
+
+  onLogout(): void {
+    this.store.dispatch(logout());
+  }
 }

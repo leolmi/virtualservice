@@ -73,13 +73,27 @@
     gap: 8px;
     color: var(--vs-light);
 
+    .user-trigger {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 20px;
+      transition: background-color 0.15s;
+      margin-left: 8px;
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.12);
+      }
+    }
+
     .user-avatar {
       font-size: 28px;
       width: 28px;
       height: 28px;
       line-height: 28px;
       opacity: 0.85;
-      margin-right: 6px;
     }
 
     .user-avatar-img {
@@ -88,7 +102,6 @@
       border-radius: 50%;
       object-fit: cover;
       opacity: 0.9;
-      margin-right: 6px;
     }
 
     .user-name {
@@ -98,7 +111,13 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      margin-right: 16px;
+    }
+
+    .user-caret {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      opacity: 0.5;
     }
 
     .cmd-separator {
@@ -144,5 +163,21 @@
 
   .user-section {
     gap: 4px;
+
+    .user-trigger {
+      margin-left: 4px;
+      padding: 2px 4px;
+    }
   }
+}
+
+/* Menu separatore e color-warn (mat-menu è fuori dello shadow DOM) */
+.separator {
+  height: 1px;
+  background: rgba(0, 0, 0, 0.12);
+  margin: 4px 0;
+}
+
+.color-warn {
+  color: var(--vs-accent) !important;
 }

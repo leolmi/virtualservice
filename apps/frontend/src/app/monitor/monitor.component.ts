@@ -18,7 +18,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-
 import { ToolbarService } from '../core/services/toolbar.service';
 import { ToolbarCommand } from '../core/models/toolbar-command.model';
 import {
@@ -26,7 +25,7 @@ import {
   ConfirmDialogData,
 } from '../core/components/confirm-dialog/confirm-dialog.component';
 import { selectUser } from '../auth/store/auth.selectors';
-import { logout } from '../auth/store/auth.actions';
+
 import {
   ILogItem,
   LogRequest,
@@ -194,23 +193,6 @@ export class MonitorComponent implements OnDestroy {
           icon: 'view_module',
           tooltip: 'My services list',
           action: () => this.router.navigate(['/services']),
-        },
-        { type: 'separator' },
-        ...(u?.role === 'admin'
-          ? [
-              {
-                id: 'management',
-                icon: 'settings',
-                tooltip: 'Management',
-                action: () => this.router.navigate(['/management']),
-              } as ToolbarCommand,
-            ]
-          : []),
-        {
-          id: 'logout',
-          icon: 'power_settings_new',
-          tooltip: 'Logout',
-          action: () => this.store.dispatch(logout()),
         },
       ];
       this.toolbarService.set(commands);
