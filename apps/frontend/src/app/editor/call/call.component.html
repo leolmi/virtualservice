@@ -71,6 +71,76 @@
       </button>
     </div>
 
+    <!-- Headers section -->
+    <div class="kv-section" [class.open]="headersOpen()">
+      <div class="kv-header" (click)="toggleHeaders()">
+        <mat-icon class="kv-toggle">{{ headersOpen() ? 'expand_more' : 'chevron_right' }}</mat-icon>
+        <span class="kv-title">HEADERS</span>
+        @if (headerEntries().length) {
+          <span class="kv-badge">{{ headerEntries().length }}</span>
+        }
+      </div>
+      @if (headersOpen()) {
+        <div class="kv-body">
+          @for (entry of headerEntries(); track $index) {
+            <div class="kv-row">
+              <input
+                class="kv-input kv-key"
+                placeholder="Header name"
+                spellcheck="false"
+                [value]="entry.key"
+                (change)="onUpdateHeader($index, 'key', $any($event.target).value)" />
+              <input
+                class="kv-input kv-value"
+                placeholder="Value"
+                spellcheck="false"
+                [value]="entry.value"
+                (change)="onUpdateHeader($index, 'value', $any($event.target).value)" />
+              <mat-icon class="kv-delete" (click)="onDeleteHeader($index)">close</mat-icon>
+            </div>
+          }
+          <button mat-icon-button class="kv-add" matTooltip="Add header" (click)="onAddHeader()">
+            <mat-icon>add</mat-icon>
+          </button>
+        </div>
+      }
+    </div>
+
+    <!-- Cookies section -->
+    <div class="kv-section" [class.open]="cookiesOpen()">
+      <div class="kv-header" (click)="toggleCookies()">
+        <mat-icon class="kv-toggle">{{ cookiesOpen() ? 'expand_more' : 'chevron_right' }}</mat-icon>
+        <span class="kv-title">COOKIES</span>
+        @if (cookieEntries().length) {
+          <span class="kv-badge">{{ cookieEntries().length }}</span>
+        }
+      </div>
+      @if (cookiesOpen()) {
+        <div class="kv-body">
+          @for (entry of cookieEntries(); track $index) {
+            <div class="kv-row">
+              <input
+                class="kv-input kv-key"
+                placeholder="Cookie name"
+                spellcheck="false"
+                [value]="entry.key"
+                (change)="onUpdateCookie($index, 'key', $any($event.target).value)" />
+              <input
+                class="kv-input kv-value"
+                placeholder="Value"
+                spellcheck="false"
+                [value]="entry.value"
+                (change)="onUpdateCookie($index, 'value', $any($event.target).value)" />
+              <mat-icon class="kv-delete" (click)="onDeleteCookie($index)">close</mat-icon>
+            </div>
+          }
+          <button mat-icon-button class="kv-add" matTooltip="Add cookie" (click)="onAddCookie()">
+            <mat-icon>add</mat-icon>
+          </button>
+        </div>
+      }
+    </div>
+
     <!-- Response section -->
     <div class="section-label response-label">
       RESPONSE
