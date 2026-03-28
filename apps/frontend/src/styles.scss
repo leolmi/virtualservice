@@ -156,3 +156,16 @@ body {
     display: none;
   }
 }
+
+// ── Snackbar variants ─────────────────────────────────────────────────────
+.snack-error {
+  --mat-snack-bar-container-color: #b71c1c;
+  --mat-snack-bar-supporting-text-color: white;
+  --mat-snack-bar-button-color: #ffcdd2;
+}
+
+.snack-success {
+  --mat-snack-bar-container-color: #03600c;
+  --mat-snack-bar-supporting-text-color: white;
+  --mat-snack-bar-button-color: #b4ffb4;
+}
