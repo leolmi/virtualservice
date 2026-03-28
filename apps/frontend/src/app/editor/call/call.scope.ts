@@ -16,11 +16,26 @@ const getScopeVariables = (
     type: 'object',
     description:
       'Query-string parameters of the request (parameters with target: query)',
-    properties: queryParams.map((p) => ({
-      name: p.name,
-      type: 'string',
-      description: `Value of ?${p.name}=... in the URL`,
-    })),
+    properties: queryParams.reduce(
+      (acc, p) => [
+        ...acc,
+        {
+          name: p.name,
+          type: 'string',
+          description: `Value of parameter ${p.key || p.name}=... in the URL`,
+        },
+        ...(p.name !== p.key && !!p.key
+          ? [
+              {
+                name: p.key,
+                type: 'string',
+                description: `Value of parameter ${p.key}=... in the URL`,
+              },
+            ]
+          : []),
+      ],
+      <{ name: string; type: string; description: string }[]>[],
+    ),
     examples: queryParams.length
       ? [
           {
