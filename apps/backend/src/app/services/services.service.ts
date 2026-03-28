@@ -47,7 +47,13 @@ export class ServicesService {
         void _id; void owner; void creationDate;
         Object.assign(existing, updateData);
         existing.lastChange = Date.now();
-        return existing.save();
+        const saved = await existing.save();
+
+        // Pulisce la cache (ferma il timer scheduler se attivo).
+        // La prossima request reinizializzerà il servizio con i nuovi valori.
+        this.cacheService.clearService(existingId);
+
+        return saved;
       }
     }
 
