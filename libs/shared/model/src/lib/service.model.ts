@@ -13,8 +13,6 @@ export type ResponseType = 'json' | 'text' | 'file' | 'html';
 /** Ambito di utilizzo di un parametro nella chiamata */
 export type ParameterTarget = 'path' | 'query' | 'body' | 'header';
 
-export const PARAM_TARGET_PATH = 'path';
-export const PARAM_TARGET_QUERY = 'query';
 
 // ---------------------------------------------------------------------------
 

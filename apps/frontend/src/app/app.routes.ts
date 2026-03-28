@@ -6,27 +6,32 @@ export const appRoutes: Route[] = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   {
     path: 'login',
+    title: '',
     loadComponent: () =>
       import('./auth/login/login.component').then((m) => m.LoginComponent),
   },
   {
     path: 'help',
+    title: 'help',
     loadComponent: () =>
       import('./help/help.component').then((m) => m.HelpComponent),
   },
   {
     path: 'legal',
+    title: 'legal',
     loadComponent: () =>
       import('./legal/legal.component').then((m) => m.LegalComponent),
   },
   {
     path: 'services',
+    title: 'services',
     canActivate: [authGuard],
     loadComponent: () =>
       import('./services/services.component').then((m) => m.ServicesComponent),
   },
   {
     path: 'editor/:id',
+    title: 'editor',
     canActivate: [authGuard],
     loadComponent: () =>
       import('./editor/editor.component').then((m) => m.EditorComponent),
@@ -60,12 +65,14 @@ export const appRoutes: Route[] = [
   },
   {
     path: 'monitor/:id',
+    title: 'monitor',
     canActivate: [authGuard],
     loadComponent: () =>
       import('./monitor/monitor.component').then((m) => m.MonitorComponent),
   },
   {
     path: 'management',
+    title: 'management',
     canActivate: [adminGuard],
     loadComponent: () =>
       import('./management/management.component').then((m) => m.ManagementComponent),

@@ -6,7 +6,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { DROP_FILE_TYPES } from '../core/constants/drop-file-types';
 import {
   selectOtherServices,
   selectServicesError,
@@ -21,6 +20,7 @@ import {
 } from './store/services.actions';
 import { IServiceItem } from './store/services.state';
 import { ServiceTileComponent } from './service-tile/service-tile.component';
+import { DROP_FILE_TYPES } from '@virtualservice/shared/model';
 
 @Component({
   selector: 'vs-services',

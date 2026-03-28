@@ -1,3 +1,92 @@
 <div class="management-page">
-  <h2>Management</h2>
+  <h2 class="page-title">
+    <mat-icon class="title-icon">admin_panel_settings</mat-icon>
+    User Management
+  </h2>
+
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner diameter="40" />
+    </div>
+  }
+
+  @if (error(); as err) {
+    <div class="error-banner">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ err }}</span>
+      <button mat-button (click)="loadUsers()">Retry</button>
+    </div>
+  }
+
+  @if (!loading() && !error()) {
+    <div class="user-count">{{ users().length }} registered users</div>
+
+    <div class="users-list">
+      @for (user of users(); track user._id) {
+        <div class="user-card" [class.expanded]="expandedUserId() === user._id">
+
+          <!-- Header row -->
+          <div class="user-header" (click)="toggleExpand(user._id)">
+            <div class="user-identity">
+              @if (user.avatarUrl) {
+                <img class="user-avatar" [src]="user.avatarUrl" [alt]="user.email" referrerpolicy="no-referrer" />
+              } @else {
+                <mat-icon class="user-avatar-icon">account_circle</mat-icon>
+              }
+              <div class="user-info">
+                <span class="user-email">{{ user.email }}</span>
+                <span class="user-meta">
+                  {{ getAuthMethod(user) }}
+                  &middot;
+                  Registered {{ user.createdAt | date:'mediumDate' }}
+                  @if (!user.isEmailVerified) {
+                    &middot;
+                    <span class="badge warn">unverified</span>
+                  }
+                  @if (user.deletionRequestedAt) {
+                    &middot;
+                    <span class="badge danger">deletion requested</span>
+                  }
+                </span>
+              </div>
+            </div>
+            <div class="user-stats">
+              <span class="service-count" [class.zero]="user.serviceCount === 0">
+                {{ user.serviceCount }}
+              </span>
+              <span class="service-label">{{ user.serviceCount === 1 ? 'service' : 'services' }}</span>
+              <mat-icon class="expand-icon">
+                {{ expandedUserId() === user._id ? 'expand_less' : 'expand_more' }}
+              </mat-icon>
+            </div>
+          </div>
+
+          <!-- Expanded: service list -->
+          @if (expandedUserId() === user._id && user.services.length > 0) {
+            <div class="service-list">
+              @for (svc of user.services; track svc._id) {
+                <div class="service-row">
+                  <mat-icon class="svc-icon" [class.inactive]="!svc.active">
+                    {{ svc.active ? 'cloud_done' : 'cloud_off' }}
+                  </mat-icon>
+                  <span class="svc-name">{{ svc.name }}</span>
+                  <span class="svc-path mono">/{{ svc.path }}</span>
+                  @if (svc.starred) {
+                    <mat-icon class="svc-star">star</mat-icon>
+                  }
+                </div>
+              }
+            </div>
+          }
+
+          @if (expandedUserId() === user._id && user.services.length === 0) {
+            <div class="service-list empty">
+              No services created
+            </div>
+          }
+
+        </div>
+      }
+    </div>
+  }
 </div>

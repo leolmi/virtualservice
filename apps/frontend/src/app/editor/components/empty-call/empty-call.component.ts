@@ -1,8 +1,8 @@
 import { Component, computed, inject } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { DROP_FILE_TYPES } from '../../../core/constants/drop-file-types';
 import { selectEditorService } from '../../store/editor.selectors';
 import * as EditorActions from '../../store/editor.actions';
+import { DROP_FILE_TYPES } from '@virtualservice/shared/model';
 
 @Component({
   selector: 'vs-empty-call',

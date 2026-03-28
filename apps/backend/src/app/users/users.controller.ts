@@ -1,5 +1,6 @@
 import {
   Controller,
+  Get,
   Patch,
   Delete,
   Body,
@@ -8,7 +9,7 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import { JwtAuthGuard } from '@virtualservice/auth';
+import { JwtAuthGuard, RolesGuard, Roles } from '@virtualservice/auth';
 import { UpdatePasswordDto } from '@virtualservice/shared/dto';
 import { UsersService } from './users.service';
 import { RequestWithUser } from '../auth/interfaces/request-with-user.interface';
@@ -17,6 +18,18 @@ import { RequestWithUser } from '../auth/interfaces/request-with-user.interface'
 @UseGuards(JwtAuthGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
+
+  // ─── Admin ──────────────────────────────────────────────────────────────────
+
+  /** Lista utenti con conteggio servizi — solo admin */
+  @Get()
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  async findAll() {
+    return this.usersService.findAllWithServiceCount();
+  }
+
+  // ─── User self-service ──────────────────────────────────────────────────────
 
   @Patch('password')
   @HttpCode(HttpStatus.OK)

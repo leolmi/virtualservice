@@ -9,6 +9,7 @@ import { Model } from 'mongoose';
 import * as bcrypt from 'bcryptjs';
 import { randomUUID } from 'crypto';
 import { User, UserDocument } from './schemas/user.schema';
+import { Service, ServiceDocument } from '../services/schemas/service.schema';
 
 const SALT_ROUNDS = 10;
 const VERIFICATION_TOKEN_TTL_MS = 48 * 60 * 60 * 1000; // 48 hours
@@ -17,6 +18,7 @@ const VERIFICATION_TOKEN_TTL_MS = 48 * 60 * 60 * 1000; // 48 hours
 export class UsersService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    @InjectModel(Service.name) private readonly serviceModel: Model<ServiceDocument>,
   ) {}
 
   async findByEmail(email: string): Promise<UserDocument | null> {
@@ -25,6 +27,46 @@ export class UsersService {
 
   async findById(id: string): Promise<UserDocument | null> {
     return this.userModel.findById(id).exec();
+  }
+
+  /**
+   * Restituisce tutti gli utenti (escluso l'admin) con il conteggio
+   * e l'elenco dei servizi creati da ciascuno.
+   */
+  async findAllWithServiceCount(): Promise<unknown[]> {
+    // Recupera tutti gli utenti non-admin
+    const users = await this.userModel
+      .find({ role: { $ne: 'admin' } })
+      .select('email googleId avatarUrl isEmailVerified deletionRequestedAt role createdAt updatedAt')
+      .sort({ createdAt: -1 })
+      .lean()
+      .exec();
+
+    // Recupera tutti i servizi raggruppati per owner
+    const services = await this.serviceModel
+      .find()
+      .select('owner name path active starred')
+      .lean()
+      .exec();
+
+    const servicesByOwner = new Map<string, typeof services>();
+    for (const svc of services) {
+      const ownerId = String(svc.owner);
+      if (!servicesByOwner.has(ownerId)) {
+        servicesByOwner.set(ownerId, []);
+      }
+      servicesByOwner.get(ownerId)!.push(svc);
+    }
+
+    return users.map((user) => {
+      const userId = String(user._id);
+      const userServices = servicesByOwner.get(userId) ?? [];
+      return {
+        ...user,
+        services: userServices,
+        serviceCount: userServices.length,
+      };
+    });
   }
 
   async findByGoogleId(googleId: string): Promise<UserDocument | null> {

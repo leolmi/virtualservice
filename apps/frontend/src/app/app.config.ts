@@ -1,5 +1,5 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, TitleStrategy } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideStore } from '@ngrx/store';
@@ -14,6 +14,7 @@ import { editorReducer } from './editor/store/editor.reducer';
 import { EditorEffects } from './editor/store/editor.effects';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { APP_VERSION } from './core/tokens/app.tokens';
+import { AppTitleStrategy } from './core/services/app-title.strategy';
 import { version } from '../../../../package.json';
 
 export const appConfig: ApplicationConfig = {
@@ -25,5 +26,6 @@ export const appConfig: ApplicationConfig = {
     provideStore({ auth: authReducer, services: servicesReducer, editor: editorReducer }),
     provideEffects([AuthEffects, ServicesEffects, EditorEffects]),
     { provide: APP_VERSION, useValue: version },
+    { provide: TitleStrategy, useClass: AppTitleStrategy },
   ],
 };
