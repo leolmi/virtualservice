@@ -125,16 +125,16 @@
 } @else {
   <vs-empty-call />
 }
-
-<!-- FAB -->
-<button
-  mat-fab
-  class="run-btn"
-  aria-label="run call test"
-  matTooltip="run call test"
-  color="accent"
-  [disabled]="!activeCall() || testing()"
-  (click)="onRunTest()"
->
-  <mat-icon>flash_on</mat-icon>
-</button>
+<!-- Bottom FAB toolbar -->
+<div class="bottom-fab-bar">
+  <button
+    mat-fab
+    color="accent"
+    aria-label="run call test"
+    matTooltip="run call test"
+    [disabled]="!activeCall() || testing()"
+    (click)="onRunTest()"
+  >
+    <mat-icon class="fab-big-icon">flash_on</mat-icon>
+  </button>
+</div>

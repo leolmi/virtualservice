@@ -111,18 +111,6 @@
   margin: 8px 0;
 }
 
-/* Bottom FAB toolbar */
-.bottom-fab-bar {
-  position: fixed;
-  bottom: 16px;
-  right: 16px;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 12px;
-  background: transparent;
-  z-index: 10;
-}
 
 /* Narrow mode */
 @media only screen and (max-width: 800px) {
@@ -136,10 +124,5 @@
 
   .tiles-grid {
     gap: 12px;
-  }
-
-  .bottom-fab-bar {
-    right: 12px;
-    bottom: 12px;
   }
 }

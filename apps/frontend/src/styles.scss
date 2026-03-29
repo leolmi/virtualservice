@@ -38,6 +38,8 @@ html {
   --toolbar-height-wide: 140px;
   --toolbar-height-narrow: 60px;
 
+  --vs-big-icon: 32px;
+
   --mat-slide-toggle-handle-surface-color: white;
   --mat-sys-primary-container: #ff408150;
   --mat-sys-primary: #ff4081;
@@ -141,6 +143,27 @@ body {
   }
 }
 
+// ── Bottom FAB toolbar ─────────────────────────────────────────────────────
+.bottom-fab-bar {
+  --mat-fab-container-shape: 50%;
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  background: transparent;
+  z-index: 10;
+}
+
+.fab-big-icon {
+  font-size: var(--vs-big-icon) !important;
+  width: var(--vs-big-icon) !important;
+  height: var(--vs-big-icon) !important;
+  line-height: var(--vs-big-icon) !important;
+}
+
 
 .layout-narrow-hidden {
   display: unset;
@@ -155,6 +178,11 @@ body {
   }
   .layout-narrow-hidden {
     display: none;
+  }
+
+  .bottom-fab-bar {
+    right: 12px;
+    bottom: 12px;
   }
 }
 

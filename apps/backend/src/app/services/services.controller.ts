@@ -32,6 +32,7 @@ export class ServicesController {
   // ─── GET ────────────────────────────────────────────────────────────────────
 
   /** Lista dei servizi dell'utente autenticato */
+  @SkipThrottle({ default: true, strict: true })
   @Get()
   async findAll(@Req() req: RequestWithUser) {
     return this.servicesService.findAll(req.user.userId);
@@ -61,7 +62,11 @@ export class ServicesController {
     @Req() req: RequestWithUser,
   ) {
     const lastTs = parseInt(last, 10);
-    return this.logService.findByService(id, req.user.userId, isNaN(lastTs) ? undefined : lastTs);
+    return this.logService.findByService(
+      id,
+      req.user.userId,
+      isNaN(lastTs) ? undefined : lastTs,
+    );
   }
 
   /** @SkipThrottle: endpoint di polling, protetto da JWT. */
@@ -120,7 +125,10 @@ export class ServicesController {
 
   /** Salvataggio (upsert) di un servizio */
   @Post()
-  async save(@Body() dto: Record<string, unknown>, @Req() req: RequestWithUser) {
+  async save(
+    @Body() dto: Record<string, unknown>,
+    @Req() req: RequestWithUser,
+  ) {
     return this.servicesService.save(dto, req.user.userId);
   }
 

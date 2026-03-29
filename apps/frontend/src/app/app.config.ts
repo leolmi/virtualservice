@@ -1,5 +1,9 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
-import { provideRouter, TitleStrategy } from '@angular/router';
+import {
+  provideRouter,
+  TitleStrategy,
+  withInMemoryScrolling, withRouterConfig,
+} from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideStore } from '@ngrx/store';
@@ -20,7 +24,16 @@ import { version } from '../../../../package.json';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideRouter(appRoutes),
+    provideRouter(
+      appRoutes,
+      withRouterConfig({
+        paramsInheritanceStrategy: 'always'
+      }),
+      withInMemoryScrolling({
+        anchorScrolling: 'enabled',
+        scrollPositionRestoration: 'enabled',
+      })
+    ),
     provideHttpClient(withInterceptors([authInterceptor])),
     provideAnimationsAsync(),
     provideStore({ auth: authReducer, services: servicesReducer, editor: editorReducer }),

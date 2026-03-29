@@ -1,5 +1,5 @@
-import { Component, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { AfterViewInit, Component, inject, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
@@ -21,6 +21,8 @@ import {
 import { IServiceItem } from './store/services.state';
 import { ServiceTileComponent } from './service-tile/service-tile.component';
 import { DROP_FILE_TYPES } from '@virtualservice/shared/model';
+import { ViewportScroller } from '@angular/common';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'vs-services',
@@ -76,10 +78,6 @@ export class ServicesComponent {
 
   onCreateService(): void {
     this.store.dispatch(createService());
-  }
-
-  onGoToHelp(): void {
-    this.router.navigate(['/help']);
   }
 
   onDragOver(event: DragEvent): void {

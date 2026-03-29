@@ -1,6 +1,6 @@
 import { Component, computed, inject } from '@angular/core';
 import { NgClass } from '@angular/common';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -15,8 +15,14 @@ import { selectUser } from '../../../auth/store/auth.selectors';
 import { logout } from '../../../auth/store/auth.actions';
 import { AuthService } from '../../../auth/auth.service';
 import { ToolbarService } from '../../services/toolbar.service';
-import { ConfirmDialogComponent, ConfirmDialogData } from '../confirm-dialog/confirm-dialog.component';
-import { ChangePasswordDialogComponent, ChangePasswordDialogData } from '../change-password-dialog/change-password-dialog.component';
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogData,
+} from '../confirm-dialog/confirm-dialog.component';
+import {
+  ChangePasswordDialogComponent,
+  ChangePasswordDialogData,
+} from '../change-password-dialog/change-password-dialog.component';
 
 @Component({
   selector: 'vs-toolbar',
@@ -36,6 +42,7 @@ export class ToolbarComponent {
   private breakpoints = inject(BreakpointObserver);
   private store = inject(Store);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private dialog = inject(MatDialog);
   private authService = inject(AuthService);
   private toolbarService = inject(ToolbarService);
@@ -45,7 +52,9 @@ export class ToolbarComponent {
     { initialValue: false },
   );
 
-  isNarrow = computed(() => this.toolbarService.forceLow() || this.isNarrowBreakpoint(),);
+  isNarrow = computed(
+    () => this.toolbarService.forceLow() || this.isNarrowBreakpoint(),
+  );
 
   isForceLow = computed(() => this.toolbarService.forceLow());
 
@@ -73,13 +82,17 @@ export class ToolbarComponent {
   }
 
   onHelp(): void {
-    this.router.navigate(['/help']);
+    this.router.navigate(['/help'], {
+      fragment: this.toolbarService.helpContext(),
+    });
   }
 
   onChangePassword(): void {
     const user = this.user();
     this.dialog.open(ChangePasswordDialogComponent, {
-      data: { hasPassword: !!user?.password } satisfies ChangePasswordDialogData,
+      data: {
+        hasPassword: !!user?.password,
+      } satisfies ChangePasswordDialogData,
     });
   }
 

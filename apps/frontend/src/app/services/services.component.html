@@ -75,18 +75,12 @@
   <div class="bottom-fab-bar">
     <button
       mat-fab
-      matTooltip="Open help page"
-      (click)="onGoToHelp()"
-    >
-      <mat-icon>help_outline</mat-icon>
-    </button>
-    <button
-      mat-fab
       color="accent"
+      aria-label="Create new service"
       matTooltip="Create new service"
       (click)="onCreateService()"
     >
-      <mat-icon>add</mat-icon>
+      <mat-icon class="fab-big-icon">add</mat-icon>
     </button>
   </div>
 

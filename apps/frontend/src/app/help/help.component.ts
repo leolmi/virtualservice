@@ -2,12 +2,13 @@ import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { Location } from '@angular/common';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { map } from 'rxjs';
+import { filter, map, take } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { HelpScrollerDirective, SectionElement } from './help-scroller.directive';
 import { ToolbarService } from '../core/services/toolbar.service';
+import { ActivatedRoute } from '@angular/router';
 
 const DEFAULT_IMAGE = 'assets/help/cloud.png';
 
@@ -25,7 +26,12 @@ const SECTION_IDS = [
 @Component({
   selector: 'vs-help',
   standalone: true,
-  imports: [HelpScrollerDirective, MatIconModule, MatButtonModule, MatTooltipModule],
+  imports: [
+    HelpScrollerDirective,
+    MatIconModule,
+    MatButtonModule,
+    MatTooltipModule,
+  ],
   templateUrl: './help.component.html',
   styleUrl: './help.component.scss',
 })
@@ -33,10 +39,11 @@ export class HelpComponent implements OnInit, OnDestroy {
   private readonly location = inject(Location);
   private readonly toolbar = inject(ToolbarService);
   private readonly bp = inject(BreakpointObserver);
+  private route = inject(ActivatedRoute);
 
   readonly isWide = toSignal(
     this.bp.observe('(min-width: 800px)').pipe(map((r) => r.matches)),
-    { initialValue: true }
+    { initialValue: true },
   );
 
   readonly sectionIds = SECTION_IDS;
@@ -58,6 +65,14 @@ export class HelpComponent implements OnInit, OnDestroy {
         action: () => this.location.back(),
       },
     ]);
+
+    // Rileva il fragment nella rotta iniziale
+    this.route.fragment
+      .pipe(
+        take(1),
+        filter((f) => !!f),
+      )
+      .subscribe((f) => setTimeout(() => this.goTo(f || ''), 100));
   }
 
   ngOnDestroy(): void {

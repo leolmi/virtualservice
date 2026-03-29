@@ -170,13 +170,16 @@
     <vs-empty-call />
   }
 
-  <!-- FAB: create new call -->
-  <button
-    mat-fab
-    class="new-call-btn"
-    matTooltip="Create new call"
-    color="accent"
-    (click)="onAddCall()">
-    <mat-icon>add</mat-icon>
-  </button>
+  <!-- Bottom FAB toolbar -->
+  <div class="bottom-fab-bar">
+    <button
+      mat-fab
+      color="accent"
+      aria-label="Create new call"
+      matTooltip="Create new call"
+      (click)="onAddCall()"
+    >
+      <mat-icon class="fab-big-icon">add</mat-icon>
+    </button>
+  </div>
 </div>
