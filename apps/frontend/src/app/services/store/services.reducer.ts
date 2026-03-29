@@ -45,4 +45,20 @@ export const servicesReducer = createReducer(
     ...state,
     items: [...state.items, service],
   })),
+
+  on(ServicesActions.importServices, (state) => ({
+    ...state,
+    saving: true,
+    error: null,
+  })),
+  on(ServicesActions.importServicesSuccess, (state, { services }) => ({
+    ...state,
+    saving: false,
+    items: [...state.items, ...services],
+  })),
+  on(ServicesActions.importServicesFailure, (state, { error }) => ({
+    ...state,
+    saving: false,
+    error,
+  })),
 );

@@ -32,6 +32,7 @@ export class ServicesController {
   // ─── GET ────────────────────────────────────────────────────────────────────
 
   /** Lista dei servizi dell'utente autenticato */
+  @SkipThrottle({ default: true, strict: true })
   @Get()
   async findAll(@Req() req: RequestWithUser) {
     return this.servicesService.findAll(req.user.userId);
@@ -41,6 +42,7 @@ export class ServicesController {
    * Templates pubblici — non ancora implementato.
    * DEVE essere dichiarato PRIMA di :id per evitare conflitti di routing.
    */
+  @SkipThrottle({ default: true, strict: true })
   @Get('templates')
   getTemplates() {
     throw new InternalServerErrorException(NOT_IMPLEMENTED_MSG);
@@ -61,14 +63,24 @@ export class ServicesController {
     @Req() req: RequestWithUser,
   ) {
     const lastTs = parseInt(last, 10);
-    return this.logService.findByService(id, req.user.userId, isNaN(lastTs) ? undefined : lastTs, req.user.role);
+    return this.logService.findByService(
+      id,
+      req.user.userId,
+      isNaN(lastTs) ? undefined : lastTs,
+      req.user.role,
+    );
   }
 
   /** @SkipThrottle: endpoint di polling, protetto da JWT. */
   @SkipThrottle({ default: true, strict: true })
   @Get('monitor/:id')
   async monitor(@Param('id') id: string, @Req() req: RequestWithUser) {
-    return this.logService.findByService(id, req.user.userId, undefined, req.user.role);
+    return this.logService.findByService(
+      id,
+      req.user.userId,
+      undefined,
+      req.user.role,
+    );
   }
 
   /** Verifica disponibilità del path (globale su tutti i servizi) */
@@ -82,6 +94,7 @@ export class ServicesController {
   }
 
   /** Servizio per id (solo se l'utente ne è l'owner, admin bypassa) */
+  @SkipThrottle({ default: true, strict: true })
   @Get(':id')
   async findOne(@Param('id') id: string, @Req() req: RequestWithUser) {
     return this.servicesService.findOne(id, req.user.userId, req.user.role);
@@ -93,7 +106,11 @@ export class ServicesController {
   @Post('restart')
   @HttpCode(HttpStatus.OK)
   async restart(@Body() body: { _id: string }, @Req() req: RequestWithUser) {
-    await this.servicesService.restart(body._id, req.user.userId, req.user.role);
+    await this.servicesService.restart(
+      body._id,
+      req.user.userId,
+      req.user.role,
+    );
   }
 
   /** Creazione template pubblico — solo admin, non ancora implementato */
@@ -119,8 +136,12 @@ export class ServicesController {
   }
 
   /** Salvataggio (upsert) di un servizio */
+  @SkipThrottle({ default: true, strict: true })
   @Post()
-  async save(@Body() dto: Record<string, unknown>, @Req() req: RequestWithUser) {
+  async save(
+    @Body() dto: Record<string, unknown>,
+    @Req() req: RequestWithUser,
+  ) {
     return this.servicesService.save(dto, req.user.userId, req.user.role);
   }
 

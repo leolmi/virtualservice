@@ -1,8 +1,8 @@
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Router } from '@angular/router';
-import { catchError, map, switchMap, tap } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { catchError, map, switchMap, tap, mergeMap, toArray } from 'rxjs/operators';
+import { of, from } from 'rxjs';
 import * as ServicesActions from './services.actions';
 import { ServicesApiService } from '../services.service';
 
@@ -107,5 +107,25 @@ export class ServicesEffects {
         ),
       ),
     { dispatch: false },
+  );
+
+  importServices$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ServicesActions.importServices),
+      switchMap(({ services }) =>
+        from(services).pipe(
+          mergeMap((svc) => this.api.save(svc), 3),
+          toArray(),
+          map((saved) => ServicesActions.importServicesSuccess({ services: saved })),
+          catchError((err) =>
+            of(
+              ServicesActions.importServicesFailure({
+                error: err.error?.message ?? 'Failed to import services',
+              }),
+            ),
+          ),
+        ),
+      ),
+    ),
   );
 }

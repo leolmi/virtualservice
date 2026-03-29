@@ -6,8 +6,9 @@ export const PARAM_TARGET_PATH = 'path';
 export const PARAM_TARGET_QUERY = 'query';
 
 export const DROP_FILE_TYPES: DropFileType[] = [
-  { description: 'OpenApi / Swagger (SOA 2.0)', extensions: '*.json, *.yml' },
-  { description: 'Curl text file (bash style)', extensions: '*.txt, *.curl' },
-  { description: 'Postman (collection v2)', extensions: '*.json, *.yml' },
-  { description: 'Chrome log (.har)', extensions: '*.har' },
+  { description: 'OpenAPI / Swagger', extensions: '*.json' },
+  { description: 'Postman Collection v2', extensions: '*.json' },
+  { description: 'Insomnia v4', extensions: '*.json' },
+  { description: 'HAR (HTTP Archive)', extensions: '*.har' },
+  { description: 'cURL', extensions: '*.txt, *.curl, *.sh' },
 ];

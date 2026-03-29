@@ -46,3 +46,16 @@ export const createServiceFailure = createAction(
   '[Services] Create Failure',
   props<{ error: string }>(),
 );
+
+export const importServices = createAction(
+  '[Services] Import',
+  props<{ services: Partial<IServiceItem>[] }>(),
+);
+export const importServicesSuccess = createAction(
+  '[Services] Import Success',
+  props<{ services: IServiceItem[] }>(),
+);
+export const importServicesFailure = createAction(
+  '[Services] Import Failure',
+  props<{ error: string }>(),
+);

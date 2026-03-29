@@ -1,11 +1,12 @@
-import { AfterViewInit, Component, inject, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 import {
   selectOtherServices,
   selectServicesError,
@@ -15,14 +16,20 @@ import {
 import {
   createService,
   deleteService,
+  importServices,
   loadServices,
   saveService,
 } from './store/services.actions';
 import { IServiceItem } from './store/services.state';
 import { ServiceTileComponent } from './service-tile/service-tile.component';
 import { DROP_FILE_TYPES } from '@virtualservice/shared/model';
-import { ViewportScroller } from '@angular/common';
-import { take } from 'rxjs';
+import { parseImportFile } from './import/file-parser-registry';
+import { convertToServices } from './import/import-converter';
+import {
+  ImportDialogComponent,
+  ImportDialogData,
+  ImportDialogResult,
+} from './import/import-dialog/import-dialog.component';
 
 @Component({
   selector: 'vs-services',
@@ -42,6 +49,7 @@ export class ServicesComponent {
   private store = inject(Store);
   private router = inject(Router);
   private snackBar = inject(MatSnackBar);
+  private dialog = inject(MatDialog);
 
   readonly loading = this.store.selectSignal(selectServicesLoading);
   readonly error = this.store.selectSignal(selectServicesError);
@@ -92,7 +100,50 @@ export class ServicesComponent {
   onDrop(event: DragEvent): void {
     event.preventDefault();
     this.isDragOver = false;
-    // File parsing (curl/har/swagger/postman) — not yet implemented
-    this.snackBar.open('File import coming soon', 'Close', { duration: 3000 });
+
+    const file = event.dataTransfer?.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const content = reader.result as string;
+      try {
+        const result = parseImportFile(content, file.name);
+        this.openImportDialog(result.data, result.parserLabel);
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : 'Failed to parse file';
+        this.snackBar.open(message, 'Close', { duration: 5000 });
+      }
+    };
+    reader.onerror = () => {
+      this.snackBar.open('Failed to read file', 'Close', { duration: 3000 });
+    };
+    reader.readAsText(file);
+  }
+
+  private openImportDialog(parsed: ImportDialogData['parsed'], parserLabel: string): void {
+    this.dialog
+      .open(ImportDialogComponent, {
+        data: { parsed, parserLabel } satisfies ImportDialogData,
+        width: '640px',
+        maxHeight: '80vh',
+      })
+      .afterClosed()
+      .subscribe((result: ImportDialogResult | null) => {
+        if (!result || result.selected.size === 0) return;
+
+        const services = convertToServices(parsed, result.selected);
+        if (services.length === 0) {
+          this.snackBar.open('No compatible operations to import', 'Close', { duration: 3000 });
+          return;
+        }
+
+        this.store.dispatch(importServices({ services }));
+        this.snackBar.open(
+          `Importing ${services.length} service${services.length > 1 ? 's' : ''}…`,
+          undefined,
+          { duration: 2000 },
+        );
+      });
   }
 }
