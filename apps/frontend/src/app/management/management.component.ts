@@ -46,8 +46,8 @@ export class ManagementComponent {
     return this.users().filter((u) => u.email.toLowerCase().includes(q));
   });
 
-  readonly deletionCount = computed(() =>
-    this.filteredUsers().filter((u) => !!u.deletionRequestedAt).length,
+  readonly deletionCount = computed(
+    () => this.filteredUsers().filter((u) => !!u.deletionRequestedAt).length,
   );
 
   constructor() {
@@ -132,7 +132,8 @@ export class ManagementComponent {
       .subscribe((confirmed) => {
         if (!confirmed) return;
         this.managementService.deleteUser(user._id).subscribe({
-          next: () => this.users.update((list) => list.filter((u) => u._id !== user._id)),
+          next: () =>
+            this.users.update((list) => list.filter((u) => u._id !== user._id)),
         });
       });
   }
@@ -150,11 +151,41 @@ export class ManagementComponent {
       .subscribe((confirmed) => {
         if (!confirmed) return;
         this.managementService.restoreUser(user._id).subscribe({
-          next: () => this.users.update((list) =>
-            list.map((u) => u._id === user._id ? { ...u, deletionRequestedAt: undefined } : u),
-          ),
+          next: () =>
+            this.users.update((list) =>
+              list.map((u) =>
+                u._id === user._id
+                  ? { ...u, deletionRequestedAt: undefined }
+                  : u,
+              ),
+            ),
         });
       });
+  }
+
+  onOpenService(svc: { _id: string; }, event: Event): void {
+    event.stopPropagation();
+    this.router.navigate(['/editor', svc._id]);
+  }
+
+  onDownloadService(svc: { _id: string; name: string }, event: Event): void {
+    event.stopPropagation();
+    this.managementService.getService(svc._id).subscribe({
+      next: (service) => {
+        const filename = svc.name
+          .replace(/[^\w\-. ]/g, '_')
+          .trim()
+          .replace(/\s+/g, '-');
+        const json = JSON.stringify(service, null, 2);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${filename}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+      },
+    });
   }
 
   getAuthMethod(user: ManagedUser): string {

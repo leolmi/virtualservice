@@ -58,7 +58,9 @@
       @if (searchQuery()) { matching } @else { registered }
       {{ filteredUsers().length === 1 ? 'user' : 'users' }}
       @if (deletionCount() > 0) {
-        <span class="deletion-count">{{ deletionCount() }} pending deletion</span>
+        <span class="deletion-count">
+          &mdash; {{ deletionCount() }} pending deletion
+        </span>
       }
     </div>
 
@@ -115,6 +117,16 @@
                   @if (svc.starred) {
                     <mat-icon class="svc-star">star</mat-icon>
                   }
+                  <mat-icon
+                    class="as-button row-btn"
+                    matTooltip="Download as JSON"
+                    (click)="onDownloadService(svc, $event)"
+                  >download</mat-icon>
+                  <mat-icon
+                    class="as-button row-btn"
+                    matTooltip="Open service in editor"
+                    (click)="onOpenService(svc, $event)"
+                  >edit</mat-icon>
                 </div>
               }
             </div>

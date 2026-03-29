@@ -26,8 +26,12 @@ export class LogService {
     serviceId: string,
     ownerId: string,
     last?: number,
+    role?: string,
   ): Promise<LogDocument[]> {
-    const filter: Record<string, unknown> = { serviceId, owner: ownerId };
+    const filter: Record<string, unknown> = { serviceId };
+    if (role !== 'admin') {
+      filter['owner'] = ownerId;
+    }
     if (last !== undefined) {
       filter['time'] = { $gte: last };
     }

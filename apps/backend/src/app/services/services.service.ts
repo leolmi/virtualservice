@@ -41,11 +41,11 @@ export class ServicesService {
     return this.serviceModel.find({ owner: ownerId }).sort({ lastChange: -1 }).exec();
   }
 
-  /** Restituisce un servizio per id (solo se l'owner corrisponde) */
-  async findOne(id: string, ownerId: string): Promise<ServiceDocument> {
+  /** Restituisce un servizio per id (solo se l'owner corrisponde, admin bypassa) */
+  async findOne(id: string, ownerId: string, role?: string): Promise<ServiceDocument> {
     const service = await this.serviceModel.findById(id).exec();
     if (!service) throw new NotFoundException('Service not found');
-    if (service.owner !== ownerId) throw new ForbiddenException();
+    if (role !== 'admin' && service.owner !== ownerId) throw new ForbiddenException();
     return service;
   }
 
@@ -56,6 +56,7 @@ export class ServicesService {
   async save(
     dto: Record<string, unknown>,
     ownerId: string,
+    role?: string,
   ): Promise<ServiceDocument> {
     this.validateExpressionSizes(dto);
 
@@ -63,7 +64,7 @@ export class ServicesService {
 
     if (existingId && isValidObjectId(existingId)) {
       const existing = await this.serviceModel.findById(existingId).exec();
-      if (existing && existing.owner === ownerId) {
+      if (existing && (role === 'admin' || existing.owner === ownerId)) {
         // Aggiornamento: escludiamo i campi immutabili
         const { _id, owner, creationDate, ...updateData } = dto;
         void _id; void owner; void creationDate;
@@ -102,11 +103,11 @@ export class ServicesService {
     return { available: !existing };
   }
 
-  /** Elimina un servizio (solo se l'owner corrisponde) */
-  async remove(id: string, ownerId: string): Promise<void> {
+  /** Elimina un servizio (solo se l'owner corrisponde, admin bypassa) */
+  async remove(id: string, ownerId: string, role?: string): Promise<void> {
     const service = await this.serviceModel.findById(id).exec();
     if (!service) throw new NotFoundException('Service not found');
-    if (service.owner !== ownerId) throw new ForbiddenException();
+    if (role !== 'admin' && service.owner !== ownerId) throw new ForbiddenException();
 
     this.cacheService.clearService(id);
     await this.serviceModel.findByIdAndDelete(id).exec();
@@ -116,10 +117,10 @@ export class ServicesService {
    * Restart: resetta il dbo in cache e riavvia lo schedulerFn.
    * La prossima chiamata al servizio lo reinizializzerà automaticamente.
    */
-  async restart(id: string, ownerId: string): Promise<void> {
+  async restart(id: string, ownerId: string, role?: string): Promise<void> {
     const service = await this.serviceModel.findById(id).exec();
     if (!service) throw new NotFoundException('Service not found');
-    if (service.owner !== ownerId) throw new ForbiddenException();
+    if (role !== 'admin' && service.owner !== ownerId) throw new ForbiddenException();
 
     // Cancella la cache (timer + db) e reinizializza immediatamente
     this.cacheService.clearService(id);

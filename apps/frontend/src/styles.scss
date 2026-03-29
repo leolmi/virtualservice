@@ -143,6 +143,15 @@ body {
   }
 }
 
+.mat-icon {
+  &.as-button {
+    cursor: pointer;
+    &:hover {
+      background-color: var(--vs-light-grey);
+    }
+  }
+}
+
 // ── Bottom FAB toolbar ─────────────────────────────────────────────────────
 .bottom-fab-bar {
   --mat-fab-container-shape: 50%;

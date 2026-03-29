@@ -32,7 +32,6 @@ export class ServicesController {
   // ─── GET ────────────────────────────────────────────────────────────────────
 
   /** Lista dei servizi dell'utente autenticato */
-  @SkipThrottle({ default: true, strict: true })
   @Get()
   async findAll(@Req() req: RequestWithUser) {
     return this.servicesService.findAll(req.user.userId);
@@ -62,18 +61,14 @@ export class ServicesController {
     @Req() req: RequestWithUser,
   ) {
     const lastTs = parseInt(last, 10);
-    return this.logService.findByService(
-      id,
-      req.user.userId,
-      isNaN(lastTs) ? undefined : lastTs,
-    );
+    return this.logService.findByService(id, req.user.userId, isNaN(lastTs) ? undefined : lastTs, req.user.role);
   }
 
   /** @SkipThrottle: endpoint di polling, protetto da JWT. */
   @SkipThrottle({ default: true, strict: true })
   @Get('monitor/:id')
   async monitor(@Param('id') id: string, @Req() req: RequestWithUser) {
-    return this.logService.findByService(id, req.user.userId);
+    return this.logService.findByService(id, req.user.userId, undefined, req.user.role);
   }
 
   /** Verifica disponibilità del path (globale su tutti i servizi) */
@@ -86,10 +81,10 @@ export class ServicesController {
     return this.servicesService.isPathAvailable(path, serviceId);
   }
 
-  /** Servizio per id (solo se l'utente ne è l'owner) */
+  /** Servizio per id (solo se l'utente ne è l'owner, admin bypassa) */
   @Get(':id')
   async findOne(@Param('id') id: string, @Req() req: RequestWithUser) {
-    return this.servicesService.findOne(id, req.user.userId);
+    return this.servicesService.findOne(id, req.user.userId, req.user.role);
   }
 
   // ─── POST ───────────────────────────────────────────────────────────────────
@@ -98,7 +93,7 @@ export class ServicesController {
   @Post('restart')
   @HttpCode(HttpStatus.OK)
   async restart(@Body() body: { _id: string }, @Req() req: RequestWithUser) {
-    await this.servicesService.restart(body._id, req.user.userId);
+    await this.servicesService.restart(body._id, req.user.userId, req.user.role);
   }
 
   /** Creazione template pubblico — solo admin, non ancora implementato */
@@ -125,11 +120,8 @@ export class ServicesController {
 
   /** Salvataggio (upsert) di un servizio */
   @Post()
-  async save(
-    @Body() dto: Record<string, unknown>,
-    @Req() req: RequestWithUser,
-  ) {
-    return this.servicesService.save(dto, req.user.userId);
+  async save(@Body() dto: Record<string, unknown>, @Req() req: RequestWithUser) {
+    return this.servicesService.save(dto, req.user.userId, req.user.role);
   }
 
   // ─── DELETE ─────────────────────────────────────────────────────────────────
@@ -149,7 +141,7 @@ export class ServicesController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Param('id') id: string, @Req() req: RequestWithUser) {
-    await this.servicesService.remove(id, req.user.userId);
+    await this.servicesService.remove(id, req.user.userId, req.user.role);
   }
 
   /** Elimina tutto il log dell'utente autenticato */
