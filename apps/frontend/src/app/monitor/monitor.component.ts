@@ -61,7 +61,7 @@ function fmtMethod(item: ILogItem): string {
 
 function fmtPath(item: ILogItem): string {
   const r = req(item);
-  const p = r.path ?? '';
+  const p = (r.path ?? '').replace(/^\/service\//g, '/');
   const q = r.query;
   if (!q || Object.keys(q).length === 0) return p;
   const qs = Object.entries(q)

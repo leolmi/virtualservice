@@ -96,7 +96,10 @@
 
   &--selected {
     background: var(--vs-accent) !important;
-    color: #fff;
+    color: var(--vs-white) !important;
+    > * {
+      color: inherit !important;
+    }
   }
 
   &--error {
@@ -113,16 +116,14 @@
     padding-right: 16px;
   }
 
-  .col-time    { width: 110px; opacity: 0.65; }
+  .col-time    { width: 130px; opacity: 0.65; }
   .col-elapsed { width: 70px; }
   .col-origin  { width: 130px; opacity: 0.75; }
   .col-method  {
     width: 70px;
-    font-weight: 700;
+    font-weight: bold;
     text-transform: uppercase;
-    color: var(--vs-accent-light);
-
-    .log-item--selected & { color: inherit; }
+    color: var(--vs-accent);
   }
   .col-path    { flex: 1; padding-right: 0; }
 }

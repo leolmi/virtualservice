@@ -157,7 +157,6 @@ export class EditorComponent {
 
   onSelectCall(idx: number): void {
     this.store.dispatch(EditorActions.selectCall({ index: idx }));
-    this.navigateToTab('call');
   }
 
   onClearSelection(): void {
