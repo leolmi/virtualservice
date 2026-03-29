@@ -1,5 +1,4 @@
 <div class="management-page">
-
   <div class="admin-actions">
     <div class="action-card">
       <div class="action-info">
@@ -40,12 +39,32 @@
   }
 
   @if (!loading() && !error()) {
+    <div class="search-bar">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-icon matPrefix>search</mat-icon>
+        <input matInput placeholder="Search by email…"
+               [value]="searchQuery()"
+               (input)="searchQuery.set($any($event.target).value)" />
+        @if (searchQuery()) {
+          <button matSuffix mat-icon-button (click)="searchQuery.set('')">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </mat-form-field>
+    </div>
 
-    <div class="user-count">{{ users().length }} registered users</div>
+    <div class="user-count">
+      {{ filteredUsers().length }}
+      @if (searchQuery()) { matching } @else { registered }
+      {{ filteredUsers().length === 1 ? 'user' : 'users' }}
+      @if (deletionCount() > 0) {
+        <span class="deletion-count">{{ deletionCount() }} pending deletion</span>
+      }
+    </div>
 
     <div class="users-list">
-      @for (user of users(); track user._id) {
-        <div class="user-card" [class.expanded]="expandedUserId() === user._id">
+      @for (user of filteredUsers(); track user._id) {
+        <div class="user-card" [class.expanded]="expandedUserId() === user._id" [class.deletion-pending]="!!user.deletionRequestedAt">
 
           <!-- Header row -->
           <div class="user-header" (click)="toggleExpand(user._id)">
@@ -104,6 +123,21 @@
           @if (expandedUserId() === user._id && user.services.length === 0) {
             <div class="service-list empty">
               No services created
+            </div>
+          }
+
+          @if (expandedUserId() === user._id) {
+            <div class="user-actions">
+              @if (user.deletionRequestedAt) {
+                <button mat-stroked-button color="primary" (click)="onRestoreUser(user); $event.stopPropagation()">
+                  <mat-icon>restore</mat-icon>
+                  Restore
+                </button>
+              }
+              <button mat-stroked-button color="warn" (click)="onDeleteUser(user); $event.stopPropagation()">
+                <mat-icon>delete_forever</mat-icon>
+                Delete permanently
+              </button>
             </div>
           }
 

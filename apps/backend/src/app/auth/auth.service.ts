@@ -38,6 +38,12 @@ export class AuthService {
   }
 
   async login(user: UserDocument): Promise<{ accessToken: string }> {
+    if (user.deletionRequestedAt) {
+      throw new ForbiddenException(
+        'This account has been suspended pending deletion. Please contact the administrator.',
+      );
+    }
+
     if (!user.isEmailVerified) {
       throw new ForbiddenException(
         'You must verify your email before logging in. Please check your inbox.',
@@ -72,6 +78,11 @@ export class AuthService {
     // Cerca prima per googleId
     const existingByGoogle = await this.usersService.findByGoogleId(googleId);
     if (existingByGoogle) {
+      if (existingByGoogle.deletionRequestedAt) {
+        throw new ForbiddenException(
+          'This account has been suspended pending deletion. Please contact the administrator.',
+        );
+      }
       // Aggiorna l'avatar se è cambiato
       if (avatarUrl && existingByGoogle.avatarUrl !== avatarUrl) {
         return this.usersService.linkGoogleAccount(
@@ -86,6 +97,11 @@ export class AuthService {
     // Cerca per email (account locale esistente)
     const existingByEmail = await this.usersService.findByEmail(email);
     if (existingByEmail) {
+      if (existingByEmail.deletionRequestedAt) {
+        throw new ForbiddenException(
+          'This email belongs to an account pending deletion. Please contact the administrator.',
+        );
+      }
       // Unifica: aggiunge googleId all'account esistente
       return this.usersService.linkGoogleAccount(
         existingByEmail._id.toString(),
@@ -99,6 +115,11 @@ export class AuthService {
   }
 
   googleCallback(user: UserDocument): { accessToken: string } {
+    if (user.deletionRequestedAt) {
+      throw new ForbiddenException(
+        'This account has been suspended pending deletion. Please contact the administrator.',
+      );
+    }
     return { accessToken: this.generateToken(user) };
   }
 

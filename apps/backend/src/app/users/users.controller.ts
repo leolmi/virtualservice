@@ -3,6 +3,7 @@ import {
   Get,
   Patch,
   Delete,
+  Param,
   Body,
   Req,
   Res,
@@ -38,10 +39,29 @@ export class UsersController {
   @Roles('admin')
   async backup(@Res({ passthrough: true }) res: Response): Promise<StreamableFile> {
     const data = await this.usersService.backupDatabase();
-    const filename = `virtualservice-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    const filename = `backup-${new Date().toISOString().slice(0, 10)}.json`;
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
     return new StreamableFile(Buffer.from(JSON.stringify(data, null, 2)));
+  }
+
+  /** Eliminazione definitiva utente e relativi servizi — solo admin */
+  @Delete(':id')
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteUser(@Param('id') id: string): Promise<void> {
+    await this.usersService.deleteUserPermanently(id);
+  }
+
+  /** Ripristino utente (rimuove deletionRequestedAt) — solo admin */
+  @Patch(':id/restore')
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  @HttpCode(HttpStatus.OK)
+  async restoreUser(@Param('id') id: string): Promise<{ message: string }> {
+    await this.usersService.restoreUser(id);
+    return { message: 'User account restored successfully' };
   }
 
   // ─── User self-service ──────────────────────────────────────────────────────

@@ -1,6 +1,7 @@
 import {
   IsEmail,
   IsString,
+  IsOptional,
   MinLength,
   IsNotEmpty,
 } from 'class-validator';
@@ -29,8 +30,8 @@ export class RegisterDto {
 
 export class UpdatePasswordDto {
   @IsString()
-  @IsNotEmpty()
-  currentPassword!: string;
+  @IsOptional()
+  currentPassword?: string;
 
   @IsString()
   @MinLength(8, { message: 'La nuova password deve avere almeno 8 caratteri' })

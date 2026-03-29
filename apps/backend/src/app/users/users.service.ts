@@ -97,6 +97,11 @@ export class UsersService {
   ): Promise<{ user: UserDocument; verificationToken: string }> {
     const existing = await this.findByEmail(email);
     if (existing) {
+      if (existing.deletionRequestedAt) {
+        throw new ConflictException(
+          'This email belongs to an account pending deletion. Please contact the administrator.',
+        );
+      }
       throw new ConflictException(
         'An account with this email already exists',
       );
@@ -160,21 +165,20 @@ export class UsersService {
 
   async updatePassword(
     userId: string,
-    currentPassword: string,
+    currentPassword: string | undefined,
     newPassword: string,
   ): Promise<void> {
     const user = await this.userModel.findById(userId).exec();
     if (!user) throw new NotFoundException('User not found');
 
-    if (!user.password) {
-      throw new BadRequestException(
-        'This account uses Google OAuth and does not have a local password',
-      );
-    }
-
-    const passwordMatch = await bcrypt.compare(currentPassword, user.password);
-    if (!passwordMatch) {
-      throw new BadRequestException('Current password is incorrect');
+    if (user.password) {
+      if (!currentPassword) {
+        throw new BadRequestException('Current password is required');
+      }
+      const passwordMatch = await bcrypt.compare(currentPassword, user.password);
+      if (!passwordMatch) {
+        throw new BadRequestException('Current password is incorrect');
+      }
     }
 
     user.password = await bcrypt.hash(newPassword, SALT_ROUNDS);
@@ -238,6 +242,25 @@ export class UsersService {
         { upsert: true, new: true },
       )
       .exec();
+  }
+
+  async deleteUserPermanently(userId: string): Promise<void> {
+    const user = await this.userModel.findById(userId).exec();
+    if (!user) throw new NotFoundException('User not found');
+    if (user.role === 'admin') {
+      throw new BadRequestException('Cannot delete the admin account');
+    }
+
+    await this.serviceModel.deleteMany({ owner: userId }).exec();
+    await this.userModel.findByIdAndDelete(userId).exec();
+  }
+
+  async restoreUser(userId: string): Promise<void> {
+    const user = await this.userModel.findById(userId).exec();
+    if (!user) throw new NotFoundException('User not found');
+
+    user.deletionRequestedAt = null;
+    await user.save();
   }
 
   async backupDatabase(): Promise<DatabaseBackup> {

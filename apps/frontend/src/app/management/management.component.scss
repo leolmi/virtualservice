@@ -31,6 +31,12 @@
   font-size: 0.85rem;
   color: rgba(0, 0, 0, 0.5);
   margin-bottom: 16px;
+
+  .deletion-count {
+    margin-left: 32px;
+    color: #c62828;
+    font-weight: 600;
+  }
 }
 
 /* ─── Loading / Error ────────────────────────── */
@@ -98,7 +104,7 @@
   font-size: 28px;
   width: 28px;
   height: 28px;
-  color: var(--vs-accent);
+  color: var(--vs-primary);
   flex-shrink: 0;
   opacity: 0.8;
 }
@@ -113,6 +119,16 @@
   font-size: 0.78rem;
   color: rgba(0, 0, 0, 0.5);
   line-height: 1.4;
+}
+
+/* ─── Search ─────────────────────────────────── */
+
+.search-bar {
+  margin-bottom: 12px;
+
+  mat-form-field {
+    width: 100%;
+  }
 }
 
 /* ─── User list ──────────────────────────────── */
@@ -136,6 +152,11 @@
 
   &.expanded {
     border-color: var(--vs-primary);
+  }
+
+  &.deletion-pending {
+    background: var(--vs-accent-light-transp, rgba(255, 64, 129, 0.08));
+    border-color: var(--vs-accent, #ff4081);
   }
 }
 
@@ -291,6 +312,24 @@
     width: 16px;
     height: 16px;
     color: #ffc107;
+  }
+}
+
+/* ─── User actions (expanded) ────────────────── */
+
+.user-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 8px 16px 12px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+
+  button {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.8rem;
   }
 }
 

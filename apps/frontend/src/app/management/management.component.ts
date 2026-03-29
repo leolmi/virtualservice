@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
@@ -6,6 +6,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { ToolbarService } from '../core/services/toolbar.service';
 import { ManagementService, ManagedUser } from './management.service';
 import { ConfirmDialogComponent, ConfirmDialogData } from '../core/components/confirm-dialog/confirm-dialog.component';
@@ -19,6 +21,8 @@ import { ConfirmDialogComponent, ConfirmDialogData } from '../core/components/co
     MatButtonModule,
     MatTooltipModule,
     MatProgressSpinnerModule,
+    MatFormFieldModule,
+    MatInputModule,
   ],
   templateUrl: './management.component.html',
   styleUrl: './management.component.scss',
@@ -34,9 +38,28 @@ export class ManagementComponent {
   readonly error = signal<string | null>(null);
   readonly expandedUserId = signal<string | null>(null);
   readonly backing = signal(false);
+  readonly searchQuery = signal('');
+
+  readonly filteredUsers = computed(() => {
+    const q = this.searchQuery().trim().toLowerCase();
+    if (!q) return this.users();
+    return this.users().filter((u) => u.email.toLowerCase().includes(q));
+  });
+
+  readonly deletionCount = computed(() =>
+    this.filteredUsers().filter((u) => !!u.deletionRequestedAt).length,
+  );
 
   constructor() {
     this.toolbarService.set([
+      {
+        id: 'backup',
+        icon: 'cloud_download',
+        tooltip: 'Backup Database',
+        enabled: true,
+        action: () => this.onBackup(),
+      },
+      { type: 'separator' },
       {
         id: 'services',
         icon: 'view_module',
@@ -86,12 +109,50 @@ export class ManagementComponent {
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `virtualservice-backup-${new Date().toISOString().slice(0, 10)}.json`;
+            a.download = `backup-${new Date().toISOString().slice(0, 10)}.json`;
             a.click();
             URL.revokeObjectURL(url);
             this.backing.set(false);
           },
           error: () => this.backing.set(false),
+        });
+      });
+  }
+
+  onDeleteUser(user: ManagedUser): void {
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        data: {
+          title: 'Delete user permanently',
+          message: `Permanently delete "${user.email}" and all their services? This action cannot be undone.`,
+          confirmLabel: 'Delete permanently',
+        } satisfies ConfirmDialogData,
+      })
+      .afterClosed()
+      .subscribe((confirmed) => {
+        if (!confirmed) return;
+        this.managementService.deleteUser(user._id).subscribe({
+          next: () => this.users.update((list) => list.filter((u) => u._id !== user._id)),
+        });
+      });
+  }
+
+  onRestoreUser(user: ManagedUser): void {
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        data: {
+          title: 'Restore user',
+          message: `Restore access for "${user.email}"? The deletion request will be cancelled.`,
+          confirmLabel: 'Restore',
+        } satisfies ConfirmDialogData,
+      })
+      .afterClosed()
+      .subscribe((confirmed) => {
+        if (!confirmed) return;
+        this.managementService.restoreUser(user._id).subscribe({
+          next: () => this.users.update((list) =>
+            list.map((u) => u._id === user._id ? { ...u, deletionRequestedAt: undefined } : u),
+          ),
         });
       });
   }

@@ -13,8 +13,10 @@ import { map } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { selectUser } from '../../../auth/store/auth.selectors';
 import { logout } from '../../../auth/store/auth.actions';
+import { AuthService } from '../../../auth/auth.service';
 import { ToolbarService } from '../../services/toolbar.service';
-import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
+import { ConfirmDialogComponent, ConfirmDialogData } from '../confirm-dialog/confirm-dialog.component';
+import { ChangePasswordDialogComponent, ChangePasswordDialogData } from '../change-password-dialog/change-password-dialog.component';
 
 @Component({
   selector: 'vs-toolbar',
@@ -35,6 +37,7 @@ export class ToolbarComponent {
   private store = inject(Store);
   private router = inject(Router);
   private dialog = inject(MatDialog);
+  private authService = inject(AuthService);
   private toolbarService = inject(ToolbarService);
 
   private isNarrowBreakpoint = toSignal(
@@ -74,7 +77,10 @@ export class ToolbarComponent {
   }
 
   onChangePassword(): void {
-    this.router.navigate(['/management'], { fragment: 'password' });
+    const user = this.user();
+    this.dialog.open(ChangePasswordDialogComponent, {
+      data: { hasPassword: !!user?.password } satisfies ChangePasswordDialogData,
+    });
   }
 
   onDeleteAccount(): void {
@@ -83,14 +89,16 @@ export class ToolbarComponent {
         data: {
           title: 'Delete account',
           message:
-            'Are you sure you want to delete your account and all your services? This action cannot be undone.',
-        },
+            'Are you sure you want to request account deletion? Your account will be suspended and all access blocked until an administrator processes the request.',
+          confirmLabel: 'Request deletion',
+        } satisfies ConfirmDialogData,
       })
       .afterClosed()
       .subscribe((confirmed) => {
-        if (confirmed) {
-          this.router.navigate(['/management'], { fragment: 'delete' });
-        }
+        if (!confirmed) return;
+        this.authService.requestDeletion().subscribe({
+          next: () => this.store.dispatch(logout()),
+        });
       });
   }
 

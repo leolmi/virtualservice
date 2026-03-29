@@ -58,4 +58,8 @@ export class AuthService {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
   }
+
+  requestDeletion(): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>('/users/me');
+  }
 }
