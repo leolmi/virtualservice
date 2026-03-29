@@ -41,17 +41,23 @@ html {
   --vs-big-icon: 32px;
 
   --mat-slide-toggle-handle-surface-color: white;
-  --mat-sys-primary-container: #ff408150;
+  --mat-sys-primary-container: #ff4081;
   --mat-sys-primary: #ff4081;
-  --mat-sys-on-primary-container: #ff4081;
+  --mat-sys-on-primary-container: white;
   --mat-slide-toggle-selected-track-color: #ff4081;
   --mat-slide-toggle-selected-hover-track-color: #ff4081;
   --mat-slide-toggle-selected-focus-track-color: #ff4081;
   --mat-slide-toggle-selected-pressed-track-color: #ff4081;
 
+  --mat-fab-container-shape: 50%;
   --mat-fab-hover-container-elevation-shadow: 0;
   --mat-fab-container-elevation-shadow: 0;
   --mat-fab-focus-container-elevation-shadow: 0;
+
+  --mat-fab-small-container-shape: 50%;
+  --mat-fab-small-hover-container-elevation-shadow: 0;
+  --mat-fab-small-container-elevation-shadow: 0;
+  --mat-fab-small-focus-container-elevation-shadow: 0;
 
   --mat-dialog-container-shape: 3px;
   --mat-button-filled-container-shape: 3px;

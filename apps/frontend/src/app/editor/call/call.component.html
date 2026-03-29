@@ -99,7 +99,12 @@
               <mat-icon class="kv-delete" (click)="onDeleteHeader($index)">close</mat-icon>
             </div>
           }
-          <button mat-icon-button class="kv-add" matTooltip="Add header" (click)="onAddHeader()">
+          <button
+            mat-mini-fab
+            class="kv-add"
+            matTooltip="Add header"
+            color="accent"
+            (click)="onAddHeader()">
             <mat-icon>add</mat-icon>
           </button>
         </div>
@@ -134,7 +139,12 @@
               <mat-icon class="kv-delete" (click)="onDeleteCookie($index)">close</mat-icon>
             </div>
           }
-          <button mat-icon-button class="kv-add" matTooltip="Add cookie" (click)="onAddCookie()">
+          <button
+            mat-mini-fab
+            color="accent"
+            class="kv-add"
+            matTooltip="Add cookie"
+            (click)="onAddCookie()">
             <mat-icon>add</mat-icon>
           </button>
         </div>
