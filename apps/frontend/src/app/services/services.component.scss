@@ -26,16 +26,16 @@
   gap: 6px;
   pointer-events: none;
   z-index: 0;
+  opacity: .4;
+  user-select: none;
 
   .drop-hint-label {
     font-size: 0.875rem;
-    color: rgba(38, 50, 56, 0.2);
     text-align: center;
   }
 
   .drop-hint-types {
     font-size: 0.75rem;
-    color: rgba(38, 50, 56, 0.15);
     text-align: center;
   }
 }
