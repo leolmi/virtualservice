@@ -1,4 +1,11 @@
-import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  DestroyRef,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Store } from '@ngrx/store';
@@ -105,6 +112,13 @@ export class TestComponent {
     });
     const prefix = this.basePath();
     return `${prefix}/${callPath}`;
+  }
+
+  constructor() {
+    effect(() => {
+      this.activeCall();
+      this.results.set('');
+    });
   }
 
   onUpdateDescription(value: string): void {
