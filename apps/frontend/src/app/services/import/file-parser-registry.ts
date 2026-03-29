@@ -1,4 +1,5 @@
 import { FileParser, ParsedImport } from './parsers/file-parser';
+import { VirtualServiceParser } from './parsers/virtualservice.parser';
 import { OpenApiParser } from './parsers/openapi.parser';
 import { PostmanParser } from './parsers/postman.parser';
 import { InsomniaParser } from './parsers/insomnia.parser';
@@ -12,12 +13,14 @@ import { CurlParser } from './parsers/curl.parser';
  * the first one whose `canParse()` returns true.
  * To add a new format, implement `FileParser` and register it here.
  *
- * ORDER MATTERS: more specific detectors first (Postman, Insomnia, OpenAPI
- * all share .json extension — their canParse checks internal structure).
+ * ORDER MATTERS: more specific detectors first.
+ * VirtualService is first (own format). Then Postman, Insomnia, OpenAPI
+ * (all share .json — their canParse checks internal structure).
  * Curl is last because its canParse is text-based and less selective.
  */
 
 const PARSERS: FileParser[] = [
+  new VirtualServiceParser(),
   new PostmanParser(),
   new InsomniaParser(),
   new OpenApiParser(),

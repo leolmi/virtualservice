@@ -12,6 +12,7 @@ import {
   ParsedParameter,
   ParsedServiceGroup,
 } from './parsers/file-parser';
+import { VS_NATIVE_SOURCE_KEY } from './parsers/virtualservice.parser';
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -160,6 +161,57 @@ function groupToService(
   };
 }
 
+// ── Native VirtualService import ────────────────────────────────────────────
+
+function isObject(v: unknown): v is Record<string, unknown> {
+  return typeof v === 'object' && v !== null && !Array.isArray(v);
+}
+
+/**
+ * When the source is a native VirtualService JSON, we rebuild the IService
+ * from the original document, preserving dbo, schedulerFn, interval and the
+ * full IServiceCall objects. The user may have deselected some calls via the
+ * dialog, so we filter the calls array by matching method+path against the
+ * selected ParsedOperations.
+ */
+function convertNativeVirtualService(
+  source: Record<string, unknown>,
+  selected: Set<ParsedOperation>,
+): IService {
+  const now = Date.now();
+
+  // Build a set of selected method+path keys for filtering
+  const selectedKeys = new Set<string>();
+  for (const op of selected) {
+    selectedKeys.add(`${op.method}|${op.path}`);
+  }
+
+  // Filter original calls
+  const originalCalls = Array.isArray(source['calls']) ? source['calls'] : [];
+  const filteredCalls = originalCalls
+    .filter(isObject)
+    .filter((call: Record<string, unknown>) => {
+      const verb = (typeof call['verb'] === 'string' ? call['verb'] : 'GET').toUpperCase();
+      const path = typeof call['path'] === 'string' ? call['path'] : '/';
+      return selectedKeys.has(`${verb}|${path}`);
+    }) as unknown as IServiceCall[];
+
+  return {
+    owner: '',
+    starred: false,
+    lastChange: now,
+    creationDate: now,
+    name: typeof source['name'] === 'string' ? source['name'] : 'Imported Service',
+    description: typeof source['description'] === 'string' ? source['description'] : '',
+    active: false,
+    dbo: typeof source['dbo'] === 'string' ? source['dbo'] : '',
+    path: (typeof source['path'] === 'string' ? source['path'] : `import-${now}`) + `-${now}`,
+    calls: filteredCalls,
+    schedulerFn: typeof source['schedulerFn'] === 'string' ? source['schedulerFn'] : '',
+    interval: typeof source['interval'] === 'number' ? source['interval'] : 0,
+  };
+}
+
 // ── Public API ──────────────────────────────────────────────────────────────
 
 /**
@@ -174,6 +226,14 @@ export function convertToServices(
   parsed: ParsedImport,
   selected: Set<ParsedOperation>,
 ): IService[] {
+  // Native VirtualService import: preserve the original document as-is
+  const nativeSource = (parsed as unknown as Record<string, unknown>)[VS_NATIVE_SOURCE_KEY];
+  if (nativeSource && isObject(nativeSource)) {
+    const svc = convertNativeVirtualService(nativeSource, selected);
+    return svc.calls.length > 0 || selected.size === 0 ? [svc] : [];
+  }
+
+  // Generic import: convert from parsed operations
   return parsed.groups
     .map((group) => groupToService(group, selected))
     .filter((svc) => svc.calls.length > 0);
