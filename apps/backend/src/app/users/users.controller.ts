@@ -5,10 +5,13 @@ import {
   Delete,
   Body,
   Req,
+  Res,
   UseGuards,
   HttpCode,
   HttpStatus,
+  StreamableFile,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { JwtAuthGuard, RolesGuard, Roles } from '@virtualservice/auth';
 import { UpdatePasswordDto } from '@virtualservice/shared/dto';
 import { UsersService } from './users.service';
@@ -27,6 +30,18 @@ export class UsersController {
   @Roles('admin')
   async findAll() {
     return this.usersService.findAllWithServiceCount();
+  }
+
+  /** Backup completo del database — solo admin */
+  @Get('backup')
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  async backup(@Res({ passthrough: true }) res: Response): Promise<StreamableFile> {
+    const data = await this.usersService.backupDatabase();
+    const filename = `virtualservice-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    return new StreamableFile(Buffer.from(JSON.stringify(data, null, 2)));
   }
 
   // ─── User self-service ──────────────────────────────────────────────────────

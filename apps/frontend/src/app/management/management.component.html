@@ -1,4 +1,25 @@
 <div class="management-page">
+
+  <div class="admin-actions">
+    <div class="action-card">
+      <div class="action-info">
+        <mat-icon class="action-icon">cloud_download</mat-icon>
+        <div>
+          <div class="action-title">Backup Database</div>
+          <div class="action-desc">Download a complete JSON snapshot of all collections. Use it to restore data or migrate to another instance.</div>
+        </div>
+      </div>
+      <button mat-stroked-button (click)="onBackup()" [disabled]="backing()">
+        @if (backing()) {
+          <mat-spinner diameter="18" />
+        } @else {
+          <mat-icon>cloud_download</mat-icon>
+        }
+        Download backup
+      </button>
+    </div>
+  </div>
+
   <h2 class="page-title">
     <mat-icon class="title-icon">admin_panel_settings</mat-icon>
     User Management
@@ -19,6 +40,7 @@
   }
 
   @if (!loading() && !error()) {
+
     <div class="user-count">{{ users().length }} registered users</div>
 
     <div class="users-list">

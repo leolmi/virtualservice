@@ -60,6 +60,61 @@
   }
 }
 
+/* ─── Admin actions ──────────────────────────── */
+
+.admin-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.action-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  background: white;
+
+  button {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+}
+
+.action-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.action-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+  color: var(--vs-accent);
+  flex-shrink: 0;
+  opacity: 0.8;
+}
+
+.action-title {
+  font-size: 0.95rem;
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.action-desc {
+  font-size: 0.78rem;
+  color: rgba(0, 0, 0, 0.5);
+  line-height: 1.4;
+}
+
 /* ─── User list ──────────────────────────────── */
 
 .users-list {

@@ -3,9 +3,10 @@ import {
   NotFoundException,
   BadRequestException,
   ConflictException,
+  InternalServerErrorException,
 } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { InjectModel, InjectConnection } from '@nestjs/mongoose';
+import { Connection, Model } from 'mongoose';
 import * as bcrypt from 'bcryptjs';
 import { randomUUID } from 'crypto';
 import { User, UserDocument } from './schemas/user.schema';
@@ -14,11 +15,19 @@ import { Service, ServiceDocument } from '../services/schemas/service.schema';
 const SALT_ROUNDS = 10;
 const VERIFICATION_TOKEN_TTL_MS = 48 * 60 * 60 * 1000; // 48 hours
 
+const BACKUP_EXCLUDED_COLLECTIONS = ['logs'];
+
+export interface DatabaseBackup {
+  meta: { createdAt: string; version: number; dbName: string };
+  collections: Record<string, unknown[]>;
+}
+
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     @InjectModel(Service.name) private readonly serviceModel: Model<ServiceDocument>,
+    @InjectConnection() private readonly connection: Connection,
   ) {}
 
   async findByEmail(email: string): Promise<UserDocument | null> {
@@ -229,6 +238,28 @@ export class UsersService {
         { upsert: true, new: true },
       )
       .exec();
+  }
+
+  async backupDatabase(): Promise<DatabaseBackup> {
+    const db = this.connection.db;
+    if (!db) throw new InternalServerErrorException('Database connection not ready');
+
+    const collectionInfos = await db.listCollections().toArray();
+    const collections: Record<string, unknown[]> = {};
+
+    for (const info of collectionInfos) {
+      if (BACKUP_EXCLUDED_COLLECTIONS.includes(info.name)) continue;
+      collections[info.name] = await db.collection(info.name).find({}).toArray();
+    }
+
+    return {
+      meta: {
+        createdAt: new Date().toISOString(),
+        version: 1,
+        dbName: db.databaseName,
+      },
+      collections,
+    };
   }
 
   async regenerateVerificationToken(

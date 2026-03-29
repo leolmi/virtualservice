@@ -31,4 +31,8 @@ export class ManagementService {
   getUsers(): Observable<ManagedUser[]> {
     return this.http.get<ManagedUser[]>('/users');
   }
+
+  backup(): Observable<Blob> {
+    return this.http.get('/users/backup', { responseType: 'blob' });
+  }
 }
