@@ -9,15 +9,17 @@ import {
   HttpCode,
   HttpStatus,
   Query,
+  HttpException,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { Throttle, SkipThrottle } from '@nestjs/throttler';
+import { Logger } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { GoogleAuthGuard } from './guards/google-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { RegisterDto, LoginDto } from '@virtualservice/shared/dto';
+import { RegisterDto, LoginDto, ResetPasswordDto } from '@virtualservice/shared/dto';
 import { UserDocument } from '../users/schemas/user.schema';
 import { RequestWithUser } from './interfaces/request-with-user.interface';
 import { DEFAULT_FRONTEND_URL } from '../../defaults';
@@ -28,6 +30,8 @@ interface RequestWithPassportUser extends Request {
 
 @Controller('auth')
 export class AuthController {
+  private readonly logger = new Logger(AuthController.name);
+
   constructor(
     private readonly authService: AuthService,
     private readonly configService: ConfigService,
@@ -55,7 +59,34 @@ export class AuthController {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     @Body() _dto: LoginDto,
   ): Promise<{ accessToken: string }> {
+    // Utente migrato dalla vecchia app: nessuna password → invia mail di reset e notifica il client
+    const maybeMarker = req.user as unknown as { _migrated?: boolean; email?: string };
+    if (maybeMarker._migrated && maybeMarker.email) {
+      try {
+        await this.authService.handleMigratedLogin(maybeMarker.email);
+      } catch (err) {
+        this.logger.error(`Failed to send migration email to ${maybeMarker.email}`, err);
+      }
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.UNAUTHORIZED,
+          code: 'ACCOUNT_MIGRATION_REQUIRED',
+          message:
+            "We've updated our platform. Check your email to set a new password.",
+        },
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
     return this.authService.login(req.user);
+  }
+
+  @Throttle({ strict: { ttl: 60_000, limit: 5 } })
+  @Post('reset-password')
+  @HttpCode(HttpStatus.OK)
+  async resetPassword(
+    @Body() dto: ResetPasswordDto,
+  ): Promise<{ accessToken: string }> {
+    return this.authService.resetPassword(dto.token, dto.password, dto.confirmPassword);
   }
 
   @Get('verify-email')

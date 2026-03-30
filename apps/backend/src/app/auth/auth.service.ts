@@ -2,6 +2,7 @@ import {
   Injectable,
   ForbiddenException,
   ConflictException,
+  BadRequestException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
@@ -68,6 +69,26 @@ export class AuthService {
       message:
         'Verification email resent. Please check your inbox.',
     };
+  }
+
+  async handleMigratedLogin(email: string): Promise<void> {
+    const result = await this.usersService.generatePasswordResetToken(email);
+    // null = cooldown attivo, la mail è già stata inviata di recente
+    if (result) {
+      await this.mailService.sendPasswordResetEmail(email, result.token, true);
+    }
+  }
+
+  async resetPassword(
+    token: string,
+    password: string,
+    confirmPassword: string,
+  ): Promise<{ accessToken: string }> {
+    if (password !== confirmPassword) {
+      throw new BadRequestException('Passwords do not match');
+    }
+    const user = await this.usersService.setPasswordFromToken(token, password);
+    return { accessToken: this.generateToken(user) };
   }
 
   async findOrCreateGoogleUser(

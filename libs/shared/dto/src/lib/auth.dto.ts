@@ -42,3 +42,17 @@ export class RequestPasswordResetDto {
   @IsEmail({}, { message: 'Inserisci un indirizzo email valido' })
   email!: string;
 }
+
+export class ResetPasswordDto {
+  @IsString()
+  @IsNotEmpty()
+  token!: string;
+
+  @IsString()
+  @MinLength(8, { message: 'La password deve avere almeno 8 caratteri' })
+  password!: string;
+
+  @IsString()
+  @IsNotEmpty({ message: 'La conferma password è obbligatoria' })
+  confirmPassword!: string;
+}

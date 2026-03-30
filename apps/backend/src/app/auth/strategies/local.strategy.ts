@@ -10,14 +10,20 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     super({ usernameField: 'email' });
   }
 
-  async validate(email: string, password: string): Promise<UserDocument> {
-    const user = await this.usersService.validateLocalCredentials(
+  async validate(
+    email: string,
+    password: string,
+  ): Promise<UserDocument | { _migrated: true; email: string }> {
+    const result = await this.usersService.validateLocalCredentials(
       email,
       password,
     );
-    if (!user) {
+    if (result === 'migrated') {
+      return { _migrated: true, email };
+    }
+    if (!result) {
       throw new UnauthorizedException('Invalid credentials');
     }
-    return user;
+    return result;
   }
 }

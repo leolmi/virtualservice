@@ -82,7 +82,10 @@
                   {{ getAuthMethod(user) }}
                   &middot;
                   Registered {{ user.createdAt | date:'mediumDate' }}
-                  @if (!user.isEmailVerified) {
+                  @if (user.isMigrated) {
+                    &middot;
+                    <span class="badge info">migrated</span>
+                  } @else if (!user.isEmailVerified) {
                     &middot;
                     <span class="badge warn">unverified</span>
                   }

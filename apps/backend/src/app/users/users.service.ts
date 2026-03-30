@@ -14,6 +14,7 @@ import { Service, ServiceDocument } from '../services/schemas/service.schema';
 
 const SALT_ROUNDS = 10;
 const VERIFICATION_TOKEN_TTL_MS = 48 * 60 * 60 * 1000; // 48 hours
+const RESET_EMAIL_COOLDOWN_MS = 5 * 60 * 1000; // 5 minutes
 
 const BACKUP_EXCLUDED_COLLECTIONS = ['logs'];
 
@@ -46,7 +47,7 @@ export class UsersService {
     // Recupera tutti gli utenti non-admin
     const users = await this.userModel
       .find({ role: { $ne: 'admin' } })
-      .select('email googleId avatarUrl isEmailVerified deletionRequestedAt role createdAt updatedAt')
+      .select('email password googleId avatarUrl isEmailVerified deletionRequestedAt role createdAt updatedAt')
       .sort({ createdAt: -1 })
       .lean()
       .exec();
@@ -70,8 +71,11 @@ export class UsersService {
     return users.map((user) => {
       const userId = String(user._id);
       const userServices = servicesByOwner.get(userId) ?? [];
+      // Derive isMigrated flag, then strip the password hash from the response
+      const { password, ...safeUser } = user;
       return {
-        ...user,
+        ...safeUser,
+        isMigrated: !password && !user.googleId,
         services: userServices,
         serviceCount: userServices.length,
       };
@@ -196,12 +200,55 @@ export class UsersService {
   async validateLocalCredentials(
     email: string,
     password: string,
-  ): Promise<UserDocument | null> {
+  ): Promise<UserDocument | 'migrated' | null> {
     const user = await this.findByEmail(email);
-    if (!user || !user.password) return null;
+    if (!user) return null;
+
+    // Utente migrato dalla vecchia app: esiste ma non ha ancora una password
+    if (!user.password && !user.googleId) return 'migrated';
+
+    if (!user.password) return null;
 
     const isMatch = await bcrypt.compare(password, user.password);
     return isMatch ? user : null;
+  }
+
+  async generatePasswordResetToken(
+    email: string,
+  ): Promise<{ user: UserDocument; token: string } | null> {
+    const user = await this.findByEmail(email);
+    if (!user) throw new NotFoundException('User not found');
+
+    // Cooldown: se un token è stato generato da meno di 5 minuti, non rigenerare
+    if (user.emailVerificationExpires) {
+      const tokenCreatedAt = user.emailVerificationExpires.getTime() - VERIFICATION_TOKEN_TTL_MS;
+      if (Date.now() - tokenCreatedAt < RESET_EMAIL_COOLDOWN_MS) {
+        return null; // cooldown attivo, nessuna nuova mail
+      }
+    }
+
+    const token = randomUUID();
+    user.emailVerificationToken = token;
+    user.emailVerificationExpires = new Date(Date.now() + VERIFICATION_TOKEN_TTL_MS);
+    await user.save();
+
+    return { user, token };
+  }
+
+  async setPasswordFromToken(
+    token: string,
+    password: string,
+  ): Promise<UserDocument> {
+    const user = await this.findByVerificationToken(token);
+    if (!user) {
+      throw new BadRequestException('Invalid or expired token');
+    }
+
+    user.password = await bcrypt.hash(password, SALT_ROUNDS);
+    user.isEmailVerified = true;
+    user.emailVerificationToken = null;
+    user.emailVerificationExpires = null;
+    return user.save();
   }
 
   /**
