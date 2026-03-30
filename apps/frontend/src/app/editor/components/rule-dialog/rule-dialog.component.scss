@@ -1,4 +1,56 @@
+// ── Title bar with help toggle ──────────────────────────────────────────────
+.dialog-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .help-toggle {
+    color: rgba(0, 0, 0, 0.38);
+    &.active { color: var(--vs-primary); }
+  }
+}
+
+// ── Two-column layout ───────────────────────────────────────────────────────
+.dialog-body {
+  display: flex;
+  gap: 0;
+
+  &.with-help {
+    gap: 20px;
+    align-items: stretch;
+
+    .rule-fields {
+      flex: 0 0 520px;
+      display: flex;
+      flex-direction: column;
+
+      // L'ultimo field-col (expression editor) prende lo spazio residuo
+      .field-col:last-of-type {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+
+        .expression-editor {
+          flex: 1;
+          height: auto;
+          min-height: 180px;
+        }
+      }
+    }
+
+    .help-col {
+      flex: 1;
+      border-left: 1px solid rgba(0, 0, 0, 0.08);
+      padding-left: 20px;
+      overflow-y: auto;
+      max-height: 420px;
+    }
+  }
+}
+
+// ── Form fields ─────────────────────────────────────────────────────────────
 .rule-fields {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 14px;

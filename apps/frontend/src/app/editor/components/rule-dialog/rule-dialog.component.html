@@ -1,50 +1,71 @@
-<h2 mat-dialog-title>Rule editor</h2>
+<div mat-dialog-title class="dialog-title">
+  <span>Rule editor</span>
+  @if (helpContext) {
+    <button mat-icon-button
+      class="help-toggle"
+      [class.active]="showHelp()"
+      matTooltip="Toggle expression help"
+      (click)="toggleHelp()">
+      <mat-icon>help_outline</mat-icon>
+    </button>
+  }
+</div>
 
 <mat-dialog-content>
-  <div class="rule-fields">
+  <div class="dialog-body" [class.with-help]="showHelp()">
 
-    <div class="field-row">
-      <span class="field-label">Code</span>
-      <mat-form-field appearance="fill" class="code-field">
-        <mat-select [(ngModel)]="rule.code">
-          <mat-select-trigger>
-            <span class="opt-code">{{ rule.code }}</span>
-            <span class="opt-label">{{ getLabel(rule.code) }}</span>
-          </mat-select-trigger>
+    <div class="rule-fields">
 
-          @for (group of statusGroups; track group.category) {
-            <mat-optgroup [label]="group.category">
-              @for (s of group.codes; track s.code) {
-                <mat-option [value]="s.code">
-                  <span class="opt-code">{{ s.code }}</span>
-                  <span class="opt-label">{{ s.label }}</span>
-                </mat-option>
-              }
-            </mat-optgroup>
-          }
-        </mat-select>
-      </mat-form-field>
+      <div class="field-row">
+        <span class="field-label">Code</span>
+        <mat-form-field appearance="fill" class="code-field">
+          <mat-select [(ngModel)]="rule.code">
+            <mat-select-trigger>
+              <span class="opt-code">{{ rule.code }}</span>
+              <span class="opt-label">{{ getLabel(rule.code) }}</span>
+            </mat-select-trigger>
+
+            @for (group of statusGroups; track group.category) {
+              <mat-optgroup [label]="group.category">
+                @for (s of group.codes; track s.code) {
+                  <mat-option [value]="s.code">
+                    <span class="opt-code">{{ s.code }}</span>
+                    <span class="opt-label">{{ s.label }}</span>
+                  </mat-option>
+                }
+              </mat-optgroup>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="field-row">
+        <span class="field-label">Error text</span>
+        <input
+          type="text"
+          class="field-input"
+          [(ngModel)]="rule.error"
+          placeholder="Error message returned to the caller" />
+      </div>
+
+      <div class="field-col">
+        <span class="field-label">Validation expression</span>
+        <p class="sub-label">
+          The rule fires (error is returned) when the expression evaluates to <b>true</b>.
+        </p>
+        <vs-code-editor
+          class="expression-editor"
+          [value]="rule.expression"
+          (valueChange)="onExpressionChange($event)" />
+      </div>
+
     </div>
 
-    <div class="field-row">
-      <span class="field-label">Error text</span>
-      <input
-        type="text"
-        class="field-input"
-        [(ngModel)]="rule.error"
-        placeholder="Error message returned to the caller" />
-    </div>
-
-    <div class="field-col">
-      <span class="field-label">Validation expression</span>
-      <p class="sub-label">
-        The rule fires (error is returned) when the expression evaluates to <b>true</b>.
-      </p>
-      <vs-code-editor
-        class="expression-editor"
-        [value]="rule.expression"
-        (valueChange)="onExpressionChange($event)" />
-    </div>
+    @if (showHelp()) {
+      <div class="help-col">
+        <vs-expression-help [context]="helpContext" />
+      </div>
+    }
 
   </div>
 </mat-dialog-content>

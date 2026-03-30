@@ -3,6 +3,7 @@ import {
   ExpressionHelpContext,
   ScopeVariable,
 } from '../../core/models/expression-help.model';
+import { SCOPE_GUID } from '../editor-common.scope';
 
 export const getScopeContext = (
   service: IServiceItem | null,
@@ -55,20 +56,7 @@ export const getScopeContext = (
         },
       ],
     },
-    {
-      name: 'guid',
-      type: '(mask?: string) => string',
-      description: 'Generates a random GUID string',
-      tag: 'built-in',
-      examples: [
-        {
-          description: 'Standard GUID',
-          code: 'guid()',
-          result: '"a1b2-c3d4-e5f6-7890"',
-        },
-        { description: 'Custom mask', code: 'guid("xxxx-xxxx")' },
-      ],
-    },
+    SCOPE_GUID,
   ];
 
   return {

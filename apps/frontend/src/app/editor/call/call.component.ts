@@ -14,7 +14,7 @@ import {
   selectServiceBasePath,
 } from '../store/editor.selectors';
 import * as EditorActions from '../store/editor.actions';
-import { RuleDialogComponent } from '../components/rule-dialog/rule-dialog.component';
+import { RuleDialogComponent, RuleDialogData } from '../components/rule-dialog/rule-dialog.component';
 import { CodeEditorComponent } from '../../core/components/code-editor/code-editor.component';
 import { calcParameters } from '../../core/models/path.helper';
 import { ExpressionHelpComponent } from '../../core/components/expression-help/expression-help.component';
@@ -130,8 +130,9 @@ export class CallComponent {
       error: 'Error',
       code: 400,
     };
+    const data: RuleDialogData = { rule: newRule, helpContext: this.helpContext() };
     this.dialog
-      .open(RuleDialogComponent, { data: newRule, width: '600px' })
+      .open(RuleDialogComponent, { data, width: '600px', maxWidth: '960px' })
       .afterClosed()
       .subscribe((result: IServiceCallRule | null) => {
         if (!result) return;
@@ -142,9 +143,9 @@ export class CallComponent {
   onEditRule(ruleIndex: number): void {
     const call = this.activeCall();
     if (!call) return;
-    const rule = call.rules[ruleIndex];
+    const data: RuleDialogData = { rule: call.rules[ruleIndex], helpContext: this.helpContext() };
     this.dialog
-      .open(RuleDialogComponent, { data: rule, width: '600px' })
+      .open(RuleDialogComponent, { data, width: '600px', maxWidth: '960px' })
       .afterClosed()
       .subscribe((changes) => {
         if (!changes) return;

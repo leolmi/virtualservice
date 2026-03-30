@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
   MAT_DIALOG_DATA,
@@ -8,9 +8,12 @@ import {
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
-
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { IServiceCallRule } from '@virtualservice/shared/model';
 import { CodeEditorComponent } from '../../../core/components/code-editor/code-editor.component';
+import { ExpressionHelpComponent } from '../../../core/components/expression-help/expression-help.component';
+import { ExpressionHelpContext } from '../../../core/models/expression-help.model';
 
 // ── HTTP status codes ────────────────────────────────────────────────────────
 
@@ -63,7 +66,17 @@ export const HTTP_STATUS_GROUPS: HttpStatusGroup[] = [
   },
 ];
 
+// ── dialog data ──────────────────────────────────────────────────────────────
+
+export interface RuleDialogData {
+  rule: IServiceCallRule;
+  helpContext: ExpressionHelpContext | null;
+}
+
 // ── component ────────────────────────────────────────────────────────────────
+
+const WIDTH_NORMAL   = '600px';
+const WIDTH_WITH_HELP = '960px';
 
 @Component({
   selector: 'vs-rule-dialog',
@@ -74,18 +87,30 @@ export const HTTP_STATUS_GROUPS: HttpStatusGroup[] = [
     MatButtonModule,
     MatFormFieldModule,
     MatSelectModule,
+    MatIconModule,
+    MatTooltipModule,
     CodeEditorComponent,
+    ExpressionHelpComponent,
   ],
   templateUrl: './rule-dialog.component.html',
   styleUrl: './rule-dialog.component.scss',
 })
 export class RuleDialogComponent {
   private dialogRef = inject(MatDialogRef<RuleDialogComponent>);
+  private data      = inject<RuleDialogData>(MAT_DIALOG_DATA);
 
   /** Shallow copy of the incoming rule — edited locally until Done */
-  rule: IServiceCallRule = { ...inject<IServiceCallRule>(MAT_DIALOG_DATA) };
+  rule: IServiceCallRule = { ...this.data.rule };
 
+  readonly helpContext = this.data.helpContext;
+  readonly showHelp    = signal(false);
   readonly statusGroups = HTTP_STATUS_GROUPS;
+
+  toggleHelp(): void {
+    const next = !this.showHelp();
+    this.showHelp.set(next);
+    this.dialogRef.updateSize(next ? WIDTH_WITH_HELP : WIDTH_NORMAL);
+  }
 
   onExpressionChange(value: string): void {
     this.rule = { ...this.rule, expression: value };
