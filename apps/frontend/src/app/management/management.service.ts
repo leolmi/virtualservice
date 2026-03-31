@@ -31,8 +31,8 @@ export class ManagementService {
   private http = inject(HttpClient);
 
   getUsers(): Observable<ManagedUser[]> {
-    return of(MOCK_USERS);
-    //return this.http.get<ManagedUser[]>('/users');
+    // return of(MOCK_USERS);
+    return this.http.get<ManagedUser[]>('/users');
   }
 
   backup(): Observable<Blob> {
