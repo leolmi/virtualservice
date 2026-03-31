@@ -80,6 +80,44 @@ Nx Console is an editor extension that enriches your developer experience. It le
 
 [Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
 
+## Migrazione DB
+
+Lo script `scripts/migrate-db.js` consente di importare i dati da un backup JSON del vecchio database nel nuovo schema MongoDB.
+
+### Prerequisiti
+
+- Node.js installato
+- Dipendenze del progetto installate (`npm install --legacy-peer-deps`)
+- Accesso al MongoDB di destinazione
+
+### Uso
+
+```sh
+# Anteprima (dry-run) — mostra cosa verrebbe importato senza scrivere sul DB
+node scripts/migrate-db.js <backup.json> --dry-run
+
+# Esecuzione reale con URI esplicito
+node scripts/migrate-db.js <backup.json> --mongo-uri "mongodb://localhost:27017/virtualservice"
+
+# Oppure usando la variabile d'ambiente VIRTUALSERVICE_MONGO_URI
+export VIRTUALSERVICE_MONGO_URI="mongodb://localhost:27017/virtualservice"
+node scripts/migrate-db.js <backup.json>
+```
+
+### Cosa fa
+
+- **Utenti**: migra email, ruolo, avatar e Google OAuth. Le password non sono convertibili (il vecchio formato salt+PBKDF2 non e' compatibile con bcrypt), quindi vengono impostate a `null` — gli utenti dovranno reimpostare la password. Gli utenti migrati sono marcati come `isEmailVerified: true`.
+- **Servizi**: migra tutti i servizi con i relativi endpoint (calls), regole e parametri. Converte `starred` da numerico a booleano, `verb` da minuscolo a maiuscolo, `respType` da `object` a `json`.
+- **Idempotenza**: lo script usa `$setOnInsert` con upsert, quindi puo' essere rieseguito senza sovrascrivere documenti gia' presenti.
+
+### Esempio
+
+```sh
+node scripts/migrate-db.js "documents/Virtual Service - DB backup - 1774858035138.json" --dry-run
+```
+
+---
+
 ## Useful links
 
 Learn more:

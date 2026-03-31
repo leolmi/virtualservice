@@ -350,4 +350,19 @@ export class UsersService {
 
     return { user, verificationToken };
   }
+
+  /** Restituisce tutte le email degli utenti */
+  async getAllEmails(): Promise<string[]> {
+    const users = await this.userModel.find({}, { email: 1 }).lean().exec();
+    return users.map((u) => u.email);
+  }
+
+  /** Restituisce le email degli utenti con gli ID specificati */
+  async getEmailsByIds(ids: string[]): Promise<string[]> {
+    const users = await this.userModel
+      .find({ _id: { $in: ids } }, { email: 1 })
+      .lean()
+      .exec();
+    return users.map((u) => u.email);
+  }
 }

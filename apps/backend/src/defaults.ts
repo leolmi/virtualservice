@@ -6,7 +6,7 @@ export const DEFAULT_MONGO_URI = 'mongodb://localhost:27017/virtualservice';
 
 // Google OAuth 2.0
 export const DEFAULT_GOOGLE_CALLBACK_URL = 'https://virtualservice.herokuapp.com/auth/google/callback';
-export const DEFAULT_GOOGLE_CLIENT_ID = '895437854648-r84q9709ko06n3bqvfoo210ml90btvcf.apps.googleusercontent.com';
+export const DEFAULT_GOOGLE_CLIENT_ID = 'xxxxx';
 export const DEFAULT_GOOGLE_CLIENT_SECRET = 'xxx';
 
 // SMTP (Nodemailer)

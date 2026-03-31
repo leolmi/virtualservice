@@ -20,7 +20,10 @@ import { DEFAULT_MONGO_URI } from './defaults';
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
-        uri: configService.getOrThrow<string>('MONGO_URI', DEFAULT_MONGO_URI),
+        uri: configService.getOrThrow<string>(
+          'VIRTUALSERVICE_MONGO_URI',
+          DEFAULT_MONGO_URI,
+        ),
       }),
       inject: [ConfigService],
     }),

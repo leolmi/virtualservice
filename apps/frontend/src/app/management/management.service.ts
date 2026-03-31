@@ -48,4 +48,16 @@ export class ManagementService {
   restoreUser(userId: string): Observable<{ message: string }> {
     return this.http.patch<{ message: string }>(`/users/${userId}/restore`, {});
   }
+
+  sendMail(
+    subject: string,
+    body: string,
+    userIds?: string[],
+  ): Observable<{ sent: number; failed: number }> {
+    return this.http.post<{ sent: number; failed: number }>('/users/send-mail', {
+      subject,
+      body,
+      userIds: userIds?.length ? userIds : undefined,
+    });
+  }
 }

@@ -103,6 +103,56 @@ export class MailService {
     }
   }
 
+  /**
+   * Invia una mail generica (testo libero) a uno o più destinatari.
+   * Il body viene inserito in un template HTML semplice.
+   */
+  async sendBulkEmail(
+    recipients: string[],
+    subject: string,
+    body: string,
+  ): Promise<{ sent: number; failed: number }> {
+    const from = this.configService.get<string>('SMTP_FROM', DEFAULT_SMTP_FROM);
+    const html = this.buildGenericEmailHtml(subject, body);
+    const text = body;
+
+    let sent = 0;
+    let failed = 0;
+
+    for (const to of recipients) {
+      try {
+        await this.transporter.sendMail({ from, to, subject, html, text });
+        this.logger.log(`Bulk email sent to ${to}`);
+        sent++;
+      } catch (error) {
+        this.logger.error(`Failed to send bulk email to ${to}`, error);
+        failed++;
+      }
+    }
+
+    return { sent, failed };
+  }
+
+  private buildGenericEmailHtml(title: string, body: string): string {
+    // Converte \n in <br> per il body
+    const htmlBody = body.replace(/\n/g, '<br>');
+    return `
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>${title}</title></head>
+<body style="font-family: Arial, sans-serif; background: #f4f4f4; margin: 0; padding: 20px;">
+  <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 8px; padding: 32px;">
+    <h1 style="color: #333; margin-top: 0;">${title}</h1>
+    <div style="color: #555; line-height: 1.6;">${htmlBody}</div>
+    <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;">
+    <p style="color: #999; font-size: 11px;">
+      This email was sent by VirtualService administration.
+    </p>
+  </div>
+</body>
+</html>`;
+  }
+
   private buildPasswordResetEmailHtml(resetUrl: string, isMigration: boolean): string {
     const title = isMigration ? 'Set your new password' : 'Reset your password';
     const intro = isMigration

@@ -5,6 +5,7 @@ import { Service, ServiceSchema } from '../services/schemas/service.schema';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { AdminBootstrapService } from './admin-bootstrap.service';
+import { MailModule } from '../mail/mail.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { AdminBootstrapService } from './admin-bootstrap.service';
       { name: User.name, schema: UserSchema },
       { name: Service.name, schema: ServiceSchema },
     ]),
+    MailModule,
   ],
   providers: [UsersService, AdminBootstrapService],
   controllers: [UsersController],

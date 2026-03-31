@@ -50,3 +50,7 @@ Thumbs.db
 .env
 .env.*
 !.env.example
+
+# Secret files — NEVER commit
+.secret
+.secret.*

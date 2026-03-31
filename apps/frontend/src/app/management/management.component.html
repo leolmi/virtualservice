@@ -53,13 +53,28 @@
       </mat-form-field>
     </div>
 
-    <div class="user-count">
-      {{ filteredUsers().length }}
-      @if (searchQuery()) { matching } @else { registered }
-      {{ filteredUsers().length === 1 ? 'user' : 'users' }}
-      @if (deletionCount() > 0) {
-        <span class="deletion-count">
-          &mdash; {{ deletionCount() }} pending deletion
+    <div class="user-count-row">
+      <div class="user-count-left">
+        <mat-checkbox
+          [checked]="allFilteredSelected()"
+          [indeterminate]="selectedCount() > 0 && !allFilteredSelected()"
+          (change)="toggleSelectAll()"
+          matTooltip="Select all / Deselect all"
+        />
+        <span class="user-count">
+          {{ filteredUsers().length }}
+          @if (searchQuery()) { matching } @else { registered }
+          {{ filteredUsers().length === 1 ? 'user' : 'users' }}
+          @if (deletionCount() > 0) {
+            <span class="deletion-count">
+              &mdash; {{ deletionCount() }} pending deletion
+            </span>
+          }
+        </span>
+      </div>
+      @if (selectedCount() > 0) {
+        <span class="selection-info">
+          {{ selectedCount() }} selected
         </span>
       }
     </div>
@@ -70,6 +85,12 @@
 
           <!-- Header row -->
           <div class="user-header" (click)="toggleExpand(user._id)">
+            <mat-checkbox
+              [checked]="isSelected(user._id)"
+              (change)="toggleSelectUser(user._id)"
+              (click)="$event.stopPropagation()"
+              class="user-checkbox"
+            />
             <div class="user-identity">
               @if (user.avatarUrl) {
                 <img class="user-avatar" [src]="user.avatarUrl" [alt]="user.email" referrerpolicy="no-referrer" />

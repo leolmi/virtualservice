@@ -8,9 +8,11 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ToolbarService } from '../core/services/toolbar.service';
 import { ManagementService, ManagedUser } from './management.service';
 import { ConfirmDialogComponent, ConfirmDialogData } from '../core/components/confirm-dialog/confirm-dialog.component';
+import { SendMailDialogComponent, SendMailDialogData, SendMailDialogResult } from './send-mail-dialog/send-mail-dialog.component';
 
 @Component({
   selector: 'vs-management',
@@ -23,6 +25,7 @@ import { ConfirmDialogComponent, ConfirmDialogData } from '../core/components/co
     MatProgressSpinnerModule,
     MatFormFieldModule,
     MatInputModule,
+    MatCheckboxModule,
   ],
   templateUrl: './management.component.html',
   styleUrl: './management.component.scss',
@@ -38,7 +41,9 @@ export class ManagementComponent {
   readonly error = signal<string | null>(null);
   readonly expandedUserId = signal<string | null>(null);
   readonly backing = signal(false);
+  readonly sending = signal(false);
   readonly searchQuery = signal('');
+  readonly selectedUserIds = signal<Set<string>>(new Set());
 
   readonly filteredUsers = computed(() => {
     const q = this.searchQuery().trim().toLowerCase();
@@ -50,8 +55,24 @@ export class ManagementComponent {
     () => this.filteredUsers().filter((u) => !!u.deletionRequestedAt).length,
   );
 
+  readonly selectedCount = computed(() => this.selectedUserIds().size);
+
+  readonly allFilteredSelected = computed(() => {
+    const filtered = this.filteredUsers();
+    if (filtered.length === 0) return false;
+    const sel = this.selectedUserIds();
+    return filtered.every((u) => sel.has(u._id));
+  });
+
   constructor() {
     this.toolbarService.set([
+      {
+        id: 'send-mail',
+        icon: 'email',
+        tooltip: 'Send email to users',
+        enabled: true,
+        action: () => this.onSendMail(),
+      },
       {
         id: 'backup',
         icon: 'cloud_download',
@@ -186,6 +207,98 @@ export class ManagementComponent {
         URL.revokeObjectURL(url);
       },
     });
+  }
+
+  toggleSelectUser(userId: string): void {
+    this.selectedUserIds.update((set) => {
+      const next = new Set(set);
+      if (next.has(userId)) {
+        next.delete(userId);
+      } else {
+        next.add(userId);
+      }
+      return next;
+    });
+  }
+
+  isSelected(userId: string): boolean {
+    return this.selectedUserIds().has(userId);
+  }
+
+  toggleSelectAll(): void {
+    const filtered = this.filteredUsers();
+    if (this.allFilteredSelected()) {
+      // Deseleziona tutti i filtrati
+      this.selectedUserIds.update((set) => {
+        const next = new Set(set);
+        filtered.forEach((u) => next.delete(u._id));
+        return next;
+      });
+    } else {
+      // Seleziona tutti i filtrati
+      this.selectedUserIds.update((set) => {
+        const next = new Set(set);
+        filtered.forEach((u) => next.add(u._id));
+        return next;
+      });
+    }
+  }
+
+  onSendMail(): void {
+    const selected = this.selectedUserIds();
+    const count = selected.size;
+    const totalUsers = this.users().length;
+    const recipientLabel = count > 0
+      ? `${count} selected user${count > 1 ? 's' : ''}`
+      : `All users (${totalUsers})`;
+
+    this.dialog
+      .open(SendMailDialogComponent, {
+        data: {
+          recipientCount: count,
+          recipientLabel,
+        } satisfies SendMailDialogData,
+        width: '540px',
+      })
+      .afterClosed()
+      .subscribe((result: SendMailDialogResult | undefined) => {
+        if (!result) return;
+
+        const userIds = count > 0 ? [...selected] : undefined;
+        const confirmMsg = count > 0
+          ? `Send email to ${count} selected user${count > 1 ? 's' : ''}?`
+          : `Send email to ALL ${totalUsers} users?`;
+
+        this.dialog
+          .open(ConfirmDialogComponent, {
+            data: {
+              title: 'Confirm send',
+              message: confirmMsg,
+              confirmLabel: 'Send',
+            } satisfies ConfirmDialogData,
+          })
+          .afterClosed()
+          .subscribe((confirmed) => {
+            if (!confirmed) return;
+            this.sending.set(true);
+            this.managementService
+              .sendMail(result.subject, result.body, userIds)
+              .subscribe({
+                next: (res) => {
+                  this.sending.set(false);
+                  this.dialog.open(ConfirmDialogComponent, {
+                    data: {
+                      title: 'Email sent',
+                      message: `Successfully sent: ${res.sent}${res.failed > 0 ? `, Failed: ${res.failed}` : ''}`,
+                      confirmLabel: 'OK',
+                      cancelLabel: '',
+                    } satisfies ConfirmDialogData,
+                  });
+                },
+                error: () => this.sending.set(false),
+              });
+          });
+      });
   }
 
   getAuthMethod(user: ManagedUser): string {
