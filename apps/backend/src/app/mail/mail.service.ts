@@ -15,6 +15,8 @@ import {
 export class MailService {
   private readonly logger = new Logger(MailService.name);
   private readonly transporter: Transporter;
+  private readonly logoDataUri =
+    'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjwhRE9DVFlQRSBzdmcgIFBVQkxJQyAnLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4nICAnaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkJz48c3ZnIGhlaWdodD0iMzJweCIgaWQ9IkxheWVyXzEiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDMyIDMyOyIgdmVyc2lvbj0iMS4xIiB2aWV3Qm94PSIwIDAgMzIgMzIiIHdpZHRoPSIzMnB4IiB4bWw6c3BhY2U9InByZXNlcnZlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIj48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSg1NzYgNDgpIj48cGF0aCBkPSJNLTU0OC4wNzEtMzQuOTQ1Qy01NDguMDIyLTM1LjI5My01NDgtMzUuNjQ2LTU0OC0zNmMwLTQuNDEtMy41ODgtOC04LThjLTIuNTU5LDAtNC45MDcsMS4yMDgtNi4zOTYsMy4xODkgICBDLTU2Mi45MTktNDAuOTM4LTU2My40NTUtNDEtNTY0LTQxYy0zLjg1OCwwLTcsMy4xNDEtNyw3YzAsMC4wOTgsMC4wMDIsMC4xOTEsMC4wMDcsMC4yODhDLTU3My44ODctMzIuODU0LTU3Ni0zMC4xNjgtNTc2LTI3ICAgYzAsMy44NTcsMy4xNDIsNyw3LDdoMTdjNC40MTIsMCw4LTMuNTg4LDgtOEMtNTQ0LTMwLjkxNy01NDUuNjA0LTMzLjU1MS01NDguMDcxLTM0Ljk0NXogTS01NTItMjJoLTE3Yy0yLjc2MiwwLTUtMi4yMzgtNS01ICAgYzAtMi43NjMsMi4yMzgtNSw1LTVjMC4xNTIsMCwwLjI5OCwwLjAzMSwwLjQ0NSwwLjA0NUMtNTY4LjgzNi0zMi41OC01NjktMzMuMjctNTY5LTM0YzAtMi43NjMsMi4yMzgtNSw1LTUgICBjMC45MDIsMCwxLjczOCwwLjI1OCwyLjQ3LDAuNjc1Qy01NjAuNjI1LTQwLjQ4NC01NTguNDg5LTQyLTU1Ni00MmMzLjMxMywwLDYsMi42ODYsNiw2YzAsMC43ODgtMC4xNjEsMS41MzgtMC40MzgsMi4yMjkgICBjMi41NTUsMC42OSw0LjQzOCwzLDQuNDM4LDUuNzcxQy01NDYtMjQuNjg4LTU0OC42ODctMjItNTUyLTIyeiIvPjxwYXRoIGQ9Ik0tNTYxLjQxNC0zMGwtMi44MjctMi44MjlMLTU2Ny4wNjktMzBsNS42NTUsNS42NTZsOC40ODQtOC40ODVsLTIuODI4LTIuODI3TC01NjEuNDE0LTMweiIvPjwvZz48L3N2Zz4=';
 
   constructor(private readonly configService: ConfigService) {
     this.transporter = nodemailer.createTransport({
@@ -133,6 +135,12 @@ export class MailService {
     return { sent, failed };
   }
 
+  private get logoHtml(): string {
+    return `<div style="text-align: center; margin-bottom: 24px;">
+      <img src="${this.logoDataUri}" alt="VirtualService" width="48" height="48" style="display: inline-block;">
+    </div>`;
+  }
+
   private buildGenericEmailHtml(title: string, body: string): string {
     // Converte \n in <br> per il body
     const htmlBody = body.replace(/\n/g, '<br>');
@@ -142,6 +150,7 @@ export class MailService {
 <head><meta charset="UTF-8"><title>${title}</title></head>
 <body style="font-family: Arial, sans-serif; background: #f4f4f4; margin: 0; padding: 20px;">
   <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 8px; padding: 32px;">
+    ${this.logoHtml}
     <h1 style="color: #333; margin-top: 0;">${title}</h1>
     <div style="color: #555; line-height: 1.6;">${htmlBody}</div>
     <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;">
@@ -167,6 +176,7 @@ export class MailService {
 <head><meta charset="UTF-8"><title>${title}</title></head>
 <body style="font-family: Arial, sans-serif; background: #f4f4f4; margin: 0; padding: 20px;">
   <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 8px; padding: 32px;">
+    ${this.logoHtml}
     <h1 style="color: #333; margin-top: 0;">${title}</h1>
     <p style="color: #555; line-height: 1.6;">${intro}</p>
     <div style="text-align: center; margin: 32px 0;">
@@ -196,6 +206,7 @@ export class MailService {
 <head><meta charset="UTF-8"><title>Confirm Email</title></head>
 <body style="font-family: Arial, sans-serif; background: #f4f4f4; margin: 0; padding: 20px;">
   <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 8px; padding: 32px;">
+    ${this.logoHtml}
     <h1 style="color: #333; margin-top: 0;">Welcome to VirtualService</h1>
     <p style="color: #555; line-height: 1.6;">
       Thank you for signing up! Click the button below to activate your account.
