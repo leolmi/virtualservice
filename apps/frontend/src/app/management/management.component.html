@@ -8,13 +8,31 @@
           <div class="action-desc">Download a complete JSON snapshot of all collections. Use it to restore data or migrate to another instance.</div>
         </div>
       </div>
-      <button mat-stroked-button (click)="onBackup()" [disabled]="backing()">
+      <button mat-stroked-button class="action-btn" (click)="onBackup()" [disabled]="backing()">
         @if (backing()) {
           <mat-spinner diameter="18" />
         } @else {
           <mat-icon>cloud_download</mat-icon>
         }
         Download backup
+      </button>
+    </div>
+
+    <div class="action-card">
+      <div class="action-info">
+        <mat-icon class="action-icon">send</mat-icon>
+        <div>
+          <div class="action-title">Send an email</div>
+          <div class="action-desc">Send an email to {{ selectedCount()>0 ? 'selected' : 'all' }} users.</div>
+        </div>
+      </div>
+      <button mat-stroked-button class="action-btn" (click)="onSendMail()" [disabled]="sending()">
+        @if (sending()) {
+          <mat-spinner diameter="18" />
+        } @else {
+          <mat-icon>send</mat-icon>
+        }
+        Send EMail
       </button>
     </div>
   </div>

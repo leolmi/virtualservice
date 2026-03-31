@@ -67,21 +67,6 @@ export class ManagementComponent {
   constructor() {
     this.toolbarService.set([
       {
-        id: 'send-mail',
-        icon: 'email',
-        tooltip: 'Send email to users',
-        enabled: true,
-        action: () => this.onSendMail(),
-      },
-      {
-        id: 'backup',
-        icon: 'cloud_download',
-        tooltip: 'Backup Database',
-        enabled: true,
-        action: () => this.onBackup(),
-      },
-      { type: 'separator' },
-      {
         id: 'services',
         icon: 'view_module',
         tooltip: 'My services list',

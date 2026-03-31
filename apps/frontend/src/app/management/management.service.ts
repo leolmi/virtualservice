@@ -1,6 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
+import { MOCK_USERS } from './management.mock';
 
 export interface UserService {
   _id: string;
@@ -30,7 +31,8 @@ export class ManagementService {
   private http = inject(HttpClient);
 
   getUsers(): Observable<ManagedUser[]> {
-    return this.http.get<ManagedUser[]>('/users');
+    return of(MOCK_USERS);
+    //return this.http.get<ManagedUser[]>('/users');
   }
 
   backup(): Observable<Blob> {
@@ -54,10 +56,13 @@ export class ManagementService {
     body: string,
     userIds?: string[],
   ): Observable<{ sent: number; failed: number }> {
-    return this.http.post<{ sent: number; failed: number }>('/users/send-mail', {
-      subject,
-      body,
-      userIds: userIds?.length ? userIds : undefined,
-    });
+    return this.http.post<{ sent: number; failed: number }>(
+      '/users/send-mail',
+      {
+        subject,
+        body,
+        userIds: userIds?.length ? userIds : undefined,
+      },
+    );
   }
 }
