@@ -40,18 +40,21 @@ export const appRoutes: Route[] = [
     children: [
       {
         path: 'call',
+        title: 'editor call',
         data: { helpContext: 'editor-call' },
         loadComponent: () =>
           import('./editor/call/call.component').then((m) => m.CallComponent),
       },
       {
         path: 'test',
+        title: 'editor test',
         data: { helpContext: 'editor-test' },
         loadComponent: () =>
           import('./editor/test/test.component').then((m) => m.TestComponent),
       },
       {
         path: 'database',
+        title: 'editor database',
         data: { helpContext: 'editor-database' },
         loadComponent: () =>
           import('./editor/database/database.component').then(
@@ -60,6 +63,7 @@ export const appRoutes: Route[] = [
       },
       {
         path: 'function',
+        title: 'editor function',
         data: { helpContext: 'timed-function' },
         loadComponent: () =>
           import('./editor/function/function.component').then(
