@@ -54,6 +54,6 @@ import { DEFAULT_MONGO_URI } from './defaults';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer): void {
-    consumer.apply(RequestLoggerMiddleware).forRoutes('*');
+    consumer.apply(RequestLoggerMiddleware).forRoutes('*path');
   }
 }

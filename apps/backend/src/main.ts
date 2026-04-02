@@ -57,7 +57,7 @@ async function bootstrap(): Promise<void> {
     // SPA fallback: qualsiasi rotta non gestita da NestJS restituisce index.html
     // (necessario per il client-side routing di Angular)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    app.getHttpAdapter().getInstance().get('*', (_req: any, res: any) => {
+    app.getHttpAdapter().getInstance().get('*path', (_req: any, res: any) => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
       res.sendFile(join(frontendPath, 'index.html'));
     });
