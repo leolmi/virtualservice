@@ -5,20 +5,10 @@
   "projectType": "application",
   "targets": {
     "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
+      "executor": "nx:run-commands",
       "options": {
-        "outputPath": "dist/apps/backend",
-        "main": "apps/backend/src/main.ts",
-        "tsConfig": "apps/backend/tsconfig.app.json",
-        "assets": [
-          "apps/backend/src/assets",
-          {
-            "glob": "calc-worker.js",
-            "input": "apps/backend/src/app/mock-server/workers",
-            "output": "src/app/mock-server/workers"
-          }
-        ]
+        "command": "webpack-cli build",
+        "args": ["node-env=production"]
       }
     },
     "serve": {

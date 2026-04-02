@@ -2,13 +2,11 @@ import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
-import { existsSync } from 'fs';
-import { join } from 'path';
+// import { existsSync } from 'fs';
+// import { join } from 'path';
 import { AppModule } from './app.module';
 import { DEFAULT_PORT } from './defaults';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { version } = require('../../../../package.json') as { version: string };
 
 console.log(`
  _____ _     _           _ _____             _
@@ -16,7 +14,7 @@ console.log(`
 |  |  | |  _|  _| | | .'| |__   | -_|  _| | | |  _| -_|
  \\___/|_|_| |_| |___|__,|_|_____|___|_|  \\_/|_|___|___|
 
- v.${version}  by Leo
+ by Leo
 
  `);
 
@@ -47,21 +45,20 @@ async function bootstrap(): Promise<void> {
   // il serving statico, così il fallback SPA non interferisce con le rotte NestJS
   await app.init();
 
-  // Serving del frontend Angular (solo in produzione, quando il build esiste)
-  // dist/apps/backend -> ../../frontend/browser = dist/frontend/browser
-  const frontendPath = join(__dirname, '..', '..', 'frontend', 'browser');
-  if (existsSync(frontendPath)) {
-    // Serve i file statici compilati (JS, CSS, assets, ecc.)
-    app.useStaticAssets(frontendPath);
-
-    // SPA fallback: qualsiasi rotta non gestita da NestJS restituisce index.html
-    // (necessario per il client-side routing di Angular)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    app.getHttpAdapter().getInstance().get('*path', (_req: any, res: any) => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-      res.sendFile(join(frontendPath, 'index.html'));
-    });
-  }
+  // // Serving del frontend Angular (solo in produzione, quando il build esiste)
+  // const frontendPath = join(process.cwd(), 'dist', 'frontend', 'browser');
+  // if (existsSync(frontendPath)) {
+  //   // Serve i file statici compilati (JS, CSS, assets, ecc.)
+  //   app.useStaticAssets(frontendPath);
+  //
+  //   // SPA fallback: qualsiasi rotta non gestita da NestJS restituisce index.html
+  //   // (necessario per il client-side routing di Angular)
+  //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  //   app.getHttpAdapter().getInstance().get('*path', (_req: any, res: any) => {
+  //     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+  //     res.sendFile(join(frontendPath, 'index.html'));
+  //   });
+  // }
 
   const port = process.env['PORT'] ?? DEFAULT_PORT;
   await app.listen(port);

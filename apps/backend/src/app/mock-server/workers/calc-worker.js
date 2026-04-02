@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const { isMainThread, parentPort, workerData } = require('worker_threads');
 const vm = require('vm');
-const samples = require('../samples').default;
+const samples = require('./samples').default;
 
 const _guid = (mask) =>
   (mask || 'xx-x-x-x-xxx').replace(/[x]/g, () =>

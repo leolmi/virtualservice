@@ -8,8 +8,10 @@ import { AuthModule } from './app/auth/auth.module';
 import { MailModule } from './app/mail/mail.module';
 import { ServicesModule } from './app/services/services.module';
 import { MockServerModule } from './app/mock-server/mock-server.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
 import { RequestLoggerMiddleware } from './app/common/request-logger.middleware';
 import { DEFAULT_MONGO_URI } from './defaults';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -39,6 +41,7 @@ import { DEFAULT_MONGO_URI } from './defaults';
         limit: 5,
       },
     ]),
+    ServeStaticModule.forRoot({ rootPath: join(__dirname, 'public/browser') }),
     MailModule,
     UsersModule,
     AuthModule,

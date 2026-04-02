@@ -3,16 +3,5 @@
   "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/shared/model/src",
   "projectType": "library",
-  "targets": {
-    "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "outputPath": "dist/libs/shared/model",
-        "main": "libs/shared/model/src/index.ts",
-        "tsConfig": "libs/shared/model/tsconfig.lib.json"
-      }
-    }
-  },
   "tags": ["scope:shared", "type:model"]
 }

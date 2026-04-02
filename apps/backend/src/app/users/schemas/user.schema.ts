@@ -29,7 +29,7 @@ export class User extends Document {
   @Prop({ type: Date, default: null })
   deletionRequestedAt!: Date | null;
 
-  @Prop({ default: 'user', enum: ['user', 'admin'] })
+  @Prop({ type: String, default: 'user', enum: ['user', 'admin'] })
   role!: string;
 }
 

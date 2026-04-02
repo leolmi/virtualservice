@@ -27,6 +27,7 @@ export class ServiceCallParameter implements IServiceCallParameter {
   key!: string;
 
   @Prop({
+    type: String,
     required: true,
     enum: ['path', 'query', 'body', 'header'] satisfies ParameterTarget[],
   })
@@ -73,6 +74,7 @@ export class ServiceCall implements IServiceCall {
   path!: string;
 
   @Prop({
+    type: String,
     required: true,
     enum: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'] satisfies HttpVerb[],
     default: 'GET',
@@ -91,6 +93,7 @@ export class ServiceCall implements IServiceCall {
   file!: string;
 
   @Prop({
+    type: String,
     enum: ['json', 'text', 'file', 'html'] satisfies ResponseType[],
     default: 'json',
   })
