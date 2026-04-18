@@ -353,3 +353,9 @@ The server logic is definited in file **claude/server.md**
 ## Client
 
 The client is definited in file **claude/client.md**
+
+---
+
+## Tools & Scripts
+
+Scripts documentation (backup, migrate, deploy) is in **claude/tools.md**

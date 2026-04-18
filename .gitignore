@@ -55,3 +55,6 @@ Thumbs.db
 # Secret files — NEVER commit
 .secret
 .secret.*
+
+# backup files
+backups/
