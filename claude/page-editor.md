@@ -1,12 +1,12 @@
 ## Editor Page
 
-Rotta prevista `/editor/:id/:page`;
+Rotta prevista `/editor/:id`;
 - `:id` contiene l'identificativo del servizio aperto;
-- `:page` specifica la pagina visualizzata (rotta child)
+- le rotte child selezionano la pagina attiva: `/editor/:id/call`, `/editor/:id/test`, `/editor/:id/database`, `/editor/:id/function`; il default è `call`.
+
+Componente: `apps/frontend/src/app/editor/editor.component.ts`;
 
 Layout di riferimento: `apps/frontend/src/assets/help/editor.png`;
-
-Codice di rifferimento: `leolmi\apps\virtual-service\src\app\pages\editor\editor.component.html`;
 
 Rappresenta la pagina dove l'utente loggato può:
 - modificare le proprietà servizio ed il db definito nel servizio e comune alle chiamate;

@@ -1,8 +1,8 @@
 ## Empty Call
 
-Componente che visualizza le informazioni se non esiste una call attiva per il servizio corrente;
+Componente: `apps/frontend/src/app/editor/components/empty-call/`;
 
-Immagine di riferimento: `documents/images/no-call.png`;
+Visualizzato nelle pagine `call` e `test` quando non esiste una call attiva per il servizio corrente.
 
 mostra il testo dell'immagine dove la scritta 'create new call' è cliccabile con un scss del tipo:
 ````scss

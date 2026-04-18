@@ -13,4 +13,10 @@ Fintanto che non esiste la call attiva per il servizio corrente la pagina mostra
 
 ## Struttura della pagina
 
-Adatta il componente che trovi nel file `leolmi\apps\virtual-service\src\app\components\editor-test\editor-test.component.html` al progetto corrente;
+Componente: `apps/frontend/src/app/editor/test/test.component.ts`;
+
+Permette di simulare una chiamata alla call selezionata senza passare per il server mock vero e proprio:
+- visualizza il **body** della request (stringa-js, usata solo per POST/PUT/PATCH);
+- mostra il **scope** calcolato (params, data, db, headers, cookies, pathValue, value);
+- esegue la **response** e mostra il risultato o l'errore;
+- esegue le **rules** e mostra quali si attivano.

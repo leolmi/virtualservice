@@ -10,4 +10,8 @@ Permette di modificare la proprietà `interval` ed editare il testo js della `sc
 
 ## Struttura della pagina
 
-Adatta il componente che trovi nel file `leolmi\apps\virtual-service\src\app\components\editor-function\editor-function.component.html` al progetto corrente;
+Componente: `apps/frontend/src/app/editor/function/function.component.ts`;
+
+Contiene:
+- **interval**: campo numerico (secondi, >= 0; 0 disabilita lo scheduler);
+- **schedulerFn**: editor di codice JS (stringa-js) per la funzione eseguita ciclicamente; ha accesso al `db` in scope e può modificarlo.

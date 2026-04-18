@@ -11,5 +11,9 @@ Visualizza e permette di modificare la descrizione e il db del servizio;
 
 ## Struttura della pagina
 
-Adatta il componente che trovi nel file `leolmi\apps\virtual-service\src\app\components\editor-database\editor-database.component.html` al progetto corrente;
+Componente: `apps/frontend/src/app/editor/database/database.component.ts`;
+
+Contiene:
+- **description**: campo textarea markdown per la descrizione del servizio;
+- **dbo**: editor di codice JS (stringa-js) per il database del servizio, calcolato al primo utilizzo e mantenuto in cache finché il servizio è attivo.
 

@@ -17,7 +17,7 @@ I colori presenti sono rappresentati da queste variabili css:
 --vs-warn: brown;
 --vs-light-grey: #0a0a0a33
 
-il riferimento per Material è quello al tema `indigo-pink.css`;
+Il tema Material è M3, configurato con `mat.$azure-palette` come palette primaria e `mat.$rose-palette` come palette terziaria;
 
 In generale i colori principali sono:
 - `--vs-light`: per gli sfondi chiari e i testi sugli sfondi scuri;

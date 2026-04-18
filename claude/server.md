@@ -1,10 +1,6 @@
 
 Per le definizioni delle classi si fa riferimento al file **model.md**.
 
-L'host dell'applicazione distribuita è al momento: "https://virtualservice.herokuapp.com"
-
----
-
 ## Espressioni e dati string-js
 
 Le espressioni sono considerate nell'ambito dell'applicazione script javascript.
@@ -136,11 +132,9 @@ if (isMainThread) {
 
 ## Entry-Points
 
-un url di questo tipo 'https://virtualservice.herokuapp.com/service/... ' rappresenta al momento il punto di ingresso per le chimate ai mock definite dagli utenti.
+Un url del tipo `/service/...` rappresenta il punto di ingresso per le chiamate ai mock definite dagli utenti.
 
-Questo entry-point del server, identificabile dalla regex:
-/^([^?]{2,})\/service\/(.{2,})/gm
-effettuata sull'url della request, intercetta tutte le richieste che arrivano sugli endpoint del servizio
+Questo entry-point del server, gestito da `MockServerController` con rotta `ALL /service/*path`, intercetta tutte le richieste che arrivano sugli endpoint del servizio.
 		
 Quindi si deve ricercare il servizio a cui fa riferimento tra quelli salvati dagli utenti su MongoDB;
 	
