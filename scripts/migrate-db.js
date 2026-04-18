@@ -4,10 +4,11 @@
  * Script di migrazione dal vecchio DB (backup JSON) al nuovo schema MongoDB.
  *
  * Uso:
- *   node scripts/migrate-db.js <backup.json> [--dry-run]
+ *   node scripts/migrate-db.js <backup.json> [--dry-run] [--drop] [--mongo-uri <uri>]
  *
  * Opzioni:
  *   --dry-run   Mostra cosa verrebbe inserito senza scrivere sul DB
+ *   --drop      Elimina le collection 'users' e 'services' prima di migrare (richiesto se già migrato con _id stringa)
  *   --mongo-uri URI di connessione MongoDB (default: env VIRTUALSERVICE_MONGO_URI)
  *
  * Differenze principali tra vecchio e nuovo schema:
@@ -42,6 +43,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { ObjectId } = require('mongodb');
 
 // ---------------------------------------------------------------------------
 // Parse CLI args
@@ -49,6 +51,7 @@ const path = require('path');
 
 const args = process.argv.slice(2);
 const dryRun = args.includes('--dry-run');
+const dropFirst = args.includes('--drop');
 const mongoUriIdx = args.indexOf('--mongo-uri');
 const mongoUri = mongoUriIdx !== -1 ? args[mongoUriIdx + 1] : process.env.VIRTUALSERVICE_MONGO_URI;
 const backupFile = args.find(a => !a.startsWith('--') && (mongoUriIdx === -1 || a !== args[mongoUriIdx + 1]));
@@ -76,7 +79,7 @@ function migrateUser(old) {
     : null;
 
   return {
-    _id: old._id, // preserva l'ObjectId originale
+    _id: new ObjectId(old._id), // preserva l'ObjectId originale come tipo corretto
     email: old.email,
     password: null, // vecchio formato (salt+PBKDF2) incompatibile con bcrypt
     googleId: googleId,
@@ -147,8 +150,8 @@ function migrateCall(old) {
  */
 function migrateService(old) {
   return {
-    _id: old._id,
-    owner: old.owner,
+    _id: new ObjectId(old._id),
+    owner: new ObjectId(old.owner),
     lastChange: old.lastChange || Date.now(),
     creationDate: old.creationDate || Date.now(),
     name: old.name,
@@ -192,9 +195,9 @@ async function main() {
   const services = rawServices.map(migrateService);
 
   // Riassegnazione servizi orfani all'admin
-  const userIds = new Set(users.map(u => u._id));
+  const userIds = new Set(users.map(u => u._id.toString()));
   const adminUser = users.find(u => u.role === 'admin');
-  const orphanServices = services.filter(s => !userIds.has(s.owner));
+  const orphanServices = services.filter(s => !userIds.has(s.owner.toString()));
 
   if (orphanServices.length > 0) {
     if (!adminUser) {
@@ -271,6 +274,14 @@ async function main() {
   console.log('✅ Connesso');
 
   const db = mongoose.connection.db;
+
+  // --- Drop collection se richiesto ---
+  if (dropFirst) {
+    console.log('\n🗑️  --drop: eliminazione collection esistenti...');
+    await db.collection('users').drop().catch(() => {});
+    await db.collection('services').drop().catch(() => {});
+    console.log('   ✅ Collection users e services eliminate.');
+  }
 
   // --- Migrazione utenti ---
   console.log('\n👤 Migrazione utenti...');
