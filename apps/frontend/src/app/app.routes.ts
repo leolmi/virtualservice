@@ -11,6 +11,13 @@ export const appRoutes: Route[] = [
       import('./auth/login/login.component').then((m) => m.LoginComponent),
   },
   {
+    path: 'auth/callback',
+    loadComponent: () =>
+      import('./auth/google-callback/google-callback.component').then(
+        (m) => m.GoogleCallbackComponent,
+      ),
+  },
+  {
     path: 'help',
     title: 'help',
     loadComponent: () =>

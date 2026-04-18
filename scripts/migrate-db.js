@@ -151,7 +151,7 @@ function migrateCall(old) {
 function migrateService(old) {
   return {
     _id: new ObjectId(old._id),
-    owner: new ObjectId(old.owner),
+    owner: String(old.owner), // owner è string nel schema NestJS, non ObjectId
     lastChange: old.lastChange || Date.now(),
     creationDate: old.creationDate || Date.now(),
     name: old.name,
@@ -197,7 +197,7 @@ async function main() {
   // Riassegnazione servizi orfani all'admin
   const userIds = new Set(users.map(u => u._id.toString()));
   const adminUser = users.find(u => u.role === 'admin');
-  const orphanServices = services.filter(s => !userIds.has(s.owner.toString()));
+  const orphanServices = services.filter(s => !userIds.has(s.owner));
 
   if (orphanServices.length > 0) {
     if (!adminUser) {
