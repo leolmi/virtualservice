@@ -78,6 +78,12 @@ node scripts/migrate-db.js backups/backup-old-2026-04-18T07-51-09.json
 node scripts/migrate-db.js backups/backup-old-2026-04-18T07-51-09.json --mongo-uri "mongodb://localhost:27017/virtualservice"
 ```
 
+**Formato di input supportato:**
+
+Lo script accetta due varianti di file JSON:
+- **Formato `backup-old-db.js`** (struttura con `collections`): `{ meta: {...}, collections: { users: [...], services: [...] } }`
+- **Formato flat** (vecchia struttura diretta): `{ users: [...], services: [...] }`
+
 **Argomenti:**
 
 | Argomento | Descrizione |

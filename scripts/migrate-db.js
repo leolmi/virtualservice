@@ -185,8 +185,11 @@ async function main() {
     process.exit(1);
   }
 
-  const users = (data.users || []).map(migrateUser);
-  const services = (data.services || []).map(migrateService);
+  // Supporta sia il formato flat {users, services} sia il formato {collections: {users, services}}
+  const rawUsers = data.users || data.collections?.users || [];
+  const rawServices = data.services || data.collections?.services || [];
+  const users = rawUsers.map(migrateUser);
+  const services = rawServices.map(migrateService);
 
   // Riassegnazione servizi orfani all'admin
   const userIds = new Set(users.map(u => u._id));
