@@ -317,7 +317,9 @@ nx affected:graph           # Only affected projects
 | `SMTP_FROM`                           | backend        | From address for outgoing emails                                            |
 | `VIRTUALSERVICE_DEBUG`                | backend        | `true` abilita il debug logging del path matching nel MockServerService     |
 | `VIRTUALSERVICE_EXPRESSION_SIZE_LIMIT`| backend        | Max byte size for stringa-js expressions (enforced on save)                 |
+| `VIRTUALSERVICE_DB_SIZE_LIMIT`        | backend        | Max byte size del db in cache per servizio (`ServiceCacheService`)          |
 | `VIRTUALSERVICE_ADMIN_EMAIL`          | backend        | Email dell'utente admin bootstrappato all'avvio se non esiste               |
+| `VIRTUALSERVICE_ADMIN_PASSWORD`       | backend        | Password dell'utente admin bootstrappato all'avvio se non esiste            |
 | `CALC_CODE_EXECUTING_TIMEOUT`         | backend worker | Timeout in ms per l'esecuzione delle espressioni JS (default: 10000)        |
 | `CALC_MAX_YOUNG_GENERATION_SIZE_MB`   | backend worker | Heap young generation limit per il worker calc (default: 64)                |
 | `CALC_MAX_OLD_GENERATION_SIZE_MB`     | backend worker | Heap old generation limit per il worker calc (default: 64)                  |
