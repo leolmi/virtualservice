@@ -43,6 +43,17 @@ export class RequestPasswordResetDto {
   email!: string;
 }
 
+export class UpdateUserEmailDto {
+  @IsEmail({}, { message: 'Inserisci un indirizzo email valido' })
+  email!: string;
+}
+
+export class AdminSetPasswordDto {
+  @IsString()
+  @MinLength(8, { message: 'La password deve avere almeno 8 caratteri' })
+  password!: string;
+}
+
 export class ResetPasswordDto {
   @IsString()
   @IsNotEmpty()

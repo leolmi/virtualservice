@@ -13,6 +13,8 @@ import { ToolbarService } from '../core/services/toolbar.service';
 import { ManagementService, ManagedUser } from './management.service';
 import { ConfirmDialogComponent, ConfirmDialogData } from '../core/components/confirm-dialog/confirm-dialog.component';
 import { SendMailDialogComponent, SendMailDialogData, SendMailDialogResult } from './send-mail-dialog/send-mail-dialog.component';
+import { EditEmailDialogComponent, EditEmailDialogData } from './edit-email-dialog/edit-email-dialog.component';
+import { SetPasswordDialogComponent, SetPasswordDialogData } from './set-password-dialog/set-password-dialog.component';
 
 @Component({
   selector: 'vs-management',
@@ -142,6 +144,84 @@ export class ManagementComponent {
             this.users.update((list) => list.filter((u) => u._id !== user._id)),
         });
       });
+  }
+
+  onResetPassword(user: ManagedUser): void {
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        data: {
+          title: 'Reset user password',
+          message: `Send a password-reset email to "${user.email}"? The current password will be cleared and the user will have to set a new one.`,
+          confirmLabel: 'Reset & send email',
+        } satisfies ConfirmDialogData,
+      })
+      .afterClosed()
+      .subscribe((confirmed) => {
+        if (!confirmed) return;
+        this.managementService.resetUserPassword(user._id).subscribe({
+          next: () => this.notify('Password reset email sent', `A reset link has been sent to ${user.email}.`),
+          error: (err) => this.notify('Reset failed', err.error?.message ?? 'Could not reset password'),
+        });
+      });
+  }
+
+  onEditEmail(user: ManagedUser): void {
+    this.dialog
+      .open(EditEmailDialogComponent, {
+        data: { currentEmail: user.email } satisfies EditEmailDialogData,
+      })
+      .afterClosed()
+      .subscribe((newEmail: string | null | undefined) => {
+        if (!newEmail || newEmail === user.email) return;
+        this.managementService.updateUserEmail(user._id, newEmail).subscribe({
+          next: () => {
+            this.users.update((list) =>
+              list.map((u) =>
+                u._id === user._id
+                  ? { ...u, email: newEmail, isEmailVerified: true, isMigrated: false }
+                  : u,
+              ),
+            );
+            this.notify('Email updated', `A reset link has been sent to ${newEmail}.`);
+          },
+          error: (err) => this.notify('Update failed', err.error?.message ?? 'Could not update email'),
+        });
+      });
+  }
+
+  onSetPassword(user: ManagedUser): void {
+    this.dialog
+      .open(SetPasswordDialogComponent, {
+        data: { email: user.email } satisfies SetPasswordDialogData,
+      })
+      .afterClosed()
+      .subscribe((password: string | null | undefined) => {
+        if (!password) return;
+        this.managementService.setUserPassword(user._id, password).subscribe({
+          next: () => {
+            this.users.update((list) =>
+              list.map((u) =>
+                u._id === user._id
+                  ? { ...u, isEmailVerified: true, isMigrated: false }
+                  : u,
+              ),
+            );
+            this.notify('Password set', `A new password has been set for ${user.email}. Communicate it to the user.`);
+          },
+          error: (err) => this.notify('Set password failed', err.error?.message ?? 'Could not set password'),
+        });
+      });
+  }
+
+  private notify(title: string, message: string): void {
+    this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title,
+        message,
+        confirmLabel: 'OK',
+        cancelLabel: '',
+      } satisfies ConfirmDialogData,
+    });
   }
 
   onRestoreUser(user: ManagedUser): void {

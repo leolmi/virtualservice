@@ -43,6 +43,18 @@ export class ManagementService {
     return this.http.get<Record<string, unknown>>(`/services/${serviceId}`);
   }
 
+  resetUserPassword(userId: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`/users/${userId}/reset-password`, {});
+  }
+
+  updateUserEmail(userId: string, email: string): Observable<{ message: string }> {
+    return this.http.patch<{ message: string }>(`/users/${userId}/email`, { email });
+  }
+
+  setUserPassword(userId: string, password: string): Observable<{ message: string }> {
+    return this.http.patch<{ message: string }>(`/users/${userId}/password`, { password });
+  }
+
   deleteUser(userId: string): Observable<void> {
     return this.http.delete<void>(`/users/${userId}`);
   }

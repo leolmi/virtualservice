@@ -15,7 +15,12 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { JwtAuthGuard, RolesGuard, Roles } from '@virtualservice/auth';
-import { UpdatePasswordDto, SendMailDto } from '@virtualservice/shared/dto';
+import {
+  UpdatePasswordDto,
+  SendMailDto,
+  UpdateUserEmailDto,
+  AdminSetPasswordDto,
+} from '@virtualservice/shared/dto';
 import { UsersService } from './users.service';
 import { MailService } from '../mail/mail.service';
 import { RequestWithUser } from '../auth/interfaces/request-with-user.interface';
@@ -57,6 +62,46 @@ export class UsersController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteUser(@Param('id') id: string): Promise<void> {
     await this.usersService.deleteUserPermanently(id);
+  }
+
+  /** Reset password utente — solo admin: genera token e invia email */
+  @Post(':id/reset-password')
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  @HttpCode(HttpStatus.OK)
+  async adminResetPassword(
+    @Param('id') id: string,
+  ): Promise<{ message: string }> {
+    const { user, token } = await this.usersService.adminResetUserPassword(id);
+    await this.mailService.sendPasswordResetEmail(user.email, token, false);
+    return { message: 'Password reset email sent' };
+  }
+
+  /** Aggiorna email utente e invia reset password al nuovo indirizzo — solo admin */
+  @Patch(':id/email')
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  @HttpCode(HttpStatus.OK)
+  async adminUpdateEmail(
+    @Param('id') id: string,
+    @Body() dto: UpdateUserEmailDto,
+  ): Promise<{ message: string }> {
+    const { user, token } = await this.usersService.updateUserEmail(id, dto.email);
+    await this.mailService.sendPasswordResetEmail(user.email, token, false);
+    return { message: 'Email updated and reset link sent' };
+  }
+
+  /** Forza una password sull'utente — solo admin: nessuna mail inviata */
+  @Patch(':id/password')
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  @HttpCode(HttpStatus.OK)
+  async adminSetPassword(
+    @Param('id') id: string,
+    @Body() dto: AdminSetPasswordDto,
+  ): Promise<{ message: string }> {
+    await this.usersService.adminSetUserPassword(id, dto.password);
+    return { message: 'Password updated' };
   }
 
   /** Ripristino utente (rimuove deletionRequestedAt) — solo admin */

@@ -291,6 +291,67 @@ export class UsersService {
       .exec();
   }
 
+  /**
+   * Admin: genera un token di reset password per l'utente specificato (senza cooldown).
+   */
+  async adminResetUserPassword(
+    userId: string,
+  ): Promise<{ user: UserDocument; token: string }> {
+    const user = await this.findById(userId);
+    if (!user) throw new NotFoundException('User not found');
+
+    const token = randomUUID();
+    user.emailVerificationToken = token;
+    user.emailVerificationExpires = new Date(Date.now() + VERIFICATION_TOKEN_TTL_MS);
+    await user.save();
+    return { user, token };
+  }
+
+  /**
+   * Admin: aggiorna l'email di un utente, azzera la password e genera un token di reset.
+   * Il link viene inviato al nuovo indirizzo.
+   */
+  async updateUserEmail(
+    userId: string,
+    newEmail: string,
+  ): Promise<{ user: UserDocument; token: string }> {
+    const user = await this.findById(userId);
+    if (!user) throw new NotFoundException('User not found');
+
+    const normalized = newEmail.toLowerCase();
+    if (normalized !== user.email) {
+      const emailTaken = await this.findByEmail(normalized);
+      if (emailTaken && emailTaken._id.toString() !== userId) {
+        throw new ConflictException('This email address is already in use');
+      }
+    }
+
+    const token = randomUUID();
+    user.email = normalized;
+    user.password = null;
+    user.isEmailVerified = true; // il link di reset funge da verifica implicita
+    user.emailVerificationToken = token;
+    user.emailVerificationExpires = new Date(Date.now() + VERIFICATION_TOKEN_TTL_MS);
+    await user.save();
+    return { user, token };
+  }
+
+  /**
+   * Admin: imposta direttamente una nuova password per l'utente.
+   * Nessuna mail viene inviata: l'admin si fa carico di comunicarla.
+   * Eventuali token di reset/verifica pendenti vengono invalidati.
+   */
+  async adminSetUserPassword(userId: string, password: string): Promise<void> {
+    const user = await this.findById(userId);
+    if (!user) throw new NotFoundException('User not found');
+
+    user.password = await bcrypt.hash(password, SALT_ROUNDS);
+    user.isEmailVerified = true;
+    user.emailVerificationToken = null;
+    user.emailVerificationExpires = null;
+    await user.save();
+  }
+
   async deleteUserPermanently(userId: string): Promise<void> {
     const user = await this.userModel.findById(userId).exec();
     if (!user) throw new NotFoundException('User not found');

@@ -197,6 +197,9 @@ import { JwtAuthGuard }     from '@virtualservice/auth';          // libs/auth/s
 | GET    | `/users/backup`               | JWT+Admin| Download backup JSON del database           |
 | DELETE | `/users/:id`                  | JWT+Admin| Elimina utente e servizi                    |
 | PATCH  | `/users/:id/restore`          | JWT+Admin| Annulla richiesta cancellazione             |
+| POST   | `/users/:id/reset-password`   | JWT+Admin| Genera token e invia email di reset password|
+| PATCH  | `/users/:id/email`            | JWT+Admin| Aggiorna email utente, azzera password e invia link di reset al nuovo indirizzo |
+| PATCH  | `/users/:id/password`         | JWT+Admin| Forza una password sull'utente (nessuna mail inviata) |
 | POST   | `/users/send-mail`            | JWT+Admin| Invia email agli utenti                     |
 | GET    | `/services`                   | JWT      | Lista servizi dell'utente                   |
 | GET    | `/services/:id`               | JWT      | Servizio per id                             |

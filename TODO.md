@@ -1,10 +1,3 @@
 ## TODO 
 
-- [ ] PUBBLICAZIONE
-  - [ ] recupero dati db esistente;
-  - [ ] Esegui migrate-db.js verso il nuovo cluster
-  - [ ] Testa da locale (login, CRUD servizi, mock server)
-  - [ ] Verifica env vars su Heroku (VIRTUALSERVICE_MONGO_URI, ecc.)
-  - [ ] Deploy nuova versione su Heroku
-  - [ ] Smoke test in produzione
-  - [ ] Notifica utenti (specialmente per reset password se necessario)
+- [ ] migliorare la fase di loading con spinner tondo (aggiungere background opaco e ingrandire il raggio dello spinner (100x100)

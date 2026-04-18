@@ -41,12 +41,29 @@ Ogni utente (`ManagedUser`) è mostrato come riga espandibile con:
 - stato verifica email;
 - data di creazione;
 - numero di servizi;
-- pulsante **Restore** (visibile solo se `deletionRequestedAt` è valorizzato) — ripristina l'utente annullando la richiesta di cancellazione via `PATCH /users/:id/restore` (con conferma dialog);
-- pulsante **Delete permanently** — elimina l'utente e tutti i suoi servizi via `DELETE /users/:id` (con conferma dialog);
 
 **Sezione espansa** (visibile al click sulla riga):
 - lista dei servizi dell'utente con nome, path, stato attivo, stato starred;
 - per ogni servizio: pulsante **Open** (apre l'editor) e pulsante **Download** (scarica il JSON del servizio).
+- pulsante **Change email** — apre il dialog `EditEmailDialogComponent` per cambiare l'email dell'utente; sul backend l'azione azzera anche la password e invia un link di reset al nuovo indirizzo via `PATCH /users/:id/email`;
+- pulsante **Reset password** — invia un'email di reset password all'utente (nessuna password viene impostata): `POST /users/:id/reset-password` (con conferma dialog);
+- pulsante **Force password** — apre il dialog `SetPasswordDialogComponent` per impostare direttamente una nuova password. Nessuna mail viene inviata: l'admin si fa carico di comunicarla all'utente. `PATCH /users/:id/password`;
+- pulsante **Restore** (visibile solo se `deletionRequestedAt` è valorizzato) — ripristina l'utente annullando la richiesta di cancellazione via `PATCH /users/:id/restore` (con conferma dialog);
+- pulsante **Delete permanently** — elimina l'utente e tutti i suoi servizi via `DELETE /users/:id` (con conferma dialog).
+
+
+## Dialog: Edit Email (`EditEmailDialogComponent`)
+
+Percorso: `apps/frontend/src/app/management/edit-email-dialog/`;
+
+Permette all'admin di modificare l'email di un utente. Mostra l'email corrente in sola lettura e un campo per la nuova email (validazione `email` + `required`). Alla conferma il backend verifica l'unicità della nuova email, azzera la password dell'utente, marca l'email come verificata e genera un token di reset password che viene inviato al nuovo indirizzo. L'utente dovrà quindi reimpostare la password (o usare OAuth) per accedere.
+
+
+## Dialog: Set Password (`SetPasswordDialogComponent`)
+
+Percorso: `apps/frontend/src/app/management/set-password-dialog/`;
+
+Permette all'admin di forzare una nuova password sull'utente. Mostra l'email dell'utente e un campo password (con toggle visibilità) validato `MinLength(8)`. Nessuna mail viene inviata: spetta all'admin comunicare la password all'utente. Sul backend l'azione hasha la password, marca l'email come verificata e invalida eventuali token di reset/verifica pendenti.
 
 
 ## Dialog: Send Mail (`SendMailDialogComponent`)
@@ -99,5 +116,8 @@ interface UserService {
 - `GET /users/backup` — download backup JSON completo (solo admin);
 - `DELETE /users/:id` — elimina utente e relativi servizi (solo admin);
 - `PATCH /users/:id/restore` — annulla richiesta di cancellazione (solo admin);
+- `POST /users/:id/reset-password` — invia email di reset password all'utente (solo admin);
+- `PATCH /users/:id/email` — aggiorna email utente, azzera la password e invia link di reset al nuovo indirizzo (solo admin);
+- `PATCH /users/:id/password` — forza una password sull'utente, nessuna mail inviata (solo admin);
 - `POST /users/send-mail` — invia email a utenti (solo admin);
 - `GET /services/:id` — recupera servizio singolo (per download).

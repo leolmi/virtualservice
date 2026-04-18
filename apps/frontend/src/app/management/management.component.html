@@ -182,6 +182,18 @@
 
           @if (expandedUserId() === user._id) {
             <div class="user-actions">
+              <button mat-stroked-button (click)="onEditEmail(user); $event.stopPropagation()">
+                <mat-icon>alternate_email</mat-icon>
+                Change email
+              </button>
+              <button mat-stroked-button (click)="onResetPassword(user); $event.stopPropagation()">
+                <mat-icon>lock_reset</mat-icon>
+                Reset password
+              </button>
+              <button mat-stroked-button (click)="onSetPassword(user); $event.stopPropagation()">
+                <mat-icon>password</mat-icon>
+                Force password
+              </button>
               @if (user.deletionRequestedAt) {
                 <button mat-stroked-button color="primary" (click)="onRestoreUser(user); $event.stopPropagation()">
                   <mat-icon>restore</mat-icon>
