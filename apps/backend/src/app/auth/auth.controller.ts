@@ -28,6 +28,7 @@ interface RequestWithPassportUser extends Request {
   user: UserDocument;
 }
 
+@SkipThrottle({ service: true })
 @Controller('auth')
 export class AuthController {
   private readonly logger = new Logger(AuthController.name);

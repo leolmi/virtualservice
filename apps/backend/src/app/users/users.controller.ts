@@ -14,6 +14,7 @@ import {
   StreamableFile,
 } from '@nestjs/common';
 import { Response } from 'express';
+import { SkipThrottle } from '@nestjs/throttler';
 import { JwtAuthGuard, RolesGuard, Roles } from '@virtualservice/auth';
 import {
   UpdatePasswordDto,
@@ -25,6 +26,7 @@ import { UsersService } from './users.service';
 import { MailService } from '../mail/mail.service';
 import { RequestWithUser } from '../auth/interfaces/request-with-user.interface';
 
+@SkipThrottle({ service: true })
 @Controller('users')
 @UseGuards(JwtAuthGuard)
 export class UsersController {

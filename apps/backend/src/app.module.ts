@@ -29,18 +29,21 @@ import { join } from 'path';
       }),
       inject: [ConfigService],
     }),
-    ThrottlerModule.forRoot([
-      {
-        name: 'default',
-        ttl: 60_000,
-        limit: 60,
+    ThrottlerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => {
+        const serviceLimit = parseInt(
+          config.get<string>('VIRTUALSERVICE_SERVICE_THROTTLE_LIMIT') ?? '300',
+          10,
+        );
+        return [
+          { name: 'default', ttl: 60_000, limit: 60 },
+          { name: 'strict',  ttl: 60_000, limit: 5  },
+          { name: 'service', ttl: 60_000, limit: serviceLimit },
+        ];
       },
-      {
-        name: 'strict',
-        ttl: 60_000,
-        limit: 5,
-      },
-    ]),
+    }),
     ServeStaticModule.forRoot({ rootPath: join(__dirname, 'public/browser') }),
     MailModule,
     UsersModule,

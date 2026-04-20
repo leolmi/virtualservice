@@ -22,6 +22,7 @@ import { RequestWithUser } from '../auth/interfaces/request-with-user.interface'
 
 const NOT_IMPLEMENTED_MSG = ':( Not implemented yet!';
 
+@SkipThrottle({ service: true })
 @Controller('services')
 @UseGuards(JwtAuthGuard)
 export class ServicesController {
