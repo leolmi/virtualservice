@@ -175,25 +175,40 @@ export class TestComponent {
 
   onRunTest(): void {
     const call = this.activeCall();
-    if (!call || this.testing()) return;
-    const url = this.buildUrl();
+    const service = this.service();
+    if (!call || !service || this.testing()) return;
     this.testing.set(true);
     this.results.set(null);
     this.isError.set(false);
 
+    const pathValues: Record<string, string> = {};
+    call.parameters
+      .filter((p) => p.target === 'path')
+      .forEach((p) => { pathValues[p.name] = String(p.value ?? ''); });
+
+    const params: Record<string, unknown> = {};
+    call.parameters
+      .filter((p) => p.target === 'query')
+      .forEach((p) => { params[p.name] = p.value; });
+
     const body = this.hasBody() && call.body ? parseBody(call.body) : undefined;
 
+    const dto = {
+      serviceId: service._id,
+      call,
+      pathValues,
+      params,
+      body,
+    };
+
     this.http
-      .request(call.verb, url, { body, responseType: 'text' })
+      .post<{ statusCode: number; body: unknown }>('/services/test', dto)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (text) => {
+        next: (result) => {
           this.testing.set(false);
-          try {
-            this.results.set(JSON.parse(text));
-          } catch {
-            this.results.set(text);
-          }
+          this.results.set(result.body);
+          this.isError.set(result.statusCode >= 400);
         },
         error: (err: HttpErrorResponse) => {
           this.testing.set(false);

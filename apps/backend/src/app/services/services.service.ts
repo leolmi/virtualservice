@@ -8,8 +8,12 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model, isValidObjectId } from 'mongoose';
+import * as _ from 'lodash';
 import { Service, ServiceDocument } from './schemas/service.schema';
 import { ServiceCacheService } from '../mock-server/service-cache.service';
+import { CalcResult } from '../mock-server/interfaces/scope.interface';
+import calc from '../mock-server/workers/calc';
+import { TestCallDto, TestCallResult } from '@virtualservice/shared/dto';
 
 /** Default 64 KB per singolo campo espressione */
 const DEFAULT_EXPRESSION_SIZE_LIMIT = 64 * 1024;
@@ -125,6 +129,63 @@ export class ServicesService {
     // Cancella la cache (timer + db) e reinizializza immediatamente
     this.cacheService.clearService(id);
     await this.cacheService.initIfNeeded(service);
+  }
+
+  /** Esegue il test di una call usando la definizione corrente (non ancora persistita) */
+  async testCall(dto: TestCallDto, ownerId: string, role?: string): Promise<TestCallResult> {
+    const service = await this.serviceModel.findById(dto.serviceId).exec();
+    if (!service) throw new NotFoundException('Service not found');
+    if (role !== 'admin' && service.owner !== ownerId) throw new ForbiddenException();
+
+    const db = await this.cacheService.initIfNeeded(service);
+
+    const scope: Record<string, unknown> = {
+      params: dto.params ?? {},
+      data: dto.body ?? null,
+      db,
+      headers: dto.headers ?? {},
+      cookies: dto.cookies ?? {},
+      pathValue: dto.pathValues ?? {},
+    };
+
+    const isBodyVerb = ['POST', 'PUT', 'PATCH'].includes(dto.call.verb.toUpperCase());
+    const ruleData = isBodyVerb ? (dto.body ?? {}) : (dto.params ?? {});
+
+    for (const rule of dto.call.rules) {
+      let ruleResult: CalcResult;
+      try {
+        const ruleScope = { ...scope, value: _.get(ruleData as object, rule.path) };
+        ruleResult = await calc(rule.expression, ruleScope);
+      } catch (err) {
+        this.logger.error('Errore nella valutazione della regola:', err);
+        continue;
+      }
+      if (ruleResult.db) {
+        this.cacheService.updateDb(dto.serviceId, ruleResult.db);
+        scope['db'] = ruleResult.db;
+      }
+      if (ruleResult.error) continue;
+      if (ruleResult.value === true) {
+        return { statusCode: rule.code, body: { error: rule.error } };
+      }
+    }
+
+    let respResult: CalcResult;
+    try {
+      respResult = await calc(dto.call.response, scope);
+    } catch (err) {
+      return { statusCode: 500, body: { error: String(err) } };
+    }
+
+    if (respResult.db) {
+      this.cacheService.updateDb(dto.serviceId, respResult.db);
+    }
+
+    if (respResult.error) {
+      return { statusCode: 500, body: { error: String(respResult.error) } };
+    }
+
+    return { statusCode: 200, body: respResult.value };
   }
 
   /**

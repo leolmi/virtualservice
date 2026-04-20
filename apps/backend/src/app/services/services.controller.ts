@@ -15,6 +15,7 @@ import {
 import { SkipThrottle } from '@nestjs/throttler';
 import { JwtAuthGuard } from '@virtualservice/auth';
 import { RolesGuard, Roles } from '@virtualservice/auth';
+import { TestCallDto } from '@virtualservice/shared/dto';
 import { ServicesService } from './services.service';
 import { LogService } from './log.service';
 import { RequestWithUser } from '../auth/interfaces/request-with-user.interface';
@@ -121,10 +122,11 @@ export class ServicesController {
     throw new InternalServerErrorException(NOT_IMPLEMENTED_MSG);
   }
 
-  /** Test di una chiamata — non ancora implementato */
+  /** Esegue il test di una call con la definizione corrente (non ancora persistita) */
+  @SkipThrottle({ default: true, strict: true })
   @Post('test')
-  testCall() {
-    throw new InternalServerErrorException(NOT_IMPLEMENTED_MSG);
+  async testCall(@Body() dto: TestCallDto, @Req() req: RequestWithUser) {
+    return this.servicesService.testCall(dto, req.user.userId, req.user.role);
   }
 
   /** Esecuzione diretta — solo admin, non ancora implementato */
