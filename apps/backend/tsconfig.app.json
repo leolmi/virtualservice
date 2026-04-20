@@ -4,6 +4,7 @@
     "outDir": "../../dist/out-tsc",
     "module": "commonjs",
     "resolveJsonModule": true,
+    "esModuleInterop": true,
     "types": ["node"],
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true

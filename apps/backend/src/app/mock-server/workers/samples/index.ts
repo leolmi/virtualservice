@@ -1,28 +1,28 @@
 // NORTHWIND
-import * as __customers from './northwind/customers.json';
-import * as __categories from './northwind/categories.json';
-import * as __employees from './northwind/employees.json';
-import * as __orders from './northwind/orders.json';
-import * as __products from './northwind/products.json';
-import * as __regions from './northwind/regions.json';
-import * as __shippers from './northwind/shippers.json';
-import * as __suppliers from './northwind/suppliers.json';
+import __customers from './northwind/customers.json';
+import __categories from './northwind/categories.json';
+import __employees from './northwind/employees.json';
+import __orders from './northwind/orders.json';
+import __products from './northwind/products.json';
+import __regions from './northwind/regions.json';
+import __shippers from './northwind/shippers.json';
+import __suppliers from './northwind/suppliers.json';
 // ITALIA
-import * as __regioni from './italia/regioni.json';
-import * as __comuni from './italia/comuni.json';
+import __regioni from './italia/regioni.json';
+import __comuni from './italia/comuni.json';
 // NATIONS
-import * as __countries from './nations/countries.json';
-import * as __nations from './nations/nations.json';
+import __countries from './nations/countries.json';
+import __nations from './nations/nations.json';
 // CURRENCIES
-import * as __currencies from './currencies/currencies.json';
+import __currencies from './currencies/currencies.json';
 // US
-import * as __usStates from './us/states.json';
+import __usStates from './us/states.json';
 // HTTP
-import * as __httpCodes from './http/codes.json';
+import __httpCodes from './http/codes.json';
 // LOREM
-import * as __lorem from './lorem/lorem.json';
+import __lorem from './lorem/lorem.json';
 // COLORS
-import * as __colors from './colors/colors.json';
+import __colors from './colors/colors.json';
 
 
 export default {
