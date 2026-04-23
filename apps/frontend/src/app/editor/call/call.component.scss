@@ -124,6 +124,11 @@
     width: 32px;
     height: 32px;
     line-height: 32px;
+    opacity: 0.5;
+
+    &:hover {
+      opacity: 1;
+    }
   }
 }
 
@@ -239,11 +244,19 @@
 
   .kv-add {
     opacity: 0.5;
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
 
     &:hover {
       opacity: 1;
     }
   }
+}
+
+.kv-toolbar {
+  display: flex;
+  flex-direction: row-reverse;
 }
 
 /* ─── Response label ──────────────────────────── */
