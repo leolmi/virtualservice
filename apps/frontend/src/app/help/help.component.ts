@@ -16,6 +16,7 @@ const SECTION_IDS = [
   'services',
   'editor',
   'editor-call',
+  'editor-headers',
   'editor-test',
   'editor-database',
   'timed-function',

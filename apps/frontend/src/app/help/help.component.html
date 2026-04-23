@@ -147,6 +147,43 @@
         <em>Call rules</em>
         <p>If you want to throw errors instead of returning a response, define one rule for each error scenario you want to handle.</p>
 
+        <!-- HEADERS & COOKIES -->
+        <em>Response headers &amp; cookies</em>
+        <p>The <b>HEADERS</b> and <b>COOKIES</b> collapsible sections let you attach additional
+          response headers and cookies to the call. Each entry is a <em>key / value</em> pair.</p>
+
+        <div class="help-icon-row">
+          <button mat-mini-fab color="accent"><mat-icon>add</mat-icon></button>
+          <p>Add a new header / cookie entry.</p>
+        </div>
+        <div class="help-icon-row">
+          <mat-icon>close</mat-icon>
+          <p>Remove the entry.</p>
+        </div>
+
+        <em>Static values vs expressions</em>
+        <p>By default the value is taken as a literal string. To compute the value dynamically,
+          prefix it with an equals sign <code>=</code> (Excel-style convention): everything after the
+          <code>=</code> is evaluated as a JavaScript expression when the call is served.</p>
+        <ul>
+          <li><code>application/json</code> — literal value</li>
+          <li><code>=new Date().toISOString()</code> — evaluated expression</li>
+          <li><code>=`Bearer $&#123;headers.authorization&#125;`</code> — uses the request scope</li>
+        </ul>
+
+        <div class="help-icon-row">
+          <mat-icon>functions</mat-icon>
+          <p>The <b>fx</b> icon next to the value input activates only when the value starts with
+            <code>=</code>. Click it to open a full expression editor with syntax highlighting and
+            contextual help.</p>
+        </div>
+
+        <p class="highlight">Expressions share the same execution context as the call response:
+          see <a (click)="goTo('expression-editor')">Expression editor</a> for the full list of
+          available objects (<code>db</code>, <code>pathValue</code>, <code>params</code>,
+          <code>data</code>, <code>headers</code>, <code>cookies</code>, <code>_</code>).
+          If the expression fails the header/cookie is skipped.</p>
+
         <em>Call response</em>
         <p>The <b>RESPONSE</b> is written as a JavaScript expression whose return value is sent to the client.</p>
         <p class="highlight">For details on the expression editor see the section

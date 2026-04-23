@@ -14,8 +14,8 @@
   flex-shrink: 0;
   padding: 0 4px 0 16px;
   height: 52px;
-  border-bottom: 1px solid var(--vs-light);
-  background-color: var(--vs-dark);
+  //border-bottom: 1px solid var(--vs-light);
+  //background-color: var(--vs-dark);
   gap: 16px;
 
   .service-name {
@@ -25,7 +25,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    color: var(--vs-white);
+    //color: var(--vs-white);
   }
 
   .search-box {
