@@ -266,10 +266,15 @@ export class MockServerService {
       return;
     }
 
-    // 10. Calcola la risposta
+    // 10. Calcola la risposta (controls=true → iniezione di setExitCode/throwError)
     let respResult: CalcResult;
     try {
-      respResult = await calc(call.response, scope as Record<string, unknown>);
+      respResult = await calc(
+        call.response,
+        scope as Record<string, unknown>,
+        0,
+        true,
+      );
     } catch (err) {
       const errMsg = String(err);
       this.logger.error(
@@ -390,20 +395,24 @@ export class MockServerService {
     res: Response,
   ): { statusCode: number; body: unknown } {
     if (result.error) {
-      return { statusCode: 500, body: { error: String(result.error) } };
+      // throwError(message, code) → errorCode valorizzato; altrimenti 500 di default.
+      const code = typeof result.errorCode === 'number' ? result.errorCode : 500;
+      return { statusCode: code, body: { error: String(result.error) } };
     }
 
+    // setExitCode(code) → exitCode valorizzato; altrimenti 200.
+    const code = typeof result.exitCode === 'number' ? result.exitCode : 200;
     const value = result.value;
 
     if (typeof value !== 'string') {
       // Oggetti/array: res.send() imposterà automaticamente Content-Type json
-      return { statusCode: 200, body: value };
+      return { statusCode: code, body: value };
     }
 
     // Stringa: imposta il Content-Type corretto prima di rispondere
     setContentType(call, res);
 
-    return { statusCode: 200, body: value };
+    return { statusCode: code, body: value };
   }
 
   /**

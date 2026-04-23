@@ -283,6 +283,22 @@
           <li><code>cookies</code>: request cookies (not in database definition)</li>
         </ul>
 
+        <em>Response control functions</em>
+        <p>These helpers are available <b>only inside the call RESPONSE expression</b>
+          and let you drive the HTTP status code from within the code:</p>
+        <ul class="available-exp-objects">
+          <li><code>setExitCode(code)</code>: sets the HTTP status returned with the
+            computed response (default <code>200</code>). If called multiple times the
+            last value wins.</li>
+          <li><code>throwError(message, code = 500)</code>: immediately aborts the
+            expression and returns <code>&#123; error: message &#125;</code> to the client with
+            the given HTTP status. Useful for conditions that can only be detected
+            while building the response.</li>
+        </ul>
+        <pre><code>if (!db.users[pathValue.id]) throwError('User not found', 404);
+setExitCode(201);
+return &#123; created: true &#125;;</code></pre>
+
         <em>Available samples</em>
         <p>These objects are available only in database expression context:</p>
         <ul class="available-samples">

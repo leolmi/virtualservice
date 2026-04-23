@@ -13,6 +13,8 @@ const calc = (
   exp: string,
   scope: Record<string, unknown>,
   tmo = 0,
+  /** Se true inietta setExitCode/throwError nello scope (usato solo per la response) */
+  controls = false,
 ): Promise<CalcResult> => {
   return new Promise((resolve, reject) => {
     const timeout: number =
@@ -25,6 +27,7 @@ const calc = (
         exp,
         scope,
         timeout,
+        controls,
       },
       resourceLimits: {
         maxYoungGenerationSizeMb: parseInt(

@@ -135,6 +135,42 @@ export const SCOPE_LODASH = (pathParams?: IServiceCallParameter[]): any => ({
   ],
 });
 
+export const SCOPE_SET_EXIT_CODE: any = {
+  name: 'setExitCode',
+  type: '(code: number) => void',
+  description:
+    'Sets the HTTP status code returned with the computed response. Default is 200. If called multiple times the last value wins. Available only in the call RESPONSE expression.',
+  tag: 'response only',
+  examples: [
+    {
+      description: 'Return 201 Created for a successful POST',
+      code: 'setExitCode(201);\nreturn { created: true };',
+    },
+    {
+      description: 'Dynamic status based on state',
+      code: 'if (!db.ready) setExitCode(503);\nreturn db.payload;',
+    },
+  ],
+};
+
+export const SCOPE_THROW_ERROR: any = {
+  name: 'throwError',
+  type: '(message: string, code?: number) => never',
+  description:
+    'Immediately aborts the expression and returns { error: message } to the client with the given HTTP status (default 500). Available only in the call RESPONSE expression.',
+  tag: 'response only',
+  examples: [
+    {
+      description: 'Not found',
+      code: "if (!db.users[pathValue.id]) throwError('User not found', 404);",
+    },
+    {
+      description: 'Generic server error',
+      code: "throwError('Unexpected state');",
+    },
+  ],
+};
+
 export const SCOPE_GUID: any = {
   name: 'guid',
   type: '(mask?: string) => string',

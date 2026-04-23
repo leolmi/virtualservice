@@ -66,6 +66,13 @@ export class CallComponent {
     return getScopeContext(call, service);
   });
 
+  /** Help context esteso con setExitCode/throwError — solo per la response expression */
+  readonly responseHelpContext = computed<ExpressionHelpContext | null>(() => {
+    const call = this.activeCall();
+    const service = this.service();
+    return getScopeContext(call, service, true);
+  });
+
   /**
    * Stato locale delle entries key-value (source of truth per il template).
    * Sincronizzato dallo store solo quando cambia la call selezionata.

@@ -5,6 +5,10 @@ export interface CalcResult {
   value?: unknown;
   db?: Record<string, unknown>;
   error?: unknown;
+  /** HTTP status code prodotto da throwError(message, code) */
+  errorCode?: number;
+  /** HTTP status code impostato da setExitCode(code) */
+  exitCode?: number;
 }
 
 /**

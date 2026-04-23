@@ -12,6 +12,20 @@ const _isPromiseLike = (prm) => _.isObject(prm) && _.isFunction(prm.then);
 
 const _isJson = (exp) => /^[{[]/g.test((exp || '').trim());
 
+// Marker usato da throwError per distinguere i throw "intenzionali"
+// dalle eccezioni generiche. Viene riconosciuto nel catch per produrre
+// una CalcResult con errorCode.
+const VS_THROW = '__vsThrow';
+
+// Interpreta un errore catturato: se è un marker throwError estrae
+// message/errorCode, altrimenti lo restituisce com'è.
+const _toErrorPayload = (err) => {
+  if (err && typeof err === 'object' && err[VS_THROW]) {
+    return { error: err.message, errorCode: err.code };
+  }
+  return { error: err };
+};
+
 if (isMainThread) {
   console.warn('Calc is available on secondary thread only!');
 } else {
@@ -21,6 +35,19 @@ if (isMainThread) {
   scope.setTimeout = setTimeout;
   scope.samples = samples;
   scope.guid = _guid;
+
+  // ── Scope-injected control functions (response-only use case) ──────────────
+  // setExitCode(code): override dello status code della response "di successo".
+  // throwError(message, code=500): interrompe e produce una response di errore.
+  if (data.controls) {
+    scope.setExitCode = (code) => { scope.__exitCode = code; };
+    scope.throwError = (message, code) => {
+      const err = { [VS_THROW]: true, message, code: code || 500 };
+      throw err;
+    };
+  }
+  scope.__exitCode = undefined;
+
   let exp = (data.exp || '').trim();
   if (_.startsWith(exp, '=')) exp = exp.substring(1);
   if (_isJson(exp)) exp = `return ${exp}`;
@@ -45,14 +72,14 @@ if (isMainThread) {
     });
     if (_isPromiseLike(scope.result)) {
       scope.result?.then(
-        (r) => parentPort.postMessage({ value: r, db: scope.db }),
-        (err) => parentPort.postMessage({ error: err }),
+        (r) => parentPort.postMessage({ value: r, db: scope.db, exitCode: scope.__exitCode }),
+        (err) => parentPort.postMessage({ ..._toErrorPayload(err), db: scope.db }),
       );
     } else {
-      parentPort.postMessage({ value: scope.result, db: scope.db });
+      parentPort.postMessage({ value: scope.result, db: scope.db, exitCode: scope.__exitCode });
     }
   } catch (err) {
     if (data.verbose) console.log('EXPRESSION ERROR: ', err);
-    parentPort.postMessage({ error: err });
+    parentPort.postMessage({ ..._toErrorPayload(err), db: scope.db });
   }
 }
