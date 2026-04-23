@@ -239,7 +239,7 @@ export class MockServerService {
 
       // Regola soddisfatta → errore configurato
       if (ruleResult.value === true) {
-        this.applyResponseExtras(call, res);
+        await this.applyResponseExtras(call, res, scope, serviceId);
         const body = { error: rule.error };
         await respond(rule.code, body, {
           service,
@@ -252,7 +252,7 @@ export class MockServerService {
 
     // 9. File download
     if (call.respType === 'file') {
-      this.applyResponseExtras(call, res);
+      await this.applyResponseExtras(call, res, scope, serviceId);
       const fileError = this.serveFile(call, res);
       if (fileError) {
         await respond(
@@ -290,7 +290,7 @@ export class MockServerService {
     }
 
     // 12. Invia la risposta
-    this.applyResponseExtras(call, res);
+    await this.applyResponseExtras(call, res, scope, serviceId);
     const { statusCode, body } = this.buildResponsePayload(
       respResult,
       call,
@@ -320,13 +320,63 @@ export class MockServerService {
     };
   }
 
-  /** Applica headers e cookies definiti nella ServiceCall alla response */
-  private applyResponseExtras(call: IServiceCall, res: Response): void {
+  /**
+   * Applica headers e cookies definiti nella ServiceCall alla response.
+   * Se un valore inizia con `=` viene trattato come espressione JS e valutato
+   * con lo stesso scope della response; in caso di errore l'header/cookie
+   * viene saltato (warning nel log).
+   */
+  private async applyResponseExtras(
+    call: IServiceCall,
+    res: Response,
+    scope: Record<string, unknown>,
+    serviceId: string,
+  ): Promise<void> {
     if (call.headers) {
-      Object.entries(call.headers).forEach(([k, v]) => res.setHeader(k, v));
+      for (const [k, v] of Object.entries(call.headers)) {
+        const resolved = await this.resolveKvValue(v, scope, serviceId, 'header', k);
+        if (resolved !== null) res.setHeader(k, resolved);
+      }
     }
     if (call.cookies) {
-      Object.entries(call.cookies).forEach(([k, v]) => res.cookie(k, v));
+      for (const [k, v] of Object.entries(call.cookies)) {
+        const resolved = await this.resolveKvValue(v, scope, serviceId, 'cookie', k);
+        if (resolved !== null) res.cookie(k, resolved);
+      }
+    }
+  }
+
+  /**
+   * Risolve un valore di header/cookie:
+   * - se inizia con `=` valuta l'espressione nel worker e ritorna il valore stringificato
+   * - altrimenti ritorna il literal
+   * Ritorna null se l'espressione ha errori (l'header/cookie verrà saltato).
+   */
+  private async resolveKvValue(
+    raw: string,
+    scope: Record<string, unknown>,
+    serviceId: string,
+    kind: 'header' | 'cookie',
+    key: string,
+  ): Promise<string | null> {
+    if (!raw || !raw.startsWith('=')) return raw ?? '';
+    const expression = raw.slice(1);
+    try {
+      const result = await calc(expression, scope);
+      if (result.error) {
+        this.logger.warn(
+          `[Service ${serviceId}] ${kind} "${key}" expression error: ${result.error}`,
+        );
+        return null;
+      }
+      const value = result.value;
+      if (value === undefined || value === null) return '';
+      return typeof value === 'string' ? value : JSON.stringify(value);
+    } catch (err) {
+      this.logger.warn(
+        `[Service ${serviceId}] ${kind} "${key}" expression exception: ${String(err)}`,
+      );
+      return null;
     }
   }
 

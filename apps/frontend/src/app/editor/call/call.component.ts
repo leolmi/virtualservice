@@ -15,6 +15,10 @@ import {
 } from '../store/editor.selectors';
 import * as EditorActions from '../store/editor.actions';
 import { RuleDialogComponent, RuleDialogData } from '../components/rule-dialog/rule-dialog.component';
+import {
+  ExpressionDialogComponent,
+  ExpressionDialogData,
+} from '../components/expression-dialog/expression-dialog.component';
 import { CodeEditorComponent } from '../../core/components/code-editor/code-editor.component';
 import { calcParameters } from '../../core/models/path.helper';
 import { ExpressionHelpComponent } from '../../core/components/expression-help/expression-help.component';
@@ -177,6 +181,18 @@ export class CallComponent {
     this.updateHeaderEntries(this.headerEntries().filter((_, i) => i !== index));
   }
 
+  onEditHeaderExpression(index: number): void {
+    const entry = this.headerEntries()[index];
+    if (!entry || !this.isExpression(entry.value)) return;
+    this.openExpressionDialog(
+      `Header "${entry.key || 'value'}" expression`,
+      entry.value.slice(1),
+    ).subscribe((result) => {
+      if (result === null) return;
+      this.onUpdateHeader(index, 'value', '=' + result);
+    });
+  }
+
   // ─── Cookies ────────────────────────────────────────────────────────────────
 
   onAddCookie(): void {
@@ -193,7 +209,34 @@ export class CallComponent {
     this.updateCookieEntries(this.cookieEntries().filter((_, i) => i !== index));
   }
 
+  onEditCookieExpression(index: number): void {
+    const entry = this.cookieEntries()[index];
+    if (!entry || !this.isExpression(entry.value)) return;
+    this.openExpressionDialog(
+      `Cookie "${entry.key || 'value'}" expression`,
+      entry.value.slice(1),
+    ).subscribe((result) => {
+      if (result === null) return;
+      this.onUpdateCookie(index, 'value', '=' + result);
+    });
+  }
+
   // ─── Helpers ────────────────────────────────────────────────────────────────
+
+  isExpression(value: string | undefined | null): boolean {
+    return !!value && value.startsWith('=');
+  }
+
+  private openExpressionDialog(title: string, expression: string) {
+    const data: ExpressionDialogData = {
+      title,
+      expression,
+      helpContext: this.helpContext(),
+    };
+    return this.dialog
+      .open(ExpressionDialogComponent, { data, width: '600px', maxWidth: '960px' })
+      .afterClosed();
+  }
 
   private entriesToRecord(entries: KvEntry[]): Record<string, string> {
     const record: Record<string, string> = {};

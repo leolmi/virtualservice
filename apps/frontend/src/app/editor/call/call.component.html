@@ -92,11 +92,17 @@
                 (change)="onUpdateHeader($index, 'key', $any($event.target).value)" />
               <input
                 class="kv-input kv-value"
-                placeholder="Value"
+                placeholder="Value (prefix with = for expression)"
                 spellcheck="false"
                 [value]="entry.value"
                 (change)="onUpdateHeader($index, 'value', $any($event.target).value)" />
-              <mat-icon class="kv-delete" (click)="onDeleteHeader($index)">close</mat-icon>
+              <mat-icon class="kv-icon-button kv-fx"
+                        matTooltip="Edit expression"
+                        [class.disabled]="!isExpression(entry.value)"
+                        (click)="onEditHeaderExpression($index)">functions</mat-icon>
+              <mat-icon class="kv-icon-button kv-delete"
+                        matTooltip="Delete header"
+                        (click)="onDeleteHeader($index)">close</mat-icon>
             </div>
           }
           <button
@@ -132,11 +138,17 @@
                 (change)="onUpdateCookie($index, 'key', $any($event.target).value)" />
               <input
                 class="kv-input kv-value"
-                placeholder="Value"
+                placeholder="Value (prefix with = for expression)"
                 spellcheck="false"
                 [value]="entry.value"
                 (change)="onUpdateCookie($index, 'value', $any($event.target).value)" />
-              <mat-icon class="kv-delete" (click)="onDeleteCookie($index)">close</mat-icon>
+              <mat-icon class="kv-icon-button kv-fx"
+                        matTooltip="Edit expression"
+                        [class.disabled]="!isExpression(entry.value)"
+                        (click)="onEditCookieExpression($index)">functions</mat-icon>
+              <mat-icon class="kv-icon-button kv-delete"
+                        matTooltip="Delete cookie"
+                        (click)="onDeleteCookie($index)">close</mat-icon>
             </div>
           }
           <button

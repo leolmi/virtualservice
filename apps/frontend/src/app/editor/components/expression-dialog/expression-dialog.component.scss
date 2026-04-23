@@ -1,0 +1,52 @@
+.dialog-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .help-toggle {
+    color: rgba(0, 0, 0, 0.38);
+    &.active { color: var(--vs-primary); }
+  }
+}
+
+.dialog-body {
+  display: flex;
+  gap: 0;
+
+  &.with-help {
+    gap: 20px;
+    align-items: stretch;
+
+    .expression-col {
+      flex: 0 0 520px;
+    }
+
+    .help-col {
+      flex: 1;
+      border-left: 1px solid rgba(0, 0, 0, 0.08);
+      padding-left: 20px;
+      overflow-y: auto;
+      max-height: 420px;
+    }
+  }
+}
+
+.expression-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 4px;
+}
+
+.sub-label {
+  font-size: 0.8rem;
+  color: rgba(0, 0, 0, 0.5);
+  margin: 0 0 6px;
+  line-height: 1.45;
+}
+
+.expression-editor {
+  display: block;
+  height: 220px;
+}

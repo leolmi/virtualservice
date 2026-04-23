@@ -19,12 +19,6 @@
   <!-- Main scrollable content -->
   <div class="services-content">
 
-    @if (loading()) {
-      <div class="loading-overlay">
-        <mat-spinner diameter="48"></mat-spinner>
-      </div>
-    }
-
     @if (error()) {
       <div class="error-banner">{{ error() }}</div>
     }
@@ -70,6 +64,12 @@
     </section>
 
   </div>
+
+  @if (loading()) {
+    <div class="loading-overlay">
+      <mat-spinner diameter="100"></mat-spinner>
+    </div>
+  }
 
   <!-- Bottom FAB toolbar -->
   <div class="bottom-fab-bar">

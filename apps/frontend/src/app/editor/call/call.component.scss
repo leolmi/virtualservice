@@ -207,7 +207,7 @@
     flex: 3;
   }
 
-  .kv-delete {
+  .kv-icon-button {
     font-size: 18px;
     width: 18px;
     height: 18px;
@@ -215,8 +215,24 @@
     opacity: 0.35;
     flex-shrink: 0;
 
+    &.disabled {
+      opacity: 0.1;
+      pointer-events: none;
+    }
+
     &:hover {
       opacity: 1;
+    }
+  }
+
+  .kv-fx {
+    &:hover {
+      color: var(--vs-primary);
+    }
+  }
+
+  .kv-delete {
+    &:hover {
       color: var(--vs-warn-light);
     }
   }
