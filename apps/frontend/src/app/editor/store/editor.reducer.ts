@@ -1,5 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
 import { IServiceCall } from '@virtualservice/shared/model';
+import { normalizeCallParameters } from '../../core/models/path.helper';
 import { initialEditorState } from './editor.state';
 import * as EditorActions from './editor.actions';
 
@@ -9,7 +10,10 @@ export const editorReducer = createReducer(
   on(EditorActions.loadEditor, (state) => ({ ...state, loading: true, error: null })),
   on(EditorActions.loadEditorSuccess, (state, { service }) => ({
     ...state,
-    service,
+    service: {
+      ...service,
+      calls: service.calls.map(normalizeCallParameters),
+    },
     loading: false,
     dirty: false,
     activeCallIndex: null,

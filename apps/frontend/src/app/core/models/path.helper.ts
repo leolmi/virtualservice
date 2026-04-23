@@ -1,4 +1,5 @@
 import {
+  IServiceCall,
   IServiceCallParameter,
   PARAM_TARGET_PATH,
   PARAM_TARGET_QUERY,
@@ -72,7 +73,25 @@ export const calcParameters = (path: string): IServiceCallParameter[] => {
     }
   }
 
-  console.log('CALCULATED PARAMS', params);
-
   return params;
+};
+
+/**
+ * Normalizza i parametri di una call rispetto al suo path.
+ * Usato al caricamento per rendere consistenti i documenti vecchi che
+ * potrebbero avere parameters: [] pur avendo {placeholder} nel path.
+ *
+ * - aggiunge i parametri mancanti derivati dal path
+ * - preserva il campo value dei parametri già presenti
+ * - rimuove i parametri orfani (non più nel path)
+ */
+export const normalizeCallParameters = (call: IServiceCall): IServiceCall => {
+  const expected = calcParameters(call.path);
+  if (!expected.length && !(call.parameters ?? []).length) return call;
+  const existing = call.parameters ?? [];
+  const normalized = expected.map((ep) => {
+    const stored = existing.find((p) => p.code === ep.code);
+    return stored ? { ...ep, value: stored.value } : ep;
+  });
+  return { ...call, parameters: normalized };
 };
