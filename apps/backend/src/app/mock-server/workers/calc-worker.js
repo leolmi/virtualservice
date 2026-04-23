@@ -36,6 +36,34 @@ if (isMainThread) {
   scope.samples = samples;
   scope.guid = _guid;
 
+  // Wrap headers in a case-insensitive Proxy: gli utenti tendono a scrivere
+  // headers.Authorization / headers['X-Api-Key'] con la grafia originale,
+  // ma Express normalizza le chiavi in lowercase. Il Proxy intercetta
+  // qualsiasi get/has e fa il lookup lowercase sull'oggetto reale.
+  if (scope.headers && typeof scope.headers === 'object') {
+    const raw = scope.headers;
+    scope.headers = new Proxy(raw, {
+      get(target, prop) {
+        if (typeof prop === 'symbol') return target[prop];
+        const key = String(prop).toLowerCase();
+        return key in target ? target[key] : target[prop];
+      },
+      has(target, prop) {
+        if (typeof prop === 'symbol') return prop in target;
+        return String(prop).toLowerCase() in target || prop in target;
+      },
+      ownKeys(target) {
+        return Reflect.ownKeys(target);
+      },
+      getOwnPropertyDescriptor(target, prop) {
+        if (typeof prop === 'symbol') return Object.getOwnPropertyDescriptor(target, prop);
+        const key = String(prop).toLowerCase();
+        if (key in target) return Object.getOwnPropertyDescriptor(target, key);
+        return Object.getOwnPropertyDescriptor(target, prop);
+      },
+    });
+  }
+
   // ── Scope-injected control functions (response-only use case) ──────────────
   // setExitCode(code): override dello status code della response "di successo".
   // throwError(message, code=500): interrompe e produce una response di errore.

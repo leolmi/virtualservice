@@ -24,15 +24,6 @@ import calc from './workers/calc';
 /** Cartella degli asset per il file download */
 const ASSETS_DIR = path.join(__dirname, '..', '..', 'assets');
 
-// Campi header da includere nel log della request
-const LOGGED_HEADERS = [
-  'content-type',
-  'accept',
-  'origin',
-  'user-agent',
-  'referer',
-];
-
 @Injectable()
 export class MockServerService {
   private readonly logger = new Logger(MockServerService.name);
@@ -309,10 +300,9 @@ export class MockServerService {
   /** Serializza informazioni rilevanti della request per il log */
   private buildRequestInfo(req: Request): Record<string, unknown> {
     const headers: Record<string, unknown> = {};
-    for (const h of LOGGED_HEADERS) {
-      if (req.headers[h]) headers[h] = req.headers[h];
+    for (const [k, v] of Object.entries(req.headers)) {
+      if (v !== undefined) headers[k] = v;
     }
-    if (req.headers['authorization']) headers['authorization'] = '[present]';
 
     return {
       method: req.method,

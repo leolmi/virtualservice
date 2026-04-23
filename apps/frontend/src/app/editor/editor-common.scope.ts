@@ -92,13 +92,18 @@ export const SCOPE_DATA = {
 export const SCOPE_HEADERS: any = {
   name: 'headers',
   type: 'object',
-  description: 'HTTP request headers',
+  description:
+    'HTTP request headers. Access is case-insensitive: headers.Authorization, headers.authorization and headers["X-Api-Key"] all work.',
   examples: [
     {
       description: 'Authorization header',
-      code: 'headers.authorization',
+      code: 'headers.Authorization',
     },
-    { description: 'Custom header', code: 'headers["x-api-key"]' },
+    { description: 'Custom header', code: 'headers["X-Api-Key"]' },
+    {
+      description: 'ETag handling',
+      code: "if (headers['If-None-Match'] === db.etag) throwError('', 304);",
+    },
   ],
 };
 
