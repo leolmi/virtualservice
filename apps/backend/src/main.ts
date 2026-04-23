@@ -33,11 +33,13 @@ async function bootstrap(): Promise<void> {
   );
 
   // CORS permissivo: gli endpoint /service/* devono essere raggiungibili
-  // da qualsiasi dominio esterno (mock service pubblici)
+  // da qualsiasi dominio esterno (mock service pubblici).
+  // exposedHeaders: '*' è ammesso dalla spec Fetch perché credentials === false.
   app.enableCors({
     origin: '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     allowedHeaders: '*',
+    exposedHeaders: '*',
     credentials: false,
   });
 
