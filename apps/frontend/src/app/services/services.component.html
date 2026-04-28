@@ -23,19 +23,28 @@
       <div class="error-banner">{{ error() }}</div>
     }
 
-    <!-- Search box -->
+    <!-- Header: count label + search box -->
     @if (hasAnyService()) {
-      <div class="search-box">
-        <mat-icon class="search-icon">search</mat-icon>
-        <input
-          class="search-input"
-          [ngModel]="search()"
-          (ngModelChange)="search.set($event)"
-          placeholder="search by name, description or call path..."
-        />
-        @if (search()) {
-          <mat-icon class="clear-icon" (click)="onClearSearch()">close</mat-icon>
-        }
+      <div class="services-header">
+        <span class="services-count">
+          @if (isFiltering()) {
+            <strong>{{ visibleCount() }}</strong> / {{ totalCount() }} services
+          } @else {
+            <strong>{{ totalCount() }}</strong> services
+          }
+        </span>
+        <div class="search-box">
+          <mat-icon class="search-icon">search</mat-icon>
+          <input
+            class="search-input"
+            [ngModel]="search()"
+            (ngModelChange)="search.set($event)"
+            placeholder="search by name, description or call path..."
+          />
+          @if (search()) {
+            <mat-icon class="clear-icon" (click)="onClearSearch()">close</mat-icon>
+          }
+        </div>
       </div>
     }
 

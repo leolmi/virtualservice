@@ -40,10 +40,12 @@
             <span>Admin area</span>
           </button>
         }
-        <button mat-menu-item (click)="onApiKeys()">
-          <mat-icon>vpn_key</mat-icon>
-          <span>API & MCP</span>
-        </button>
+        @if (mcpEnabled()) {
+          <button mat-menu-item (click)="onApiKeys()">
+            <mat-icon>vpn_key</mat-icon>
+            <span>API & MCP</span>
+          </button>
+        }
         <button mat-menu-item (click)="onHelp()">
           <mat-icon>help_outline</mat-icon>
           <span>Help</span>

@@ -18,3 +18,7 @@ export const selectSessionRestored = createSelector(
   selectAuthState,
   (s) => s.sessionRestored,
 );
+export const selectMcpEnabled = createSelector(
+  selectAuthState,
+  (s) => s.mcpEnabled,
+);

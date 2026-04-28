@@ -5,21 +5,23 @@ import { AuthState, initialAuthState } from './auth.state';
 export const authReducer = createReducer(
   initialAuthState,
   on(AuthActions.login, (state) => ({ ...state, loading: true, error: null })),
-  on(AuthActions.loginSuccess, (state, { token, user }) => ({
+  on(AuthActions.loginSuccess, (state, { token, user, mcpEnabled }) => ({
     ...state,
     loading: false,
     token,
     user,
+    mcpEnabled,
   })),
   on(AuthActions.loginFailure, (state, { error }) => ({
     ...state,
     loading: false,
     error,
   })),
-  on(AuthActions.restoreSessionSuccess, (state, { token, user }) => ({
+  on(AuthActions.restoreSessionSuccess, (state, { token, user, mcpEnabled }) => ({
     ...state,
     token,
     user,
+    mcpEnabled,
     sessionRestored: true,
   })),
   on(AuthActions.restoreSessionFailure, (state) => ({

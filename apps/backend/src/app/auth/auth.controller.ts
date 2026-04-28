@@ -20,6 +20,7 @@ import { LocalAuthGuard } from './guards/local-auth.guard';
 import { GoogleAuthGuard } from './guards/google-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RegisterDto, LoginDto, ResetPasswordDto } from '@virtualservice/shared/dto';
+import { MeResponse } from '@virtualservice/shared/model';
 import { UserDocument } from '../users/schemas/user.schema';
 import { RequestWithUser } from './interfaces/request-with-user.interface';
 import { DEFAULT_FRONTEND_URL } from '../../defaults';
@@ -32,11 +33,15 @@ interface RequestWithPassportUser extends Request {
 @Controller('auth')
 export class AuthController {
   private readonly logger = new Logger(AuthController.name);
+  private readonly mcpEnabled: boolean;
 
   constructor(
     private readonly authService: AuthService,
     private readonly configService: ConfigService,
-  ) {}
+  ) {
+    const raw = configService.get<string>('VIRTUALSERVICE_MCP_ENABLED');
+    this.mcpEnabled = raw === undefined ? true : raw.toLowerCase() !== 'false';
+  }
 
   @Throttle({ strict: { ttl: 60_000, limit: 5 } })
   @Post('register')
@@ -129,7 +134,7 @@ export class AuthController {
   @Get('me')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
-  getProfile(@Req() req: RequestWithUser): { userId: string; email: string } {
-    return req.user;
+  getProfile(@Req() req: RequestWithUser): MeResponse {
+    return { ...req.user, mcpEnabled: this.mcpEnabled };
   }
 }

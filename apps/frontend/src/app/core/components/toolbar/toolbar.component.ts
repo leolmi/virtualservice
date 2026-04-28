@@ -11,7 +11,7 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { Store } from '@ngrx/store';
-import { selectUser } from '../../../auth/store/auth.selectors';
+import { selectMcpEnabled, selectUser } from '../../../auth/store/auth.selectors';
 import { logout } from '../../../auth/store/auth.actions';
 import { AuthService } from '../../../auth/auth.service';
 import { ToolbarService } from '../../services/toolbar.service';
@@ -62,6 +62,7 @@ export class ToolbarComponent {
   isSmallScreen = computed(() => this.isNarrowBreakpoint());
 
   user = this.store.selectSignal(selectUser);
+  mcpEnabled = this.store.selectSignal(selectMcpEnabled);
 
   isAdmin = computed(() => this.user()?.role === 'admin');
 

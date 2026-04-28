@@ -8,7 +8,7 @@ export const login = createAction(
 
 export const loginSuccess = createAction(
   '[Auth] Login Success',
-  props<{ token: string; user: IUser }>(),
+  props<{ token: string; user: IUser; mcpEnabled: boolean }>(),
 );
 
 export const loginFailure = createAction(
@@ -24,7 +24,7 @@ export const restoreSession = createAction('[Auth] Restore Session');
 
 export const restoreSessionSuccess = createAction(
   '[Auth] Restore Session Success',
-  props<{ token: string; user: IUser }>(),
+  props<{ token: string; user: IUser; mcpEnabled: boolean }>(),
 );
 
 export const restoreSessionFailure = createAction(

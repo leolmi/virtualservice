@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { IUser } from '@virtualservice/shared/model';
+import { IUser, MeResponse } from '@virtualservice/shared/model';
 import { Observable, switchMap } from 'rxjs';
 
 const TOKEN_KEY = 'vs_token';
@@ -13,24 +13,30 @@ export class AuthService {
   login(
     email: string,
     password: string,
-  ): Observable<{ token: string; user: IUser }> {
+  ): Observable<{ token: string; user: IUser; mcpEnabled: boolean }> {
     return this.http
       .post<{ accessToken: string }>('/auth/login', { email, password })
       .pipe(
         switchMap(({ accessToken }) =>
           this.http
-            .get<IUser>('/auth/me', {
+            .get<MeResponse>('/auth/me', {
               headers: { Authorization: `Bearer ${accessToken}` },
             })
             .pipe(
-              switchMap((user) => [{ token: accessToken, user }] as const),
+              switchMap((me) => [
+                {
+                  token: accessToken,
+                  user: me as unknown as IUser,
+                  mcpEnabled: me.mcpEnabled,
+                },
+              ] as const),
             ),
         ),
       );
   }
 
-  getMe(token: string): Observable<IUser> {
-    return this.http.get<IUser>('/auth/me', {
+  getMe(token: string): Observable<MeResponse> {
+    return this.http.get<MeResponse>('/auth/me', {
       headers: { Authorization: `Bearer ${token}` },
     });
   }

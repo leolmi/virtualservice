@@ -1,6 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
+import { IUser } from '@virtualservice/shared/model';
 import { AuthService } from '../auth.service';
 import { loginSuccess } from '../store/auth.actions';
 
@@ -23,9 +24,12 @@ export class GoogleCallbackComponent implements OnInit {
     }
 
     this.authService.getMe(token).subscribe({
-      next: (user) => {
+      next: (me) => {
+        const user = me as unknown as IUser;
         this.authService.saveSession(token, user);
-        this.store.dispatch(loginSuccess({ token, user }));
+        this.store.dispatch(
+          loginSuccess({ token, user, mcpEnabled: me.mcpEnabled }),
+        );
         this.router.navigate(['/services']);
       },
       error: () => {

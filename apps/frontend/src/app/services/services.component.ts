@@ -68,6 +68,11 @@ export class ServicesComponent {
   readonly starredServices = computed(() => this._applySearch(this.rawStarred()));
   readonly otherServices = computed(() => this._applySearch(this.rawOther()));
   readonly hasAnyService = computed(() => this.allServices().length > 0);
+  readonly totalCount = computed(() => this.allServices().length);
+  readonly visibleCount = computed(
+    () => this.starredServices().length + this.otherServices().length,
+  );
+  readonly isFiltering = computed(() => this.search().trim().length > 0);
 
   readonly dropFileTypes = DROP_FILE_TYPES;
 

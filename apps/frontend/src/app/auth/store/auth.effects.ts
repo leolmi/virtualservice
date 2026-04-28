@@ -4,6 +4,7 @@ import { Action } from '@ngrx/store';
 import { Router } from '@angular/router';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { IUser } from '@virtualservice/shared/model';
 import * as AuthActions from './auth.actions';
 import { AuthService } from '../auth.service';
 
@@ -28,8 +29,12 @@ export class AuthEffects implements OnInitEffects {
         }
         // Validate the token is still valid by calling /auth/me
         return this.authService.getMe(session.token).pipe(
-          map((user) =>
-            AuthActions.restoreSessionSuccess({ token: session.token, user }),
+          map((me) =>
+            AuthActions.restoreSessionSuccess({
+              token: session.token,
+              user: me as unknown as IUser,
+              mcpEnabled: me.mcpEnabled,
+            }),
           ),
           catchError(() => {
             this.authService.clearSession();

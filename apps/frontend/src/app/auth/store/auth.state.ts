@@ -7,6 +7,8 @@ export interface AuthState {
   error: string | null;
   /** True once the session restore attempt has completed (success or failure) */
   sessionRestored: boolean;
+  /** Server-side flag: whether MCP endpoint is enabled */
+  mcpEnabled: boolean;
 }
 
 export const initialAuthState: AuthState = {
@@ -15,4 +17,5 @@ export const initialAuthState: AuthState = {
   loading: false,
   error: null,
   sessionRestored: false,
+  mcpEnabled: false,
 };

@@ -77,6 +77,23 @@
   font-size: 0.875rem;
 }
 
+/* Header: count label + search */
+.services-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+
+  .services-count {
+    flex: 1;
+    font-size: 0.9rem;
+    color: rgba(38, 50, 56, 0.65);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
 /* Search box */
 .search-box {
   position: relative;
@@ -84,7 +101,6 @@
   align-items: center;
   width: 100%;
   max-width: 480px;
-  margin-bottom: 16px;
 
   .search-icon,
   .clear-icon {

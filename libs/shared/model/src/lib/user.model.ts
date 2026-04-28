@@ -19,3 +19,10 @@ export interface JwtPayload {
   sub: string;
   email: string;
 }
+
+export interface MeResponse {
+  userId: string;
+  email: string;
+  role: string;
+  mcpEnabled: boolean;
+}
