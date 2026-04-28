@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Schema as MongooseSchema } from 'mongoose';
+import { randomUUID } from 'crypto';
 import {
   IService,
   IServiceCall,
@@ -47,6 +48,14 @@ export const ServiceCallParameterSchema =
 
 @Schema({ _id: false })
 export class ServiceCallRule implements IServiceCallRule {
+  /**
+   * uuid v4 stabile assegnato al primo save dal pre-save hook su Service.
+   * Usato dai tool MCP che modificano le rules per identità (non per indice).
+   * Optional perché documenti pre-feature potrebbero non averlo.
+   */
+  @Prop({ type: String, default: undefined })
+  id?: string;
+
   @Prop({ default: '' })
   expression!: string;
 
@@ -172,8 +181,17 @@ export class Service implements IService {
 
 export const ServiceSchema = SchemaFactory.createForClass(Service);
 
-// Aggiorna lastChange automaticamente ad ogni salvataggio
+// Aggiorna lastChange automaticamente ad ogni salvataggio.
+// Backfilla `id` su ogni rule che ne è priva (uuid v4) — migrazione naturale
+// idempotente. I documenti pre-feature acquisiscono ids al primo save (UI o MCP).
 ServiceSchema.pre('save', function (next) {
   this.lastChange = Date.now();
+  for (const call of this.calls ?? []) {
+    for (const rule of call.rules ?? []) {
+      if (!rule.id) {
+        rule.id = randomUUID();
+      }
+    }
+  }
   next();
 });

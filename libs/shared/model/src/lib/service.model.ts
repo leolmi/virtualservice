@@ -42,6 +42,14 @@ export interface PathSegment {
 
 /** Regola applicata a una chiamata: valuta un'espressione JS e, se vera, restituisce l'errore configurato */
 export interface IServiceCallRule {
+  /**
+   * Identificatore stabile della regola, generato server-side al primo save
+   * (uuid v4). Usato dai tool MCP che modificano le rules per riferirsi alla
+   * regola per identità, non per indice. Opzionale al type-level perché
+   * record creati prima dell'introduzione del campo possono non averlo —
+   * vengono completati in lettura/save.
+   */
+  id?: string;
   /** Codice JS (stringa-js) dell'espressione booleana da valutare */
   expression: StringJs;
   /**

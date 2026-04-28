@@ -20,6 +20,33 @@ import { registerSearchTemplates } from './tools/search-templates.tool';
 import { registerGetTemplate } from './tools/get-template.tool';
 import { registerListHistory } from './tools/list-history.tool';
 import { registerRestoreSnapshot } from './tools/restore-snapshot.tool';
+import { registerCreateService } from './tools/create-service.tool';
+import { registerUpdateService } from './tools/update-service.tool';
+import { registerDeleteService } from './tools/delete-service.tool';
+import { registerCloneService } from './tools/clone-service.tool';
+import { registerAddCall } from './tools/add-call.tool';
+import { registerUpdateCall } from './tools/update-call.tool';
+import { registerRemoveCall } from './tools/remove-call.tool';
+import {
+  registerAddRule,
+  registerUpdateRule,
+  registerRemoveRule,
+} from './tools/rules.tools';
+import {
+  registerAddParam,
+  registerUpdateParam,
+  registerRemoveParam,
+} from './tools/parameters.tools';
+import {
+  registerAddHeader,
+  registerUpdateHeader,
+  registerRemoveHeader,
+} from './tools/headers.tools';
+import {
+  registerAddCookie,
+  registerUpdateCookie,
+  registerRemoveCookie,
+} from './tools/cookies.tools';
 import { AuthenticatedUser } from '../auth/interfaces/request-with-user.interface';
 
 const SERVER_NAME = 'virtualservice-mcp';
@@ -137,5 +164,30 @@ export class McpServerFactory {
     // History (snapshot)
     registerListHistory(server, user, deps);
     registerRestoreSnapshot(server, user, deps);
+
+    // Authoring top-level + clone
+    registerCreateService(server, user, deps);
+    registerUpdateService(server, user, deps);
+    registerDeleteService(server, user, deps);
+    registerCloneService(server, user, deps);
+
+    // Call CRUD scalare
+    registerAddCall(server, user, deps);
+    registerUpdateCall(server, user, deps);
+    registerRemoveCall(server, user, deps);
+
+    // Sub-array atomic tools
+    registerAddRule(server, user, deps);
+    registerUpdateRule(server, user, deps);
+    registerRemoveRule(server, user, deps);
+    registerAddParam(server, user, deps);
+    registerUpdateParam(server, user, deps);
+    registerRemoveParam(server, user, deps);
+    registerAddHeader(server, user, deps);
+    registerUpdateHeader(server, user, deps);
+    registerRemoveHeader(server, user, deps);
+    registerAddCookie(server, user, deps);
+    registerUpdateCookie(server, user, deps);
+    registerRemoveCookie(server, user, deps);
   }
 }

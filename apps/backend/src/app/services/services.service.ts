@@ -14,9 +14,21 @@ import { ServiceCacheService } from '../mock-server/service-cache.service';
 import { CalcResult } from '../mock-server/interfaces/scope.interface';
 import calc from '../mock-server/workers/calc';
 import { TestCallDto, TestCallResult } from '@virtualservice/shared/dto';
+import { StaleVersionException } from './exceptions/stale-version.exception';
 
 /** Default 64 KB per singolo campo espressione */
 const DEFAULT_EXPRESSION_SIZE_LIMIT = 64 * 1024;
+
+/** Massimo numero di tentativi nel calcolo del path "suggested" su PATH_TAKEN. */
+const MAX_PATH_SUGGESTIONS = 100;
+
+export interface SaveOptions {
+  /**
+   * Se valorizzato, abilita l'optimistic locking soft: il save fallisce con
+   * `StaleVersionException` se il `lastChange` corrente sul DB diverge.
+   */
+  expectedLastChange?: number;
+}
 
 interface ExpressionViolation {
   field: string;
@@ -56,11 +68,16 @@ export class ServicesService {
   /**
    * Upsert: se il body contiene _id e il documento esiste con quell'owner → aggiorna,
    * altrimenti inserisce come nuovo servizio.
+   *
+   * `options.expectedLastChange` abilita l'optimistic locking: il save lancia
+   * `StaleVersionException` se il valore non coincide con quello a DB. Nessun
+   * controllo se il flag è assente (last-write-wins, comportamento storico).
    */
   async save(
     dto: Record<string, unknown>,
     ownerId: string,
     role?: string,
+    options: SaveOptions = {},
   ): Promise<ServiceDocument> {
     this.validateExpressionSizes(dto);
 
@@ -69,6 +86,15 @@ export class ServicesService {
     if (existingId && isValidObjectId(existingId)) {
       const existing = await this.serviceModel.findById(existingId).exec();
       if (existing && (role === 'admin' || existing.owner === ownerId)) {
+        // Optimistic locking soft: la chiamata MCP passa la versione vista in
+        // get_service. Se diverge, abortiamo e l'agente deve rifetchare.
+        if (
+          options.expectedLastChange !== undefined &&
+          existing.lastChange !== options.expectedLastChange
+        ) {
+          throw new StaleVersionException(existing.lastChange);
+        }
+
         // Aggiornamento: escludiamo i campi immutabili
         const { _id, owner, creationDate, ...updateData } = dto;
         void _id; void owner; void creationDate;
@@ -92,6 +118,29 @@ export class ServicesService {
       creationDate: Date.now(),
       lastChange: Date.now(),
     });
+  }
+
+  /**
+   * Calcola il primo path libero a partire da `desired`. Se `desired` è già
+   * libero lo restituisce; altrimenti prova `desired-2`, `desired-3`, …
+   * fino a `MAX_PATH_SUGGESTIONS`.
+   */
+  async suggestPath(desired: string): Promise<string> {
+    const trimmed = desired.trim();
+    if (!trimmed) {
+      throw new BadRequestException('Path cannot be empty');
+    }
+    const taken = await this.serviceModel.findOne({ path: trimmed }).exec();
+    if (!taken) return trimmed;
+
+    for (let n = 2; n <= MAX_PATH_SUGGESTIONS + 1; n++) {
+      const candidate = `${trimmed}-${n}`;
+      const exists = await this.serviceModel.findOne({ path: candidate }).exec();
+      if (!exists) return candidate;
+    }
+    throw new BadRequestException(
+      `Could not find a free path starting from "${trimmed}" within ${MAX_PATH_SUGGESTIONS} attempts`,
+    );
   }
 
   /** Verifica che il path non sia già usato da un altro servizio (escluso quello corrente) */

@@ -52,8 +52,9 @@ Three writing modes (auto-detected by prefix):
   list of a specific service and \`get_call\` for full call detail.
 - Path uniqueness is **global**. On \`PATH_TAKEN\`, the error carries
   \`details.suggested\` you can offer to the user.
-- All mutating tools support **optimistic locking** via \`expectedUpdatedAt\`.
-  On \`STALE_VERSION\`, re-fetch and confirm with the user before retrying.
+- Mutating tools that target an existing service support **optimistic locking**
+  via \`expectedLastChange\` (the \`lastChange\` value seen at \`get_service\`
+  time). On \`STALE_VERSION\`, re-fetch and confirm with the user before retrying.
 - Snapshots are kept automatically before each mutation; use
   \`list_history\` and \`restore_snapshot\` to recover.
 

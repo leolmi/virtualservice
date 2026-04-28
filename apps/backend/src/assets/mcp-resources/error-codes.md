@@ -30,7 +30,7 @@ to the user.
 | Code | When | `details` |
 |---|---|---|
 | `PATH_TAKEN` | The proposed service path is already in use globally | `{ suggested: string }` — backend-computed alternative |
-| `STALE_VERSION` | An optimistic-locking write was attempted with an outdated `expectedUpdatedAt` | `{ currentUpdatedAt: string }` — current ISO timestamp on disk |
+| `STALE_VERSION` | An optimistic-locking write was attempted with an outdated `expectedLastChange` | `{ currentLastChange: number }` — current `lastChange` epoch ms on disk |
 | `EXPRESSION_TOO_LARGE` | A `string-js` field exceeds `VIRTUALSERVICE_EXPRESSION_SIZE_LIMIT` | `{ field: string, size: number, limit: number }` |
 | `DB_TOO_LARGE` | The cached `db` exceeds `VIRTUALSERVICE_DB_SIZE_LIMIT` | `{ size: number, limit: number }` |
 | `OPENAPI_TOO_LARGE` | OpenAPI document exceeds `VIRTUALSERVICE_OPENAPI_SIZE_LIMIT` | `{ size: number, limit: number }` |
@@ -61,7 +61,7 @@ to the user.
 ## Recovery hints for the agent
 
 - `PATH_TAKEN`: present `details.suggested` to the user as a default and ask if they want to use it.
-- `STALE_VERSION`: re-fetch with `get_service`, ask the user to confirm overrides or choose which side wins, then retry with the new `expectedUpdatedAt`.
+- `STALE_VERSION`: re-fetch with `get_service`, ask the user to confirm overrides or choose which side wins, then retry with the new `expectedLastChange`.
 - `URL_NOT_REACHABLE`: offer to fetch the document yourself and pass it via `import_from_openapi_content`.
 - `EXPRESSION_TOO_LARGE` / `DB_TOO_LARGE` / `OPENAPI_TOO_LARGE`: tell the user to simplify or split the input.
 - `RATE_LIMITED`: back off for `details.retryAfterSec` and retry once; do not loop without surfacing the issue.
