@@ -77,6 +77,41 @@
   font-size: 0.875rem;
 }
 
+/* Search box */
+.search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 480px;
+  margin-bottom: 16px;
+
+  .search-icon,
+  .clear-icon {
+    position: absolute;
+    color: #bbb;
+  }
+  .search-icon { left: 8px; }
+  .clear-icon  {
+    right: 8px;
+    cursor: pointer;
+    &:hover { color: #888; }
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 12px 40px;
+    border: 1px solid rgba(38, 50, 56, 0.15);
+    border-radius: 3px;
+    outline: none;
+    font-size: 0.9rem;
+    background: white;
+    transition: border-color 0.2s;
+
+    &:focus { border-color: var(--vs-primary); }
+  }
+}
+
 /* Service sections */
 .services-section {
   position: relative;

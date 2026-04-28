@@ -23,6 +23,22 @@
       <div class="error-banner">{{ error() }}</div>
     }
 
+    <!-- Search box -->
+    @if (hasAnyService()) {
+      <div class="search-box">
+        <mat-icon class="search-icon">search</mat-icon>
+        <input
+          class="search-input"
+          [ngModel]="search()"
+          (ngModelChange)="search.set($event)"
+          placeholder="search by name, description or call path..."
+        />
+        @if (search()) {
+          <mat-icon class="clear-icon" (click)="onClearSearch()">close</mat-icon>
+        }
+      </div>
+    }
+
     <!-- Starred section -->
     @if (starredServices().length > 0) {
       <section class="services-section starred-section">
@@ -58,7 +74,11 @@
           />
         }
         @if (otherServices().length === 0 && starredServices().length === 0 && !loading()) {
-          <p class="empty-label">No services yet. Click <strong>+</strong> to create one.</p>
+          @if (hasAnyService()) {
+            <p class="empty-label">No services match your search.</p>
+          } @else {
+            <p class="empty-label">No services yet. Click <strong>+</strong> to create one.</p>
+          }
         }
       </div>
     </section>

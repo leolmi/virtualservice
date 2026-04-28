@@ -1,4 +1,5 @@
-import { Component, DestroyRef, inject } from '@angular/core';
+import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -11,6 +12,7 @@ import { ToolbarService } from '../core/services/toolbar.service';
 import { ToolbarCommand } from '../core/models/toolbar-command.model';
 import {
   selectOtherServices,
+  selectServices,
   selectServicesError,
   selectServicesLoading,
   selectStarredServices,
@@ -37,6 +39,7 @@ import {
   selector: 'vs-services',
   standalone: true,
   imports: [
+    FormsModule,
     MatProgressSpinnerModule,
     MatButtonModule,
     MatIconModule,
@@ -56,12 +59,35 @@ export class ServicesComponent {
 
   readonly loading = this.store.selectSignal(selectServicesLoading);
   readonly error = this.store.selectSignal(selectServicesError);
-  readonly starredServices = this.store.selectSignal(selectStarredServices);
-  readonly otherServices = this.store.selectSignal(selectOtherServices);
+  private readonly allServices = this.store.selectSignal(selectServices);
+  private readonly rawStarred = this.store.selectSignal(selectStarredServices);
+  private readonly rawOther = this.store.selectSignal(selectOtherServices);
+
+  readonly search = signal('');
+
+  readonly starredServices = computed(() => this._applySearch(this.rawStarred()));
+  readonly otherServices = computed(() => this._applySearch(this.rawOther()));
+  readonly hasAnyService = computed(() => this.allServices().length > 0);
 
   readonly dropFileTypes = DROP_FILE_TYPES;
 
   isDragOver = false;
+
+  private _applySearch(items: IServiceItem[]): IServiceItem[] {
+    const q = this.search().trim().toLowerCase();
+    if (!q) return items;
+    return items.filter((s) => {
+      if ((s.name ?? '').toLowerCase().includes(q)) return true;
+      if ((s.description ?? '').toLowerCase().includes(q)) return true;
+      if ((s.path ?? '').toLowerCase().includes(q)) return true;
+      const calls = s.calls ?? [];
+      for (const c of calls) {
+        if ((c.path ?? '').toLowerCase().includes(q)) return true;
+        if ((c.description ?? '').toLowerCase().includes(q)) return true;
+      }
+      return false;
+    });
+  }
 
   constructor() {
     this.store.dispatch(loadServices());
@@ -101,6 +127,10 @@ export class ServicesComponent {
 
   onCreateService(): void {
     this.store.dispatch(createService());
+  }
+
+  onClearSearch(): void {
+    this.search.set('');
   }
 
   onDragOver(event: DragEvent): void {
