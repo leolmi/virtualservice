@@ -176,20 +176,213 @@ I parser OpenAPI vivono oggi in `apps/frontend/src/app/services/import/parsers/`
 
 Decidere se aggiungere alla riga di log un flag `mcp: true` per distinguere request loopback dell'agente da request del client web. Utile per debug, costo minimo.
 
+---
+
+## Decisioni chiuse — follow-up del 2026-04-28
+
+Sessione di refinement sui punti critici dell'analisi precedente. Le voci qui sotto **prevalgono** su eventuali contraddizioni nelle sezioni precedenti.
+
+### 1. Concorrenza sugli array innestati — optimistic locking soft
+
+- Mongoose `timestamps: true` (già attivo) fornisce `updatedAt`.
+- I tool `update_service`, `update_call`, `update_<x>`, `remove_<x>` accettano un campo opzionale `expectedUpdatedAt`.
+- Backend in `services.service.ts.save()`: se `expectedUpdatedAt` è presente e non coincide con quello in DB → errore strutturato `STALE_VERSION` con il documento corrente. Se assente → comportamento odierno (last-write-wins).
+- `add_*` non ne ha bisogno (additivi, validano unicità per name/path+verb).
+- Costo: ~5 righe in services.service.ts, zero schema change.
+
+### 2. Patch semantics su `update_call` — tool atomici granulari
+
+- `update_call(serviceId, callPath, callVerb, patch)` modifica **solo campi scalari** (path, verb, response, description, etc.). NON tocca array.
+- Nuovi tool atomici per ogni sotto-array (×4: rules, params, headers, cookies):
+  - `add_<x>(serviceId, callPath, callVerb, <x>)`
+  - `update_<x>(serviceId, callPath, callVerb, identifier, patch)`
+  - `remove_<x>(serviceId, callPath, callVerb, identifier)`
+- **Identificazione elementi**:
+  - `params`/`headers`/`cookies`: per `name` (univoco per natura).
+  - `rules`: per `id` (uuid v4 generato server-side).
+- **Backfill rules id**: pre-save hook Mongoose assegna uuid alle rules senza id ad ogni save (UI o MCP). Migrazione naturale, idempotente. Per service mai salvati post-feature, `get_service` lato MCP popola gli id "on read" (read-only, lo storage si aggiorna alla prossima save).
+- 12 tool nuovi totali.
+
+### 3. Idempotenza / dry-run
+
+- **`dryRun: true`** opzionale su:
+  - `import_from_openapi_url` / `import_from_openapi_content` → ritorna `{ wouldCreateService: {...minimal...}, callsCount, conflicts: [...] }` senza scrivere.
+  - `delete_service` → ritorna `{ name, callsCount, logsCount }` per dare all'agente materiale per chiedere conferma.
+- **Niente flag `confirm`**: ci si affida al pattern di approvazione dei client MCP (Claude Desktop/Code chiedono per default) + safety net del punto 4. Caveat: l'utente può marcare un tool come "Always allow" e altri client potrebbero non chiedere — il vero recovery resta gli snapshot.
+
+### 4. Recovery / undo — snapshot di sessione
+
+- **1 slot per (utente, service)**: collection `service-snapshots`.
+- **Threshold temporale**: 1 ora. Prima di ogni mutation MCP, controlla l'ultimo snapshot per la coppia (utente, service): se più vecchio di 1h → sovrascrive con lo stato pre-modifica corrente; se più recente → non tocca (resta lo "stato di inizio sessione").
+- **TTL**: 24h sugli snapshot vecchi.
+- **Tool MCP**: `list_history(serviceId)`, `restore_snapshot(snapshotId)`.
+- UI dedicata rimandata a iterazione successiva (per ora restore solo via agente).
+- Lo snapshot record contiene il **content completo** del service pre-modifica + metadati `{ tool, args, ts }`.
+
+### 5. Dimensione output dei tool
+
+- **`get_service`** è "leggero": ritorna meta + lista call con solo `{ path, verb, description }` (no body/response/rules dettagli). Aggiungo **`get_call(serviceId, callPath, callVerb)`** per il dettaglio della singola call.
+- **`get_logs`**: parametri `limit?` (default **100**), `since?` (cursor temporale), `pathFilter?`.
+- **Import OpenAPI**: env `VIRTUALSERVICE_OPENAPI_SIZE_LIMIT` (bytes), default `5_000_000`. Errore `OPENAPI_TOO_LARGE` se superato.
+
+### 6. Authorization su `invoke_call` (loopback)
+
+- **Nessun ownership check sui path**: i path sono pubblici per design (chiunque conosca l'URL può invocarli dal browser). MCP non aggiunge esposizione.
+- **Tagging MCP nei log**: header interno `X-Vs-Mcp: 1` propagato dal loopback al MockServerController. Il request-logger setta `mcp: true` nella riga di log. Utile per debug e per filtri sulla pagina monitor.
+- **Throttle bypass**: se il MockServerController vede `X-Vs-Mcp: 1`, **salta il throttle `'service'`**. Il throttle `'mcp'` (lato MCP) è già l'unico guardrail necessario — niente doppia tassazione.
+
+### 7. Catalogo errori strutturati
+
+- Forma uniforme: `{ code: STRING_CONST, message, details? }`.
+- Documentazione: nuovo file **`claude/mcp.md`**.
+- Codici inizial:
+  - `SERVICE_NOT_FOUND`, `CALL_NOT_FOUND`, `RULE_NOT_FOUND`, `PARAM_NOT_FOUND`, `HEADER_NOT_FOUND`, `COOKIE_NOT_FOUND`
+  - `PATH_TAKEN` (con `details.suggested`)
+  - `STALE_VERSION` (con `details.currentUpdatedAt`)
+  - `EXPRESSION_TOO_LARGE`, `DB_TOO_LARGE`, `OPENAPI_TOO_LARGE`
+  - `URL_NOT_REACHABLE`, `INVALID_OPENAPI`
+  - `SNAPSHOT_NOT_FOUND`
+  - `RATE_LIMITED` (con `details.retryAfterSec`)
+  - `UNAUTHORIZED_KEY`, `KEY_REVOKED`, `KEY_LIMIT_EXCEEDED`
+  - `VALIDATION_FAILED` (catch-all class-validator)
+  - `SYSTEM_TEMPLATE_PROTECTED` (per tentativi di delete/edit su template di sistema)
+
+### 8. Bootstrap context — `get_workspace_info`
+
+Tool di apertura sessione, ritorna in un colpo solo lo stato del workspace + i vincoli operativi:
+
+```json
+{
+  "user": { "id", "email", "isAdmin" },
+  "stats": { "servicesCount", "activeServicesCount", "apiKeysCount" },
+  "limits": {
+    "expressionSizeBytes",
+    "dboSizeBytes",
+    "openapiSizeBytes",
+    "maxApiKeys",
+    "throttleMcpPerMin"
+  },
+  "server": { "version", "mcpProtocolVersion" },
+  "availableResources": ["vs://reference/expressions", "vs://reference/samples", "vs://reference/error-codes", "vs://reference/best-practices"]
+}
+```
+
+`isAdmin` è informativo — i tool effettivamente protetti verificano il ruolo a runtime sul JWT/key, mai dal payload del client. `mcpProtocolVersion` lo riempie l'SDK MCP. `availableResources` dà all'agente l'elenco esplicito delle MCP resources caricabili on-demand (vedi punto 16).
+
+### 9. OpenAPI security schemes — doc-only
+
+- Quando il parser OpenAPI incontra `securitySchemes`, ne mette una nota nel campo `description` della call importata (es. `"Original requires Authorization: Bearer (oauth2 scheme: ...)"`).
+- Niente headers/rules generati automaticamente.
+- **TODO futuro** segnato dall'utente: introdurre logica per mockare un giro di autenticazione in maniera minimalista ma corretta.
+
+### 10. Scopes su `ApiKey` — campo presente, non enforced
+
+- Schema include `scopes: string[]` con default `['*']`.
+- Backend non legge il campo nell'MVP (tutti i tool passano).
+- Quando servirà introdurre limitazioni (key read-only / per-service / per-tool), basta aggiungere il check nel guard senza schema migration.
+
+### 11. Throttle — singolo bucket generoso
+
+- Bucket unico `'mcp'`.
+- env `VIRTUALSERVICE_MCP_THROTTLE_PER_MIN`, default **200**.
+- `invoke_call` consuma solo questo bucket (non `'service'`, vedi punto 6).
+- Eventuale split in `'mcp:write'` / `'mcp:invoke'` rimandato a iterazione successiva se i pattern reali lo giustificheranno.
+
+### 12. Templates — workflow + system templates cablati
+
+- **Payload di ritorno**:
+  - `search_templates(query?)` → array di `{ id, name, description, tags, callsCount, source }`.
+  - `get_template(id)` → struttura completa del template.
+  - `install_template(id, path, name?)` → `{ serviceId, calls: [{ path, verb, description }] }` (l'agente ha già la "documentazione d'uso" pronta da mostrare all'utente).
+- **System templates** inclusi nell'MVP:
+  - File JSON in `apps/backend/src/assets/system-templates/*.json` (caricati al boot da un `SystemTemplatesRegistry`).
+  - Campo nuovo nello schema/DTO Template: `source: 'system' | 'community'` (default `'community'` per i record DB esistenti).
+  - Tool `search_templates`/`get_template` fanno **merge in lettura** (DB community + in-memory system).
+  - System templates immutabili: `create_template` / `delete_template` rifiutano con `SYSTEM_TEMPLATE_PROTECTED`.
+  - 2-3 esempi iniziali (l'utente ha già materiale pronto).
+
+### 13. Audit log delle azioni MCP — mutation only
+
+- Collection `mcp-audit`: `{ userId, keyId, tool, args (truncated 4KB), success, errorCode?, ts, argsTruncated?: bool }`.
+- **Solo mutation** (write). Le read non vengono registrate.
+- Fire-and-forget, non blocca la response.
+- TTL: 30gg.
+- **Niente content** del service — quello è solo nello `service-snapshots` del punto 4. Conseguenza: per mutation con payload grande (es. `update_call` con response da 10KB), nell'audit l'`args` è troncato e lo snapshot è l'unica fonte completa.
+
+### 14. Tool extra (residuo del punto A originale)
+
+- ✅ **`clone_service(sourceId, newPath, newName?)`**: duplica server-side, rimette `userId` corrente, genera nuovi uuid per le rules. Ritorna `{ newServiceId, callsCount }`.
+- ❌ **Filtri/sort su `list_services`**: non aggiunti per MVP. Solo ordinamento default `lastChange desc`. Filtri rimandati se servirà.
+- ❌ **`append_to_dbo`**: non aggiunto. Il problema è di size dei token, non semantico — l'agente per ora si arrangia con `get_service` + `update_service`. Per dbo grandi l'utente edita in UI.
+
+### 16. MCP instructions + resources — istruire l'agente sullo scope JS
+
+Lo scope di valutazione delle espressioni JS di virtualservice (campi `response`, `dbo`, `schedulerFn`, `rules.condition`) è ricco e **specifico dell'app**: non è general knowledge dell'LLM. Senza una documentazione esposta dal server MCP, l'agente ignora helpers utili come `_`, `samples.*`, `guid`, `setExitCode`, `throwError`, e produce espressioni meno efficaci.
+
+**Architettura a tre livelli per token efficiency:**
+
+#### a. Server `instructions` (sempre nel context, ~1-2KB)
+Caricato dall'SDK MCP al handshake iniziale della sessione. Contiene **l'essenziale**:
+- Variabili scope: `params`, `data`, `db`, `headers` (case-insensitive), `cookies`, `pathValue`, `value` (solo rules).
+- Helpers globali: `_` (lodash), `samples` (dataset built-in), `guid()`, `setTimeout`.
+- Solo nelle response: `setExitCode(code)`, `throwError(message, code)`.
+- Sintassi: prefisso `=` per espressione, `{` o `[` come prefisso per JSON literal con `return` implicito.
+- Riferimento esplicito alle resources per dettagli.
+
+#### b. Resources MCP (on-demand, generate da file markdown)
+Asset in `apps/backend/src/assets/mcp-resources/*.md`, esposte via `list_resources` / `read_resource`:
+
+| URI | Contenuto |
+|---|---|
+| `vs://reference/expressions` | Manuale completo dello scope, sintassi, esempi di pattern (CRUD, errori, paginazione, etag, …) |
+| `vs://reference/samples` | Catalogo dei dataset built-in `samples.*` con schema (es. `samples.northwind.products[0]` = `{ id, name, categoryId, ... }`) — riferimento per popolare il dbo o usare i dati direttamente nelle response |
+| `vs://reference/error-codes` | Catalogo errori MCP del punto 7, formato `{ code, message, details? }` |
+| `vs://reference/best-practices` | Pattern consigliati: quando usare rules vs throwError, dbo vs samples, schedulerFn, ecc. |
+
+#### c. `get_workspace_info` (vedi punto 8 esteso)
+Espone `availableResources` come hint esplicito.
+
+**Nota sulla relazione con `samples.*`**: poiché `samples` è già caricato nel worker (zero costo runtime), molti service di esempio possono essere generati dall'agente **senza popolare il dbo**, semplicemente invocando `samples.northwind.*` nelle espressioni. Il punto 14 sui dataset (chiuso su "A — niente di nuovo") va riletto alla luce di questo: la "fonte dataset" primaria è `samples`, e l'agente lo scopre via la resource `vs://reference/samples`.
+
+### 17. Rifiniture finali
+
+- **Lingua dei `message` nel catalogo errori MCP**: **inglese** sempre. I `code` sono costanti inglesi, i `message` pure. L'errore lo legge l'agente, non l'utente — la traduzione conversazionale la fa l'agente se serve. Convenzione da formalizzare in `claude/mcp.md`.
+- **`clone_service` e validazione path**: il `newPath` viene validato come in `create_service`. Se preso → errore `PATH_TAKEN` con `suggested` calcolato dal backend (es. `products` → `products-2`). Stesso identico flusso di create.
+- **Nuove env vars introdotte in questa sessione** (da aggiungere al CLAUDE.md principale al momento dell'implementazione):
+  - `VIRTUALSERVICE_OPENAPI_SIZE_LIMIT` — bytes, default `5_000_000`. Limite size content OpenAPI per gli import MCP.
+  - `VIRTUALSERVICE_MCP_THROTTLE_PER_MIN` — int, default `200`. Throttle del bucket `'mcp'` per ogni API key.
+  - `VIRTUALSERVICE_MCP_ENABLED` — bool, default `true`. Kill-switch del modulo MCP per rollback rapido in caso di problemi in produzione.
+
+### 15. Refactor parser OpenAPI (punto E originale)
+
+- I parser sono **già puri**: zero dipendenze browser-only, firma `parse(content: string)`. Refactor "as-is" fattibile senza adapter.
+- **Spostare in `libs/shared/utils/src/parsers/`**:
+  - `openapi.parser.ts`
+  - `file-parser.ts` (interfacce condivise)
+  - Solo questi due — gli altri parser (curl, har, postman, insomnia) restano in frontend.
+- **Aggiungere supporto YAML** durante il refactor: dipendenza `js-yaml`, nel `parse()` prova prima JSON, se fallisce prova YAML. ~10 righe. Estensione gratis anche per la UI.
+- Frontend: aggiornare l'import a `@virtualservice/shared/utils`.
+- Backend `mcp` module usa direttamente la lib.
+
+---
+
 ## Note operative — come riprendere
 
-**Stato**: solo analisi, **nessuna riga di codice scritta**. Niente file modificati.
+**Stato**: analisi + decisioni chiuse, **nessuna riga di codice scritta**. Niente file modificati al di fuori di questo doc.
 
-**Prossimi passi nell'ordine consigliato:**
+**Prossimi passi:**
 
-1. Chiudere punto A (tool extra) con l'utente
-2. Verificare punto E leggendo `apps/frontend/src/app/services/import/parsers/` per decidere il refactor
-3. Buttare giù un piano implementativo come fatto per la feature templates, suddiviso per:
-   - Shared lib: model `IApiKey`, DTO per generate/revoke key
-   - Backend module `api-keys` (schema + service + controller + guard)
-   - Backend module `mcp` (controller + servizio MCP basato su `@modelcontextprotocol/sdk`, riusa servizi esistenti per CRUD/import/invoke)
-   - Frontend: pagina "API & MCP", store NgRx `apiKeys`, dialog generate/revoke, snippet Claude Desktop
-4. Aggiungere `/mcp` e `/api-keys` (o equivalenti) a `apps/frontend/proxy.conf.json` (vincolo già emerso con la feature templates — il proxy elenca i prefissi uno per uno per scelta dell'utente, va aggiornato manualmente)
+1. Buttare giù un piano implementativo come fatto per la feature templates, suddiviso per:
+   - **Shared lib `libs/shared/model`**: model `IApiKey`, model `ITemplate` (con campo `source`), interfacce `ParsedImport` etc. (se non già lì).
+   - **Shared lib `libs/shared/dto`**: DTO per generate/revoke key, DTO per i tool MCP (request/response).
+   - **Shared lib `libs/shared/utils`**: parser OpenAPI rifattorizzato + `js-yaml`.
+   - **Backend module `api-keys`**: schema + service + controller + `ApiKeyGuard`.
+   - **Backend module `mcp`**: controller (Streamable HTTP) + servizio basato su `@modelcontextprotocol/sdk`, riusa `services.service.ts` / `templates.service.ts` / `log.service.ts` per CRUD/import/invoke. Implementa optimistic locking, snapshot di sessione, audit collection, throttle bucket dedicato. Configura `instructions` e registra le resources `vs://reference/*` (vedi punto 16).
+   - **Backend `system-templates` registry**: caricamento JSON da `apps/backend/src/assets/system-templates/`.
+   - **Backend `mcp-resources`**: file markdown in `apps/backend/src/assets/mcp-resources/*.md` (`expressions.md`, `samples.md`, `error-codes.md`, `best-practices.md`).
+   - **Frontend**: pagina "API & MCP", store NgRx `apiKeys`, dialog generate/revoke, snippet Claude Desktop.
+2. Aggiungere `/mcp` e `/api-keys` a `apps/frontend/proxy.conf.json` (vincolo già emerso con la feature templates — il proxy elenca i prefissi uno per uno per scelta dell'utente, va aggiornato manualmente).
+3. Aggiornare `claude/mcp.md` (nuovo file) con il catalogo errori e la documentazione utente del workflow MCP.
 
 **File correlati esistenti che diventeranno importanti:**
 
