@@ -1,0 +1,61 @@
+<h2 mat-dialog-title>Install template</h2>
+
+<mat-dialog-content>
+  <p class="hint">
+    A new service will be created in your workspace from
+    <strong>{{ data.templateTitle }}</strong>.
+  </p>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Service name</mat-label>
+    <input
+      matInput
+      [value]="name()"
+      (input)="onNameInput($any($event.target).value)"
+      autocomplete="off"
+    />
+  </mat-form-field>
+
+  <p class="hint">
+    The base path uniquely identifies the new service across all users.
+  </p>
+
+  <div class="path-field">
+    <span class="path-prefix">./</span>
+    <input
+      class="path-input mono"
+      spellcheck="false"
+      [value]="path()"
+      (input)="onPathInput($any($event.target).value)"
+      placeholder="my-service-path"
+      autocomplete="off"
+    />
+
+    @if (checking()) {
+      <mat-spinner diameter="18" class="status-spinner" />
+    } @else if (pathError() === null && path().trim()) {
+      <mat-icon class="status-ok">check_circle</mat-icon>
+    }
+  </div>
+
+  @if (pathError() === 'empty') {
+    <p class="error-msg">Path cannot be empty.</p>
+  } @else if (pathError() === 'invalid') {
+    <p class="error-msg">
+      Only letters, digits, <code>-</code> <code>_</code> <code>.</code>
+      and internal <code>/</code> are allowed.
+    </p>
+  } @else if (pathError() === 'taken') {
+    <p class="error-msg">This path is already in use.</p>
+  } @else if (pathError() === 'unavailable') {
+    <p class="error-msg">Could not verify path availability. Please try again.</p>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">Cancel</button>
+  <button mat-flat-button color="primary" [disabled]="!canApply()" (click)="apply()">
+    <mat-icon>download</mat-icon>
+    Install
+  </button>
+</mat-dialog-actions>

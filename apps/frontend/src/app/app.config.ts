@@ -16,6 +16,8 @@ import { servicesReducer } from './services/store/services.reducer';
 import { ServicesEffects } from './services/store/services.effects';
 import { editorReducer } from './editor/store/editor.reducer';
 import { EditorEffects } from './editor/store/editor.effects';
+import { templatesReducer } from './templates/store/templates.reducer';
+import { TemplatesEffects } from './templates/store/templates.effects';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { APP_VERSION } from './core/tokens/app.tokens';
 import { AppTitleStrategy } from './core/services/app-title.strategy';
@@ -36,8 +38,13 @@ export const appConfig: ApplicationConfig = {
     ),
     provideHttpClient(withInterceptors([authInterceptor])),
     provideAnimationsAsync(),
-    provideStore({ auth: authReducer, services: servicesReducer, editor: editorReducer }),
-    provideEffects([AuthEffects, ServicesEffects, EditorEffects]),
+    provideStore({
+      auth: authReducer,
+      services: servicesReducer,
+      editor: editorReducer,
+      templates: templatesReducer,
+    }),
+    provideEffects([AuthEffects, ServicesEffects, EditorEffects, TemplatesEffects]),
     { provide: APP_VERSION, useValue: version },
     { provide: TitleStrategy, useClass: AppTitleStrategy },
   ],

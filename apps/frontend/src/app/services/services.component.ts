@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, DestroyRef, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -7,6 +7,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
+import { ToolbarService } from '../core/services/toolbar.service';
+import { ToolbarCommand } from '../core/models/toolbar-command.model';
 import {
   selectOtherServices,
   selectServicesError,
@@ -50,6 +52,7 @@ export class ServicesComponent {
   private router = inject(Router);
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
+  private toolbar = inject(ToolbarService);
 
   readonly loading = this.store.selectSignal(selectServicesLoading);
   readonly error = this.store.selectSignal(selectServicesError);
@@ -62,6 +65,18 @@ export class ServicesComponent {
 
   constructor() {
     this.store.dispatch(loadServices());
+
+    const commands: ToolbarCommand[] = [
+      {
+        id: 'templates',
+        icon: 'collections_bookmark',
+        tooltip: 'Public templates',
+        action: () => this.router.navigate(['/templates']),
+      },
+    ];
+    this.toolbar.set(commands);
+
+    inject(DestroyRef).onDestroy(() => this.toolbar.clear());
   }
 
   onToggleActive(service: IServiceItem): void {

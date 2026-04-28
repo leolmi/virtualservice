@@ -7,6 +7,7 @@ import { UsersModule } from './app/users/users.module';
 import { AuthModule } from './app/auth/auth.module';
 import { MailModule } from './app/mail/mail.module';
 import { ServicesModule } from './app/services/services.module';
+import { TemplatesModule } from './app/templates/templates.module';
 import { MockServerModule } from './app/mock-server/mock-server.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { RequestLoggerMiddleware } from './app/common/request-logger.middleware';
@@ -49,6 +50,7 @@ import { join } from 'path';
     UsersModule,
     AuthModule,
     ServicesModule,
+    TemplatesModule,
     MockServerModule,
   ],
   providers: [

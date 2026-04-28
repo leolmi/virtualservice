@@ -1,0 +1,68 @@
+<mat-card class="tile" (click)="onCardClick()">
+
+  <mat-card-header>
+    <div class="title-block">
+      <span class="template-title">{{ template().title }}</span>
+      <span class="template-meta">
+        by {{ template().ownerEmail }} · {{ formatDate(template().creationDate) }}
+      </span>
+    </div>
+
+    @if (canDelete()) {
+      <button
+        mat-icon-button
+        class="delete-btn warn"
+        matTooltip="Delete template"
+        (click)="onDelete($event)"
+      >
+        <mat-icon>delete</mat-icon>
+      </button>
+    }
+  </mat-card-header>
+
+  <mat-card-content>
+    <p class="description">{{ template().description || '—' }}</p>
+
+    @if (template().tags.length) {
+      <mat-chip-set class="tags">
+        @for (t of template().tags; track t) {
+          <mat-chip disabled>{{ t }}</mat-chip>
+        }
+      </mat-chip-set>
+    }
+
+    <div class="footer">
+      <span class="counter">
+        <mat-icon>folder</mat-icon>
+        {{ template().calls.length }}
+      </span>
+      @if (template().dbo) {
+        <span class="counter" matTooltip="Includes shared db">
+          <mat-icon>storage</mat-icon>
+        </span>
+      }
+      @if (template().schedulerFn) {
+        <span class="counter" matTooltip="Includes scheduler">
+          <mat-icon>schedule</mat-icon>
+        </span>
+      }
+      <span class="flex-spacer"></span>
+      <span class="counter" matTooltip="Installs">
+        <mat-icon>download</mat-icon>
+        {{ template().installs }}
+      </span>
+    </div>
+  </mat-card-content>
+
+  <mat-card-actions>
+    <button mat-icon-button matTooltip="Preview" (click)="onPreview($event)">
+      <mat-icon>visibility</mat-icon>
+    </button>
+    <span class="flex-spacer"></span>
+    <button mat-stroked-button class="install-button" (click)="onInstall($event)">
+      <mat-icon>download</mat-icon>
+      INSTALL
+    </button>
+  </mat-card-actions>
+
+</mat-card>

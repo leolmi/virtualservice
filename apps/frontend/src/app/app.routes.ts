@@ -38,6 +38,16 @@ export const appRoutes: Route[] = [
       import('./services/services.component').then((m) => m.ServicesComponent),
   },
   {
+    path: 'templates',
+    title: 'templates',
+    data: { helpContext: 'templates' },
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./templates/templates-page/templates-page.component').then(
+        (m) => m.TemplatesPageComponent,
+      ),
+  },
+  {
     path: 'editor/:id',
     title: 'editor',
     data: { helpContext: 'editor' },

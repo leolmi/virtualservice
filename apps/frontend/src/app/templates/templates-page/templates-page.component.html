@@ -1,0 +1,35 @@
+<div class="templates-page">
+  <div class="templates-content">
+
+    @if (error()) {
+      <div class="error-banner">{{ error() }}</div>
+    }
+
+    <section class="templates-section">
+      <mat-icon class="section-icon">collections_bookmark</mat-icon>
+      <div class="tiles-grid">
+        @for (tpl of templates(); track tpl._id) {
+          <vs-template-tile
+            [template]="tpl"
+            (preview)="onPreview($event)"
+            (install)="onInstall($event)"
+            (delete)="onDelete($event)"
+          />
+        }
+        @if (templates().length === 0 && !loading()) {
+          <p class="empty-label">
+            No public templates yet. Open a service in the editor and use
+            <strong>Save as template</strong> to share one.
+          </p>
+        }
+      </div>
+    </section>
+
+  </div>
+
+  @if (loading()) {
+    <div class="loading-overlay">
+      <mat-spinner diameter="100"></mat-spinner>
+    </div>
+  }
+</div>

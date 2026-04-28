@@ -1,0 +1,111 @@
+<h2 mat-dialog-title>Save as public template</h2>
+
+<mat-dialog-content class="content">
+  <p class="hint">
+    Share a snapshot of this service as a public template. Other users will be
+    able to install a copy into their workspace.
+  </p>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Title</mat-label>
+    <input
+      matInput
+      [value]="title()"
+      (input)="title.set($any($event.target).value)"
+      maxlength="120"
+      autocomplete="off"
+    />
+    <mat-hint align="end">{{ title().length }}/120</mat-hint>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Description</mat-label>
+    <textarea
+      matInput
+      rows="3"
+      [value]="description()"
+      (input)="description.set($any($event.target).value)"
+      maxlength="2000"
+    ></textarea>
+    <mat-hint align="end">{{ description().length }}/2000</mat-hint>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Tags</mat-label>
+    <mat-chip-grid #chipGrid>
+      @for (t of tags(); track t) {
+        <mat-chip-row (removed)="removeTag(t)">
+          {{ t }}
+          <button matChipRemove>
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </mat-chip-row>
+      }
+    </mat-chip-grid>
+    <input
+      placeholder="add tag and press Enter"
+      [matChipInputFor]="chipGrid"
+      [matChipInputAddOnBlur]="true"
+      (matChipInputTokenEnd)="addTag($event)"
+    />
+  </mat-form-field>
+
+  <h3 class="section-title">Calls to include</h3>
+
+  <div class="select-all-row">
+    <mat-checkbox
+      [checked]="allCallsSelected()"
+      [indeterminate]="someCallsSelected()"
+      (change)="toggleAllCalls($event.checked)"
+    >
+      Select all ({{ selectedCalls().size }} / {{ data.service.calls.length }})
+    </mat-checkbox>
+  </div>
+
+  <div class="calls-list">
+    @for (call of data.service.calls; track $index) {
+      <mat-checkbox
+        [checked]="isCallSelected($index)"
+        (change)="toggleCall($index, $event.checked)"
+      >
+        <span class="call-row">
+          <span class="verb verb-{{ call.verb.toLowerCase() }}">{{ call.verb }}</span>
+          <span class="path">/{{ call.path }}</span>
+        </span>
+      </mat-checkbox>
+    }
+    @if (data.service.calls.length === 0) {
+      <p class="empty">This service has no calls.</p>
+    }
+  </div>
+
+  @if (hasDb || hasScheduler) {
+    <h3 class="section-title">Extras</h3>
+    <div class="extras">
+      @if (hasDb) {
+        <mat-slide-toggle
+          [checked]="includeDb()"
+          (change)="includeDb.set($event.checked)"
+        >
+          Include shared database (dbo)
+        </mat-slide-toggle>
+      }
+      @if (hasScheduler) {
+        <mat-slide-toggle
+          [checked]="includeScheduler()"
+          (change)="includeScheduler.set($event.checked)"
+        >
+          Include scheduler ({{ data.service.interval }}s)
+        </mat-slide-toggle>
+      }
+    </div>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">Cancel</button>
+  <button mat-flat-button color="primary" [disabled]="!canApply()" (click)="apply()">
+    <mat-icon>collections_bookmark</mat-icon>
+    Save template
+  </button>
+</mat-dialog-actions>

@@ -1,0 +1,140 @@
+:host {
+  display: block;
+  width: 280px;
+  flex-shrink: 0;
+}
+
+.tile {
+  width: 280px;
+  cursor: pointer;
+  box-shadow: none !important;
+  transition: box-shadow 200ms ease;
+  background: white;
+
+  &:hover {
+    box-shadow:
+      0 2px 4px -1px rgba(0, 0, 0, 0.2),
+      0 4px 5px 0 rgba(0, 0, 0, 0.14),
+      0 1px 10px 0 rgba(0, 0, 0, 0.12) !important;
+  }
+}
+
+::ng-deep .tile {
+  .mat-mdc-card-header {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 4px;
+    padding: 8px 8px 0;
+
+    .mat-mdc-card-header-text {
+      display: none;
+    }
+  }
+
+  .mat-mdc-card-actions {
+    border-top: 1px solid rgba(10, 10, 10, .1);
+  }
+}
+
+.title-block {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-left: 8px;
+
+  .template-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--vs-dark);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .template-meta {
+    font-size: 0.7rem;
+    color: rgba(38, 50, 56, 0.6);
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.delete-btn {
+  flex-shrink: 0;
+}
+
+mat-card-content {
+  padding: 8px 16px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+
+  .description {
+    font-size: 0.8rem;
+    color: var(--vs-dark);
+    margin: 0 0 8px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    min-height: 3.6em;
+  }
+
+  .tags {
+    margin-bottom: 8px;
+    --mdc-chip-container-height: 22px;
+    font-size: 0.7rem;
+  }
+
+  .footer {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.75rem;
+    color: rgba(38, 50, 56, 0.7);
+    margin-top: auto;
+
+    .counter {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+
+      mat-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
+}
+
+mat-card-actions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 4px 8px;
+}
+
+.flex-spacer {
+  flex: 1 1 auto;
+}
+
+.install-button {
+  --mat-button-outlined-outline-color: var(--vs-light-grey);
+  --mat-button-outlined-label-text-color: var(--vs-accent);
+}
+
+@media only screen and (max-width: 800px) {
+  :host {
+    width: 240px;
+    zoom: 0.9;
+  }
+
+  .tile {
+    width: 240px;
+  }
+}

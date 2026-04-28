@@ -1,14 +1,41 @@
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { Store } from '@ngrx/store';
 import { Router } from '@angular/router';
-import { catchError, map, switchMap, tap, mergeMap, toArray } from 'rxjs/operators';
+import {
+  catchError,
+  map,
+  switchMap,
+  tap,
+  mergeMap,
+  toArray,
+  withLatestFrom,
+} from 'rxjs/operators';
 import { of, from } from 'rxjs';
 import * as ServicesActions from './services.actions';
 import { ServicesApiService } from '../services.service';
+import { selectServices } from './services.selectors';
+import { IServiceItem } from './services.state';
+
+const NEW_SERVICE_BASE_NAME = 'New Service';
+
+/**
+ * Calcola il primo nome libero per un nuovo servizio nel contesto dei
+ * servizi dell'utente. Pattern: "New Service", "New Service (1)", "New Service (2)", ...
+ */
+function nextAvailableName(base: string, existing: IServiceItem[]): string {
+  const taken = new Set(existing.map((s) => s.name));
+  if (!taken.has(base)) return base;
+  for (let i = 1; ; i++) {
+    const candidate = `${base} (${i})`;
+    if (!taken.has(candidate)) return candidate;
+  }
+}
 
 @Injectable()
 export class ServicesEffects {
   private actions$ = inject(Actions);
+  private store = inject(Store);
   private api = inject(ServicesApiService);
   private router = inject(Router);
 
@@ -69,12 +96,13 @@ export class ServicesEffects {
   createService$ = createEffect(() =>
     this.actions$.pipe(
       ofType(ServicesActions.createService),
-      switchMap(() => {
+      withLatestFrom(this.store.select(selectServices)),
+      switchMap(([, existing]) => {
         const now = Date.now();
         const newService = {
-          name: 'New Service',
+          name: nextAvailableName(NEW_SERVICE_BASE_NAME, existing),
           description: '',
-          active: false,
+          active: true,
           starred: false,
           path: `new-service-${now}`,
           calls: [],

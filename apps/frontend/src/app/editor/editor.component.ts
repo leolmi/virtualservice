@@ -6,19 +6,26 @@ import {
   RouterModule,
 } from '@angular/router';
 import { Store } from '@ngrx/store';
+import { Actions, ofType } from '@ngrx/effects';
 import { filter, map, startWith } from 'rxjs/operators';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { CreateTemplateDto } from '@virtualservice/shared/dto';
 import {
   BasePathDialogComponent,
 } from './components/base-path-dialog/base-path-dialog.component';
+import {
+  SaveTemplateDialogComponent,
+  SaveTemplateDialogData,
+} from './components/save-template-dialog/save-template-dialog.component';
 import { ToolbarService } from '../core/services/toolbar.service';
 import { ToolbarCommand } from '../core/models/toolbar-command.model';
+import * as TemplatesActions from '../templates/store/templates.actions';
 
 import {
   selectEditorService,
@@ -53,6 +60,7 @@ interface TabDef {
 })
 export class EditorComponent {
   private store = inject(Store);
+  private actions$ = inject(Actions);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private toolbar = inject(ToolbarService);
@@ -127,6 +135,13 @@ export class EditorComponent {
         },
         { type: 'separator' },
         {
+          id: 'save-template',
+          icon: 'collections_bookmark',
+          tooltip: 'Save as public template',
+          enabled: !!svc && (svc.calls?.length ?? 0) > 0 && !dirty,
+          action: () => this.onSaveAsTemplate(),
+        },
+        {
           id: 'monitor',
           icon: 'desktop_windows',
           tooltip: 'This service calls monitor',
@@ -142,6 +157,23 @@ export class EditorComponent {
       ];
       this.toolbar.set(commands);
     });
+
+    // Feedback save-template
+    this.actions$
+      .pipe(ofType(TemplatesActions.createTemplateSuccess), takeUntilDestroyed())
+      .subscribe(({ template }) => {
+        this.snackBar.open(
+          `Template "${template.title}" saved`,
+          undefined,
+          { duration: 3000 },
+        );
+      });
+
+    this.actions$
+      .pipe(ofType(TemplatesActions.createTemplateFailure), takeUntilDestroyed())
+      .subscribe(({ error }) => {
+        this.snackBar.open(error, 'Close', { duration: 5000 });
+      });
 
     inject(DestroyRef).onDestroy(() => {
       this.store.dispatch(EditorActions.clearEditor());
@@ -202,5 +234,27 @@ export class EditorComponent {
     const svc = this.service();
     if (!svc) return;
     this.router.navigate(['/monitor', svc._id]);
+  }
+
+  private onSaveAsTemplate(): void {
+    const svc = this.service();
+    if (!svc) return;
+    if (this.dirty()) {
+      this.snackBar.open(
+        'Save the service first before creating a template',
+        'Close',
+        { duration: 3000 },
+      );
+      return;
+    }
+    const ref = this.dialog.open(SaveTemplateDialogComponent, {
+      data: { service: svc } satisfies SaveTemplateDialogData,
+      maxHeight: '90vh',
+    });
+    ref.afterClosed().subscribe((dto: CreateTemplateDto | null | undefined) => {
+      if (dto) {
+        this.store.dispatch(TemplatesActions.createTemplate({ dto }));
+      }
+    });
   }
 }
