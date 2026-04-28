@@ -91,6 +91,84 @@
       }
     </section>
 
+    <section class="info-card">
+      <div class="info-card-header">
+        <mat-icon>link</mat-icon>
+        <h2>MCP endpoint URL</h2>
+      </div>
+      <p class="info-hint">
+        The Streamable HTTP endpoint your MCP client will hit. Authenticate with one of the keys above as a Bearer token.
+      </p>
+      <div class="copy-row">
+        <code class="endpoint-url">{{ mcpEndpointUrl }}</code>
+        <button
+          mat-icon-button
+          matTooltip="Copy"
+          (click)="copyToClipboard(mcpEndpointUrl, 'Endpoint URL')"
+        >
+          <mat-icon>content_copy</mat-icon>
+        </button>
+      </div>
+    </section>
+
+    <section class="info-card">
+      <div class="info-card-header">
+        <mat-icon>desktop_windows</mat-icon>
+        <h2>Claude Desktop config</h2>
+      </div>
+      <p class="info-hint">
+        Paste this snippet into <code>~/.config/Claude/claude_desktop_config.json</code> (Linux),
+        <code>~/Library/Application Support/Claude/claude_desktop_config.json</code> (macOS), or
+        <code>%APPDATA%\Claude\claude_desktop_config.json</code> (Windows). Replace
+        <code>&lt;YOUR_VSK_KEY&gt;</code> with the secret you copied at key generation time.
+        Restart Claude Desktop after editing.
+      </p>
+      <div class="snippet-row">
+        <pre class="snippet"><code>{{ claudeDesktopConfig }}</code></pre>
+        <button
+          mat-icon-button
+          matTooltip="Copy"
+          class="snippet-copy"
+          (click)="copyToClipboard(claudeDesktopConfig, 'Config')"
+        >
+          <mat-icon>content_copy</mat-icon>
+        </button>
+      </div>
+      <p class="info-hint small">
+        For Claude Code, run instead:
+        <code>claude mcp add --transport http virtualservice {{ mcpEndpointUrl }} --header "Authorization: Bearer &lt;YOUR_VSK_KEY&gt;"</code>
+      </p>
+    </section>
+
+    <section class="info-card">
+      <div class="info-card-header">
+        <mat-icon>extension</mat-icon>
+        <h2>Available tools</h2>
+      </div>
+      <p class="info-hint">
+        Tools the agent can call to inspect and edit your mock workspace.
+        Reference resources (<code>vs://reference/expressions</code>, <code>samples</code>, <code>error-codes</code>, <code>best-practices</code>) are exposed alongside.
+      </p>
+      <div class="tool-groups">
+        @for (group of toolGroups; track group.title) {
+          <div class="tool-group">
+            <h3 class="tool-group-title">{{ group.title }}</h3>
+            @if (group.hint) {
+              <p class="tool-group-hint">{{ group.hint }}</p>
+            }
+            <ul class="tool-list">
+              @for (tool of group.tools; track tool.name) {
+                <li>
+                  <code class="tool-name">{{ tool.name }}</code>
+                  <span class="tool-desc">{{ tool.description }}</span>
+                </li>
+              }
+            </ul>
+          </div>
+        }
+      </div>
+    </section>
+
   </div>
 
   @if (loading()) {

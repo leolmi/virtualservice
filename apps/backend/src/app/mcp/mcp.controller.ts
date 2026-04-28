@@ -11,6 +11,8 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SkipThrottle } from '@nestjs/throttler';
+// Nota: il bucket `'mcp'` è configurato globalmente in `app.module.ts` con
+// `skipIf` che lo limita alle sole rotte `/mcp`. Qui basta skippare gli altri.
 import type { Request, Response } from 'express';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { ApiKeyGuard } from '../api-keys/guards/api-key.guard';
@@ -29,7 +31,11 @@ interface RequestWithApiKey extends RequestWithUser {
  * la connessione HTTP si chiude.
  *
  * Auth via `ApiKeyGuard` (API key utente, formato `vsk_<prefix>_<secret>`).
- * Il throttle dedicato `'mcp'` viene wirato in slice 10.
+ *
+ * Throttling: il bucket `'mcp'` è configurato globalmente con `skipIf` che lo
+ * applica solo alle rotte `/mcp`. `'service'` viene saltato dallo `skipIf`
+ * globale per i path che non iniziano con `/service/`. Quindi qui dobbiamo
+ * solo escludere `'default'` e `'strict'`.
  */
 @Controller('mcp')
 @UseGuards(ApiKeyGuard)

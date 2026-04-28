@@ -108,6 +108,12 @@ export interface ILog {
   response?: unknown;
   /** Tempo di esecuzione in ms (dalla ricezione alla risposta) */
   elapsed?: number;
+  /**
+   * `true` se la request proviene da un loopback MCP (header `X-Vs-Mcp: 1`,
+   * generato da `invoke_call`). Permette di filtrare nel monitor le call
+   * dell'agente vs quelle del client web.
+   */
+  mcp?: boolean;
 }
 
 // ---------------------------------------------------------------------------

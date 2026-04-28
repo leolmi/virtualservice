@@ -36,6 +36,10 @@ export class Log extends Document {
   /** Tempo di esecuzione in ms */
   @Prop({ type: Number, default: null })
   elapsed!: number | null;
+
+  /** True se la request proviene da un loopback MCP (`X-Vs-Mcp: 1`). */
+  @Prop({ type: Boolean, default: false })
+  mcp!: boolean;
 }
 
 export const LogSchema = SchemaFactory.createForClass(Log);

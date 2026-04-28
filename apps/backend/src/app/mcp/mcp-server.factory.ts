@@ -47,6 +47,13 @@ import {
   registerUpdateCookie,
   registerRemoveCookie,
 } from './tools/cookies.tools';
+import {
+  registerImportFromOpenapiUrl,
+  registerImportFromOpenapiContent,
+} from './tools/import-openapi.tools';
+import { registerInstallTemplate } from './tools/install-template.tool';
+import { registerInvokeCall } from './tools/invoke-call.tool';
+import { registerRestartService } from './tools/restart-service.tool';
 import { AuthenticatedUser } from '../auth/interfaces/request-with-user.interface';
 
 const SERVER_NAME = 'virtualservice-mcp';
@@ -189,5 +196,16 @@ export class McpServerFactory {
     registerAddCookie(server, user, deps);
     registerUpdateCookie(server, user, deps);
     registerRemoveCookie(server, user, deps);
+
+    // Import OpenAPI
+    registerImportFromOpenapiUrl(server, user, deps);
+    registerImportFromOpenapiContent(server, user, deps);
+
+    // Templates write
+    registerInstallTemplate(server, user, deps);
+
+    // Verify / debug
+    registerInvokeCall(server, user, deps);
+    registerRestartService(server, user, deps);
   }
 }

@@ -40,10 +40,38 @@ import { join } from 'path';
           config.get<string>('VIRTUALSERVICE_SERVICE_THROTTLE_LIMIT') ?? '300',
           10,
         );
+        const mcpLimit = parseInt(
+          config.get<string>('VIRTUALSERVICE_MCP_THROTTLE_PER_MIN') ?? '200',
+          10,
+        );
         return [
           { name: 'default', ttl: 60_000, limit: 60 },
           { name: 'strict',  ttl: 60_000, limit: 5  },
-          { name: 'service', ttl: 60_000, limit: serviceLimit },
+          {
+            name: 'service',
+            ttl: 60_000,
+            limit: serviceLimit,
+            // 'service' è limitato solo alle rotte mock pubbliche `/service/*`.
+            // Inoltre lo bypassiamo per le request loopback marcate con
+            // `X-Vs-Mcp: 1` (il throttle `'mcp'` lato MCP fa già da guardrail).
+            skipIf: (ctx) => {
+              const req = ctx.switchToHttp().getRequest();
+              if (req?.headers?.['x-vs-mcp'] === '1') return true;
+              const url: string = req?.originalUrl ?? req?.url ?? '';
+              return !url.startsWith('/service/');
+            },
+          },
+          {
+            name: 'mcp',
+            ttl: 60_000,
+            limit: mcpLimit,
+            // 'mcp' è limitato solo all'endpoint `/mcp`.
+            skipIf: (ctx) => {
+              const req = ctx.switchToHttp().getRequest();
+              const url: string = req?.originalUrl ?? req?.url ?? '';
+              return !url.startsWith('/mcp');
+            },
+          },
         ];
       },
     }),

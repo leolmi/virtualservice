@@ -45,6 +45,9 @@ export class MockServerService {
 
     // Snapshot della request per il log
     const requestInfo = this.buildRequestInfo(req);
+    // Tag MCP: la request è loopback prodotta da `invoke_call` se ha l'header
+    // interno `X-Vs-Mcp: 1`. Conservato nel log per filtrare la pagina monitor.
+    const isMcpLoopback = req.headers?.['x-vs-mcp'] === '1';
 
     // Helper: invia risposta, salva il log e termina
     const respond = async (
@@ -74,6 +77,7 @@ export class MockServerService {
             response: responseInfo,
             error: opts.error ?? null,
             elapsed,
+            mcp: isMcpLoopback,
           })
           .catch((err: unknown) =>
             this.logger.error('Errore nel salvataggio del log:', err),

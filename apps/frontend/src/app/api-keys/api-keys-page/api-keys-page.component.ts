@@ -37,6 +37,7 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from '../../core/components/confirm-dialog/confirm-dialog.component';
+import { MCP_TOOL_GROUPS } from '../mcp-tools-catalog';
 
 @Component({
   selector: 'vs-api-keys-page',
@@ -74,6 +75,30 @@ export class ApiKeysPageComponent {
     'status',
     'actions',
   ];
+
+  readonly toolGroups = MCP_TOOL_GROUPS;
+
+  readonly mcpEndpointUrl =
+    typeof window !== 'undefined'
+      ? `${window.location.origin}/mcp`
+      : '/mcp';
+
+  /** Snippet di config Claude Desktop pronto da incollare. */
+  readonly claudeDesktopConfig =
+    `{\n` +
+    `  "mcpServers": {\n` +
+    `    "virtualservice": {\n` +
+    `      "command": "npx",\n` +
+    `      "args": [\n` +
+    `        "-y",\n` +
+    `        "mcp-remote",\n` +
+    `        "${this.mcpEndpointUrl}",\n` +
+    `        "--header",\n` +
+    `        "Authorization: Bearer <YOUR_VSK_KEY>"\n` +
+    `      ]\n` +
+    `    }\n` +
+    `  }\n` +
+    `}`;
 
   constructor() {
     this.store.dispatch(loadApiKeys());
@@ -152,5 +177,16 @@ export class ApiKeysPageComponent {
         if (!confirmed) return;
         this.store.dispatch(revokeApiKey({ id }));
       });
+  }
+
+  async copyToClipboard(text: string, label: string): Promise<void> {
+    try {
+      await navigator.clipboard.writeText(text);
+      this.snackBar.open(`${label} copied to clipboard`, undefined, {
+        duration: 2000,
+      });
+    } catch {
+      this.snackBar.open(`Could not copy ${label}`, 'Close', { duration: 3000 });
+    }
   }
 }
