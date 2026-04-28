@@ -210,6 +210,10 @@ import { JwtAuthGuard }     from '@virtualservice/auth';          // libs/auth/s
 | DELETE | `/services/:id`               | JWT      | Elimina servizio                            |
 | DELETE | `/services`                   | JWT      | Elimina tutto il log dell'utente            |
 | ALL    | `/service/*path`              | —        | Entry-point chiamate mock (MockServer)      |
+| GET    | `/api-keys`                   | JWT      | Lista API key dell'utente (per MCP)         |
+| POST   | `/api-keys`                   | JWT      | Genera una nuova API key (formato `vsk_*`)  |
+| DELETE | `/api-keys/:id`               | JWT      | Revoca (soft-delete) una API key            |
+| ALL    | `/mcp`                        | API key  | Endpoint MCP (Streamable HTTP), dettagli in [claude/mcp.md](claude/mcp.md) |
 
 ---
 
@@ -323,6 +327,10 @@ nx affected:graph           # Only affected projects
 | `VIRTUALSERVICE_DB_SIZE_LIMIT`        | backend        | Max byte size del db in cache per servizio (`ServiceCacheService`)          |
 | `VIRTUALSERVICE_ADMIN_EMAIL`          | backend        | Email dell'utente admin bootstrappato all'avvio se non esiste               |
 | `VIRTUALSERVICE_ADMIN_PASSWORD`       | backend        | Password dell'utente admin bootstrappato all'avvio se non esiste            |
+| `VIRTUALSERVICE_SERVICE_THROTTLE_LIMIT` | backend      | Limite del bucket throttle `'service'` (req/min sulle rotte mock `/service/*`, default 300) |
+| `VIRTUALSERVICE_OPENAPI_SIZE_LIMIT`   | backend        | Max byte size del documento OpenAPI accettato dai tool MCP `import_from_openapi_*` (default 5_000_000) |
+| `VIRTUALSERVICE_MCP_THROTTLE_PER_MIN` | backend        | Limite del bucket throttle `'mcp'` (req/min sulle rotte `/mcp`, default 200)|
+| `VIRTUALSERVICE_MCP_ENABLED`          | backend        | Kill-switch dell'endpoint MCP. Se `false` `/mcp` risponde 503 (default `true`) |
 | `CALC_CODE_EXECUTING_TIMEOUT`         | backend worker | Timeout in ms per l'esecuzione delle espressioni JS (default: 10000)        |
 | `CALC_MAX_YOUNG_GENERATION_SIZE_MB`   | backend worker | Heap young generation limit per il worker calc (default: 64)                |
 | `CALC_MAX_OLD_GENERATION_SIZE_MB`     | backend worker | Heap old generation limit per il worker calc (default: 64)                  |
@@ -356,6 +364,12 @@ The server logic is definited in file **claude/server.md**
 ## Client
 
 The client is definited in file **claude/client.md**
+
+---
+
+## MCP Endpoint
+
+The Model Context Protocol endpoint (architettura, tool catalog, catalogo errori, workflow tipici) è documentato in **claude/mcp.md**
 
 ---
 
