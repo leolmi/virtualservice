@@ -15,6 +15,10 @@ import { UsersModule } from '../users/users.module';
   ],
   providers: [ApiKeysService, ApiKeyGuard],
   controllers: [ApiKeysController],
-  exports: [ApiKeysService, ApiKeyGuard],
+  // Ri-esportiamo UsersModule perché `ApiKeyGuard` (esportato qui) dipende da
+  // UsersService. Quando un altro module usa il guard via `@UseGuards`, NestJS
+  // istanzia il guard nel context del module consumer e ne richiede le dep
+  // localmente — quindi UsersService deve essere transitivamente visibile.
+  exports: [ApiKeysService, ApiKeyGuard, UsersModule],
 })
 export class ApiKeysModule {}
