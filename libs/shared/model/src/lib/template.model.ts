@@ -1,6 +1,14 @@
 import { IServiceCall, StringJs } from './service.model';
 
 /**
+ * Origine di un template:
+ * - `'community'`: template creato da un utente, persistito in DB.
+ * - `'system'`: template fornito dall'app come esempio, caricato in-memory
+ *   da `apps/backend/src/assets/system-templates/*.json`. Immutabile.
+ */
+export type TemplateSource = 'community' | 'system';
+
+/**
  * Template pubblico: snapshot immutabile di un sottoinsieme di call (e
  * opzionalmente db / scheduler) di un servizio, condiviso tra tutti gli utenti.
  *
@@ -31,6 +39,8 @@ export interface ITemplate {
   installs: number;
   /** Timestamp Unix (ms) della creazione */
   creationDate: number;
+  /** Origine del template (community = utente, system = built-in immutabile) */
+  source: TemplateSource;
 }
 
 /** Versione persistita di ITemplate (con _id) */

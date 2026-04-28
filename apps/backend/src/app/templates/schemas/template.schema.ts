@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
-import { ITemplate } from '@virtualservice/shared/model';
+import { ITemplate, TemplateSource } from '@virtualservice/shared/model';
 import {
   ServiceCall,
   ServiceCallSchema,
@@ -44,6 +44,9 @@ export class Template implements ITemplate {
 
   @Prop({ default: () => Date.now() })
   creationDate!: number;
+
+  @Prop({ type: String, enum: ['community', 'system'], default: 'community' })
+  source!: TemplateSource;
 }
 
 export const TemplateSchema = SchemaFactory.createForClass(Template);

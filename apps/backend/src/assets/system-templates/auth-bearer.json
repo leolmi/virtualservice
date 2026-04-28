@@ -1,0 +1,37 @@
+{
+  "id": "system-auth-bearer",
+  "title": "Bearer auth — protected endpoint",
+  "description": "Demonstrates a minimal authentication check on a protected endpoint. The /profile call inspects the Authorization header (case-insensitive lookup) and returns 401 if missing or 403 if the token doesn't match the expected one. Use as a starting point when you need to mock an authenticated API.",
+  "tags": ["auth", "bearer", "protected", "starter"],
+  "dbo": "{ token: 'demo-token-please-replace', profile: { id: 1, email: 'demo@virtualservice.local', role: 'user' } }",
+  "schedulerFn": "",
+  "interval": 0,
+  "calls": [
+    {
+      "path": "profile",
+      "verb": "GET",
+      "description": "Returns the current user's profile. Requires Authorization: Bearer <token> matching db.token.",
+      "response": "const auth = headers.authorization || headers.Authorization;\nif (!auth || !String(auth).startsWith('Bearer ')) throwError('Missing or invalid Authorization header', 401);\nconst token = String(auth).slice('Bearer '.length).trim();\nif (token !== db.token) throwError('Invalid token', 403);\nreturn db.profile;",
+      "file": "",
+      "respType": "json",
+      "rules": [],
+      "body": "",
+      "parameters": [],
+      "headers": {},
+      "cookies": {}
+    },
+    {
+      "path": "login",
+      "verb": "POST",
+      "description": "Mock login: returns the token from db. Body: { email: string, password: string } (any non-empty values accepted).",
+      "response": "if (!data?.email || !data?.password) throwError('email and password are required', 400);\nreturn { accessToken: db.token, tokenType: 'Bearer', expiresIn: 3600, profile: db.profile };",
+      "file": "",
+      "respType": "json",
+      "rules": [],
+      "body": "{ email: 'demo@example.com', password: 'demo' }",
+      "parameters": [],
+      "headers": {},
+      "cookies": {}
+    }
+  ]
+}

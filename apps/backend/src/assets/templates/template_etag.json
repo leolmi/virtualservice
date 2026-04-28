@@ -1,0 +1,65 @@
+{
+  "_id": "69e7798d18ef9875946fad7d",
+  "owner": "54b3e04cde6279a8211b42fd",
+  "lastChange": 1776951348009,
+  "creationDate": 1776777613129,
+  "name": "ETag use case",
+  "description": "",
+  "starred": true,
+  "active": true,
+  "dbo": "return {\n  articles: [{\n    id: '1',\n    title: 'Article n1',\n    value: 45\n  }, {\n    id: '2',\n    title: 'Article n2',\n    value: 2.876\n  }],\n  etag: 0\n}",
+  "path": "etag-test",
+  "calls": [
+    {
+      "path": "article",
+      "verb": "GET",
+      "description": "",
+      "response": "const etag = headers['If-Not-Match'];\n\nif (etag && etag === `${db.etag}`) {\n  setExitCode(304);\n  return null;\n}\n\nreturn db.articles;",
+      "file": "",
+      "respType": "json",
+      "rules": [],
+      "body": "",
+      "parameters": [],
+      "headers": {
+        "ETag": "=return db.etag;"
+      }
+    },
+    {
+      "path": "article",
+      "verb": "POST",
+      "description": "",
+      "response": "const etag = headers['If-Match'];\nif (`${db.etag}` !== etag) throwError('Data was changed, reload and retry', 412);\nif (!data?.id) throwError('Article withoud identity', 500);\nconst xa = db.articles.find(a => a.id === data.id);\nif (!xa) {\n  db.articles.push(data);\n} else {\n  _.extend(xa, data);\n}\ndb.etag++;\nreturn xa;",
+      "file": "",
+      "respType": "json",
+      "rules": [],
+      "body": "",
+      "parameters": [],
+      "headers": {
+        "ETag": "=return db.etag;"
+      }
+    },
+    {
+      "path": "article/{id}",
+      "verb": "DELETE",
+      "description": "",
+      "response": "const etag = headers['If-Match'];\nif (`${db.etag}` !== etag) throwError('Data was changed, reload and retry', 412);\nif (!pathValue.id) throwError('Undefined Article identity', 500);\nconst xa = _.remove(db.articles, a => a.id === pathValue.id);\nif (!xa) {\n  throwError('article not found', 404);\n} else {\n  db.etag++;\n}\nreturn xa;",
+      "file": "",
+      "respType": "json",
+      "rules": [],
+      "body": "",
+      "parameters": [
+        {
+          "code": "path-id",
+          "name": "id",
+          "key": "",
+          "target": "path"
+        }
+      ],
+      "headers": {
+        "ETag": "=return db.etag;"
+      }
+    }
+  ],
+  "schedulerFn": "",
+  "interval": 0
+}

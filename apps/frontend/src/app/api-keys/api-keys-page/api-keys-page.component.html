@@ -1,0 +1,101 @@
+<div class="api-keys-page">
+  <div class="api-keys-content">
+
+    @if (error()) {
+      <div class="error-banner">{{ error() }}</div>
+    }
+
+    <header class="page-header">
+      <div class="page-title">
+        <mat-icon class="title-icon">vpn_key</mat-icon>
+        <div>
+          <h1>API & MCP</h1>
+          <p class="subtitle">
+            Manage the API keys used by external clients (Claude Desktop / Code via MCP).
+          </p>
+        </div>
+      </div>
+      <button mat-flat-button color="primary" (click)="onGenerate()">
+        <mat-icon>add</mat-icon>
+        Generate new key
+      </button>
+    </header>
+
+    <section class="keys-section">
+      @if (keys().length > 0) {
+        <table mat-table [dataSource]="keys()" class="keys-table">
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Name</th>
+            <td mat-cell *matCellDef="let k">{{ k.name }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="prefix">
+            <th mat-header-cell *matHeaderCellDef>Prefix</th>
+            <td mat-cell *matCellDef="let k" class="prefix-cell">
+              <code>vsk_{{ k.prefix }}_…</code>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="created">
+            <th mat-header-cell *matHeaderCellDef>Created</th>
+            <td mat-cell *matCellDef="let k">
+              {{ k.createdAt | date: 'short' }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="lastUsed">
+            <th mat-header-cell *matHeaderCellDef>Last used</th>
+            <td mat-cell *matCellDef="let k">
+              @if (k.lastUsedAt) {
+                {{ k.lastUsedAt | date: 'short' }}
+              } @else {
+                <span class="muted">—</span>
+              }
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let k">
+              @if (k.revokedAt) {
+                <span class="status-revoked">Revoked</span>
+              } @else {
+                <span class="status-active">Active</span>
+              }
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef class="actions-col"></th>
+            <td mat-cell *matCellDef="let k" class="actions-col">
+              @if (!k.revokedAt) {
+                <button
+                  mat-icon-button
+                  matTooltip="Revoke"
+                  (click)="onRevoke(k._id, k.name)"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              }
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+      } @else if (!loading()) {
+        <p class="empty-label">
+          No API keys yet. Generate one to connect Claude Desktop or Code
+          to your virtualservice workspace via MCP.
+        </p>
+      }
+    </section>
+
+  </div>
+
+  @if (loading()) {
+    <div class="loading-overlay">
+      <mat-spinner diameter="100"></mat-spinner>
+    </div>
+  }
+</div>

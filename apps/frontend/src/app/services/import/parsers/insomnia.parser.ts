@@ -4,7 +4,7 @@ import {
   ParsedOperation,
   ParsedParameter,
   ParsedServiceGroup,
-} from './file-parser';
+} from '@virtualservice/shared/utils';
 
 // ── Insomnia v4 export types (subset) ───────────────────────────────────────
 

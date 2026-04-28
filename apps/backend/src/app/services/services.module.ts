@@ -13,6 +13,6 @@ import { CacheModule } from '../mock-server/cache.module';
   ],
   providers: [LogService, ServicesService],
   controllers: [ServicesController],
-  exports: [LogService],
+  exports: [LogService, ServicesService],
 })
 export class ServicesModule {}

@@ -1,6 +1,9 @@
-import { FileParser, ParsedImport } from './parsers/file-parser';
+import {
+  FileParser,
+  OpenApiParser,
+  ParsedImport,
+} from '@virtualservice/shared/utils';
 import { VirtualServiceParser } from './parsers/virtualservice.parser';
-import { OpenApiParser } from './parsers/openapi.parser';
 import { PostmanParser } from './parsers/postman.parser';
 import { InsomniaParser } from './parsers/insomnia.parser';
 import { HarParser } from './parsers/har.parser';

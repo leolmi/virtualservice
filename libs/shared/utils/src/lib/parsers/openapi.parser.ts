@@ -1,3 +1,4 @@
+import * as yaml from 'js-yaml';
 import {
   FileParser,
   ParsedImport,
@@ -22,6 +23,23 @@ function str(v: unknown, fallback = ''): string {
 
 function arr(v: unknown): unknown[] {
   return Array.isArray(v) ? v : [];
+}
+
+/**
+ * Try to deserialise content as JSON first, then YAML.
+ * Returns undefined if both attempts fail.
+ */
+function loadJsonOrYaml(content: string): unknown {
+  try {
+    return JSON.parse(content);
+  } catch {
+    /* not JSON — try YAML below */
+  }
+  try {
+    return yaml.load(content);
+  } catch {
+    return undefined;
+  }
 }
 
 /** Resolve a local $ref (#/…) inside the document */
@@ -241,32 +259,24 @@ export class OpenApiParser implements FileParser {
   readonly label = 'OpenAPI / Swagger';
 
   canParse(content: string, _filename: string): boolean {
-    try {
-      const doc = JSON.parse(content);
-      if (!isObject(doc)) return false;
-      const rec = doc as Record<string, unknown>;
-      // Swagger 2.0
-      if (typeof rec['swagger'] === 'string' && rec['swagger'].startsWith('2')) return true;
-      // OpenAPI 3.x
-      if (typeof rec['openapi'] === 'string' && rec['openapi'].startsWith('3')) return true;
-      return false;
-    } catch {
-      return false;
-    }
+    const doc = loadJsonOrYaml(content);
+    if (!isObject(doc)) return false;
+    const rec = doc as Record<string, unknown>;
+    // Swagger 2.0
+    if (typeof rec['swagger'] === 'string' && rec['swagger'].startsWith('2')) return true;
+    // OpenAPI 3.x
+    if (typeof rec['openapi'] === 'string' && rec['openapi'].startsWith('3')) return true;
+    return false;
   }
 
   parse(content: string): ParsedImport {
-    let doc: unknown;
-    try {
-      doc = JSON.parse(content);
-    } catch {
-      throw new Error(
-        'The file is not valid JSON. YAML format is not yet supported — please convert it to JSON first.',
-      );
+    const doc = loadJsonOrYaml(content);
+    if (doc === undefined) {
+      throw new Error('The file is neither valid JSON nor valid YAML.');
     }
 
     if (!isObject(doc)) {
-      throw new Error('The file does not contain a valid JSON object.');
+      throw new Error('The file does not contain a valid JSON/YAML object.');
     }
 
     const rec = doc as Record<string, unknown>;

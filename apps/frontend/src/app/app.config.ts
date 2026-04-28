@@ -18,6 +18,8 @@ import { editorReducer } from './editor/store/editor.reducer';
 import { EditorEffects } from './editor/store/editor.effects';
 import { templatesReducer } from './templates/store/templates.reducer';
 import { TemplatesEffects } from './templates/store/templates.effects';
+import { apiKeysReducer } from './api-keys/store/api-keys.reducer';
+import { ApiKeysEffects } from './api-keys/store/api-keys.effects';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { APP_VERSION } from './core/tokens/app.tokens';
 import { AppTitleStrategy } from './core/services/app-title.strategy';
@@ -43,8 +45,15 @@ export const appConfig: ApplicationConfig = {
       services: servicesReducer,
       editor: editorReducer,
       templates: templatesReducer,
+      apiKeys: apiKeysReducer,
     }),
-    provideEffects([AuthEffects, ServicesEffects, EditorEffects, TemplatesEffects]),
+    provideEffects([
+      AuthEffects,
+      ServicesEffects,
+      EditorEffects,
+      TemplatesEffects,
+      ApiKeysEffects,
+    ]),
     { provide: APP_VERSION, useValue: version },
     { provide: TitleStrategy, useClass: AppTitleStrategy },
   ],

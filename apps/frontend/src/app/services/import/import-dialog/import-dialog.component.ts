@@ -12,7 +12,7 @@ import {
   ParsedImport,
   ParsedOperation,
   ParsedServiceGroup,
-} from '../parsers/file-parser';
+} from '@virtualservice/shared/utils';
 
 // ── Dialog data & result ────────────────────────────────────────────────────
 

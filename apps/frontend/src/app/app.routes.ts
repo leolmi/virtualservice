@@ -107,4 +107,14 @@ export const appRoutes: Route[] = [
         (m) => m.ManagementComponent,
       ),
   },
+  {
+    path: 'api-keys',
+    title: 'api & mcp',
+    data: { helpContext: 'api-keys' },
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./api-keys/api-keys-page/api-keys-page.component').then(
+        (m) => m.ApiKeysPageComponent,
+      ),
+  },
 ];

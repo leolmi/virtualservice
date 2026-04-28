@@ -1,0 +1,43 @@
+{
+  "id": "system-northwind-products",
+  "title": "Northwind products — read-only",
+  "description": "A read-only mock of the Northwind product catalogue. Exposes a paginated list and a detail-by-id endpoint, served from samples.northwind.products without any dbo. Good as a starting point for a frontend that needs realistic product data.",
+  "tags": ["northwind", "catalog", "read-only", "pagination"],
+  "dbo": "",
+  "schedulerFn": "",
+  "interval": 0,
+  "calls": [
+    {
+      "path": "products",
+      "verb": "GET",
+      "description": "List products with optional pagination and category filter.",
+      "response": "const items = params.categoryId ? _.filter(samples.northwind.products, { categoryID: parseInt(params.categoryId, 10) }) : samples.northwind.products;\nconst page = parseInt(params.page ?? '1', 10);\nconst size = parseInt(params.size ?? '20', 10);\nconst start = (page - 1) * size;\nreturn { total: items.length, page, size, items: items.slice(start, start + size) };",
+      "file": "",
+      "respType": "json",
+      "rules": [],
+      "body": "",
+      "parameters": [
+        { "code": "categoryId", "name": "categoryId", "target": "query", "value": "" },
+        { "code": "page", "name": "page", "target": "query", "value": "1" },
+        { "code": "size", "name": "size", "target": "query", "value": "20" }
+      ],
+      "headers": {},
+      "cookies": {}
+    },
+    {
+      "path": "products/{id}",
+      "verb": "GET",
+      "description": "Get a single product by id (productID). Returns 404 if not found.",
+      "response": "const id = parseInt(pathValue.id, 10);\nconst item = _.find(samples.northwind.products, { productID: id });\nif (!item) throwError('Product not found', 404);\nreturn item;",
+      "file": "",
+      "respType": "json",
+      "rules": [],
+      "body": "",
+      "parameters": [
+        { "code": "id", "name": "id", "target": "path", "value": "1" }
+      ],
+      "headers": {},
+      "cookies": {}
+    }
+  ]
+}

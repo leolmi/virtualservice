@@ -4,7 +4,7 @@ import {
   ParsedOperation,
   ParsedParameter,
   ParsedServiceGroup,
-} from './file-parser';
+} from '@virtualservice/shared/utils';
 
 // ── HAR types (subset of HTTP Archive 1.2) ──────────────────────────────────
 

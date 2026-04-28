@@ -8,6 +8,8 @@ import { AuthModule } from './app/auth/auth.module';
 import { MailModule } from './app/mail/mail.module';
 import { ServicesModule } from './app/services/services.module';
 import { TemplatesModule } from './app/templates/templates.module';
+import { ApiKeysModule } from './app/api-keys/api-keys.module';
+import { McpModule } from './app/mcp/mcp.module';
 import { MockServerModule } from './app/mock-server/mock-server.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { RequestLoggerMiddleware } from './app/common/request-logger.middleware';
@@ -51,6 +53,8 @@ import { join } from 'path';
     AuthModule,
     ServicesModule,
     TemplatesModule,
+    ApiKeysModule,
+    McpModule,
     MockServerModule,
   ],
   providers: [

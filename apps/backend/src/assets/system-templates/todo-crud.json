@@ -1,0 +1,82 @@
+{
+  "id": "system-todo-crud",
+  "title": "Todo CRUD — full lifecycle",
+  "description": "A minimal CRUD mock for todo items. Demonstrates dbo seeding, POST with auto-id, PATCH partial update, DELETE with 204, and proper status codes via setExitCode/throwError. Good template to copy when scaffolding a generic CRUD entity.",
+  "tags": ["crud", "todo", "starter", "post", "patch", "delete"],
+  "dbo": "{ items: [{ id: 1, title: 'Try VirtualService', done: false }, { id: 2, title: 'Read expressions reference', done: true }] }",
+  "schedulerFn": "",
+  "interval": 0,
+  "calls": [
+    {
+      "path": "todos",
+      "verb": "GET",
+      "description": "List all todos.",
+      "response": "= db.items",
+      "file": "",
+      "respType": "json",
+      "rules": [],
+      "body": "",
+      "parameters": [],
+      "headers": {},
+      "cookies": {}
+    },
+    {
+      "path": "todos/{id}",
+      "verb": "GET",
+      "description": "Get a single todo by id. 404 if missing.",
+      "response": "const id = parseInt(pathValue.id, 10);\nconst item = _.find(db.items, { id });\nif (!item) throwError('Todo not found', 404);\nreturn item;",
+      "file": "",
+      "respType": "json",
+      "rules": [],
+      "body": "",
+      "parameters": [
+        { "code": "id", "name": "id", "target": "path", "value": "1" }
+      ],
+      "headers": {},
+      "cookies": {}
+    },
+    {
+      "path": "todos",
+      "verb": "POST",
+      "description": "Create a new todo. Body: { title: string, done?: boolean }. Returns 201.",
+      "response": "if (!data || typeof data.title !== 'string' || !data.title.trim()) throwError('title is required', 400);\nconst nextId = (_.maxBy(db.items, 'id')?.id ?? 0) + 1;\nconst created = { id: nextId, title: data.title, done: !!data.done };\ndb.items.push(created);\nsetExitCode(201);\nreturn created;",
+      "file": "",
+      "respType": "json",
+      "rules": [],
+      "body": "{ title: 'New todo', done: false }",
+      "parameters": [],
+      "headers": {},
+      "cookies": {}
+    },
+    {
+      "path": "todos/{id}",
+      "verb": "PATCH",
+      "description": "Partial update. Body may contain { title?, done? }.",
+      "response": "const id = parseInt(pathValue.id, 10);\nconst idx = _.findIndex(db.items, { id });\nif (idx < 0) throwError('Todo not found', 404);\ndb.items[idx] = { ...db.items[idx], ...data, id };\nreturn db.items[idx];",
+      "file": "",
+      "respType": "json",
+      "rules": [],
+      "body": "{ done: true }",
+      "parameters": [
+        { "code": "id", "name": "id", "target": "path", "value": "1" }
+      ],
+      "headers": {},
+      "cookies": {}
+    },
+    {
+      "path": "todos/{id}",
+      "verb": "DELETE",
+      "description": "Delete a todo. Returns 204 on success, 404 if missing.",
+      "response": "const id = parseInt(pathValue.id, 10);\nconst before = db.items.length;\ndb.items = db.items.filter(t => t.id !== id);\nif (db.items.length === before) throwError('Todo not found', 404);\nsetExitCode(204);",
+      "file": "",
+      "respType": "json",
+      "rules": [],
+      "body": "",
+      "parameters": [
+        { "code": "id", "name": "id", "target": "path", "value": "1" }
+      ],
+      "headers": {},
+      "cookies": {}
+    }
+  ]
+}

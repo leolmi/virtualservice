@@ -11,7 +11,7 @@ import {
   ParsedOperation,
   ParsedParameter,
   ParsedServiceGroup,
-} from './parsers/file-parser';
+} from '@virtualservice/shared/utils';
 import { VS_NATIVE_SOURCE_KEY } from './parsers/virtualservice.parser';
 
 // ── Helpers ─────────────────────────────────────────────────────────────────

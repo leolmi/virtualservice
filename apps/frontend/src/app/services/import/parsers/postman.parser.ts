@@ -4,7 +4,7 @@ import {
   ParsedOperation,
   ParsedParameter,
   ParsedServiceGroup,
-} from './file-parser';
+} from '@virtualservice/shared/utils';
 
 // ── Postman Collection v2 / v2.1 types (subset) ────────────────────────────
 

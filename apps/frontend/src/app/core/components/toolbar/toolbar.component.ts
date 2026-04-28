@@ -87,6 +87,10 @@ export class ToolbarComponent {
     });
   }
 
+  onApiKeys(): void {
+    this.router.navigate(['/api-keys']);
+  }
+
   onChangePassword(): void {
     const user = this.user();
     this.dialog.open(ChangePasswordDialogComponent, {
