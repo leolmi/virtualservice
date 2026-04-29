@@ -323,6 +323,7 @@ nx affected:graph           # Only affected projects
 | `SMTP_PASS`                           | backend        | SMTP authentication password                                                |
 | `SMTP_FROM`                           | backend        | From address for outgoing emails                                            |
 | `VIRTUALSERVICE_DEBUG`                | backend        | `true` abilita il debug logging del path matching nel MockServerService     |
+| `VIRTUALSERVICE_BODY_SIZE_LIMIT`      | backend        | Max byte size del body HTTP (json + urlencoded). Default 1_048_576 (1 MB). Oltre il limite risponde 413 |
 | `VIRTUALSERVICE_EXPRESSION_SIZE_LIMIT`| backend        | Max byte size for stringa-js expressions (enforced on save)                 |
 | `VIRTUALSERVICE_DB_SIZE_LIMIT`        | backend        | Max byte size del db in cache per servizio (`ServiceCacheService`)          |
 | `VIRTUALSERVICE_ADMIN_EMAIL`          | backend        | Email dell'utente admin bootstrappato all'avvio se non esiste               |

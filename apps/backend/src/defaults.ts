@@ -1,5 +1,6 @@
 // Service
 export const DEFAULT_PORT = 3000;
+export const DEFAULT_BODY_SIZE_LIMIT = 1024 * 1024;
 
 // MongoDB
 export const DEFAULT_MONGO_URI = 'mongodb://localhost:27017/virtualservice';
