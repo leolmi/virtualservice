@@ -110,10 +110,24 @@ mat-card-content {
     min-height: 3.6em;
   }
 
-  .call-count {
-    font-size: 0.75rem;
-    color: var(--vs-accent);
+  .counts-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     margin-top: auto;
+    font-size: 0.75rem;
+  }
+
+  .call-count {
+    color: var(--vs-accent);
+  }
+
+  .public-count {
+    background: var(--vs-success);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 10px;
+    line-height: 1.2;
   }
 }
 

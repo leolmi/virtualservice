@@ -1,4 +1,4 @@
-import { Component, inject, input, output } from '@angular/core';
+import { Component, computed, inject, input, output } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -31,6 +31,10 @@ import {
 })
 export class ServiceTileComponent {
   service = input.required<IServiceItem>();
+
+  readonly publicCallCount = computed(
+    () => this.service().calls.filter((c) => c.public).length,
+  );
 
   toggleActive = output<IServiceItem>();
   toggleStarred = output<IServiceItem>();

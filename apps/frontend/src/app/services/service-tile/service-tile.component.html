@@ -29,7 +29,17 @@
 
   <mat-card-content>
     <p class="description">{{ service().description || '—' }}</p>
-    <span class="call-count">{{ service().calls.length }} calls</span>
+    <div class="counts-row">
+      <span class="call-count">{{ service().calls.length }} calls</span>
+      @if (publicCallCount() > 0) {
+        <span
+          class="public-count"
+          [matTooltip]="publicCallCount() + ' visible in public discovery'"
+        >
+          {{ publicCallCount() }} public
+        </span>
+      }
+    </div>
   </mat-card-content>
 
   <mat-card-actions>
