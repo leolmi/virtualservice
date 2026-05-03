@@ -68,6 +68,8 @@ export class UsersService {
       starred: boolean;
       callCount: number;
       unlistedCallCount: number;
+      /** Dimensione approssimata del documento in byte (JSON UTF-8). */
+      size: number;
     };
 
     const servicesByOwner = new Map<string, ServiceRow[]>();
@@ -77,6 +79,12 @@ export class UsersService {
         servicesByOwner.set(ownerId, []);
       }
       const calls = svc.calls ?? [];
+      let size = 0;
+      try {
+        size = Buffer.byteLength(JSON.stringify(svc), 'utf8');
+      } catch {
+        size = 0; // strutture cicliche o JSON.stringify failure
+      }
       servicesByOwner.get(ownerId)!.push({
         _id: svc._id,
         owner: ownerId,
@@ -89,6 +97,7 @@ export class UsersService {
           (acc, c) => acc + (c?.unlisted ? 1 : 0),
           0,
         ),
+        size,
       });
     }
 

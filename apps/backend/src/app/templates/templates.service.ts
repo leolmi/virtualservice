@@ -135,12 +135,16 @@ export class TemplatesService {
   async create(
     userId: string,
     dto: CreateTemplateDto,
+    role?: string,
   ): Promise<TemplateDocument> {
     if (!Array.isArray(dto.calls) || dto.calls.length === 0) {
       throw new BadRequestException('Seleziona almeno una call');
     }
 
-    this.validateExpressionSizes(dto);
+    // Admin esente dai limiti per-field (vedi services.service.ts).
+    if (role !== 'admin') {
+      this.validateExpressionSizes(dto);
+    }
 
     const user = await this.usersService.findById(userId);
     if (!user) throw new NotFoundException('User not found');

@@ -3,9 +3,14 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe, Logger, RequestMethod } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import cookieParser = require('cookie-parser');
+import * as bodyParser from 'body-parser';
 import { AppModule } from './app.module';
 import { PayloadTooLargeFilter } from './app/common/payload-too-large.filter';
-import { DEFAULT_BODY_SIZE_LIMIT, DEFAULT_PORT } from './defaults';
+import {
+  DEFAULT_API_BODY_SIZE_LIMIT,
+  DEFAULT_BODY_SIZE_LIMIT,
+  DEFAULT_PORT,
+} from './defaults';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 const { version } = JSON.parse(readFileSync(join(process.cwd(), 'package.json'), 'utf-8')) as { version: string };
@@ -45,12 +50,32 @@ async function bootstrap(): Promise<void> {
   });
 
   const config = app.get(ConfigService);
-  const rawBodyLimit = config.get<string>('VIRTUALSERVICE_BODY_SIZE_LIMIT');
-  const bodyLimit = rawBodyLimit ? parseInt(rawBodyLimit, 10) : DEFAULT_BODY_SIZE_LIMIT;
-  const bodyLimitBytes = Number.isFinite(bodyLimit) && bodyLimit > 0 ? bodyLimit : DEFAULT_BODY_SIZE_LIMIT;
-  app.useBodyParser('json', { limit: bodyLimitBytes });
-  app.useBodyParser('urlencoded', { limit: bodyLimitBytes, extended: true });
-  Logger.log(`Body size limit: ${bodyLimitBytes} bytes`, 'Bootstrap');
+  const parseLimit = (raw: string | undefined, fallback: number): number => {
+    const n = raw ? parseInt(raw, 10) : NaN;
+    return Number.isFinite(n) && n > 0 ? n : fallback;
+  };
+  const mockBodyLimit = parseLimit(
+    config.get<string>('VIRTUALSERVICE_BODY_SIZE_LIMIT'),
+    DEFAULT_BODY_SIZE_LIMIT,
+  );
+  const apiBodyLimit = parseLimit(
+    config.get<string>('VIRTUALSERVICE_API_BODY_SIZE_LIMIT'),
+    DEFAULT_API_BODY_SIZE_LIMIT,
+  );
+  // Body parser per-rotta:
+  //   /service/* (mock pubblico, accessibile da chiunque) → limite stretto
+  //   tutte le altre rotte (autenticazione/autorizzazione applicata dai guard
+  //   a valle) → limite generoso, così gli admin possono salvare service grandi.
+  // Nota: i parser registrati prima vincono sul match path; il parser globale
+  // gira dopo solo se /service non ha già popolato req.body.
+  app.use('/service', bodyParser.json({ limit: mockBodyLimit }));
+  app.use('/service', bodyParser.urlencoded({ limit: mockBodyLimit, extended: true }));
+  app.use(bodyParser.json({ limit: apiBodyLimit }));
+  app.use(bodyParser.urlencoded({ limit: apiBodyLimit, extended: true }));
+  Logger.log(
+    `Body size limits — mock /service/*: ${mockBodyLimit}B, api: ${apiBodyLimit}B`,
+    'Bootstrap',
+  );
 
   // cookie-parser: popola req.cookies usato nello scope delle espressioni mock
   app.use(cookieParser());

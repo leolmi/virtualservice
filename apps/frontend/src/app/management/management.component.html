@@ -175,6 +175,14 @@
                       {{ svc.unlistedCallCount }}
                     </span>
                   }
+                  <span
+                    class="svc-size"
+                    [class.large]="svc.size >= 500_000"
+                    [class.huge]="svc.size >= 2_000_000"
+                    [matTooltip]="'Approximate JSON size: ' + svc.size.toLocaleString() + ' bytes'"
+                  >
+                    {{ formatBytes(svc.size) }}
+                  </span>
                   <mat-icon
                     class="as-button row-btn"
                     matTooltip="Download as JSON"

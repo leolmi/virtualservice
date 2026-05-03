@@ -17,6 +17,10 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { CreateTemplateDto } from '@virtualservice/shared/dto';
 import {
+  downloadOpenApi,
+  downloadVirtualService,
+} from '../core/utils/service-export.util';
+import {
   BasePathDialogComponent,
 } from './components/base-path-dialog/base-path-dialog.component';
 import {
@@ -81,7 +85,7 @@ export class EditorComponent {
     const svc = this.service();
     if (!svc) return [];
     return svc.calls
-      .map((call, idx) => ({ call, idx }))
+      .map((call, idx) => ({ call, idx, size: this.estimateCallSize(call) }))
       .sort((a, b) => a.call.path.localeCompare(b.call.path))
       .filter(
         ({ call }) =>
@@ -90,6 +94,47 @@ export class EditorComponent {
           call.verb.toLowerCase().includes(q),
       );
   });
+
+  /** Limite hard del documento BSON di MongoDB. Oltre questo il save fallisce
+   *  per chiunque, admin inclusi. */
+  readonly maxServiceSize = 16 * 1024 * 1024;
+
+  /** Dimensione approssimata del service corrente (JSON UTF-8). Stessa formula
+   *  usata server-side in `users.service.ts:findAllWithServiceCount`. */
+  readonly serviceSize = computed(() => {
+    const svc = this.service();
+    if (!svc) return 0;
+    return this.estimateCallSize(svc);
+  });
+
+  readonly serviceSizePercent = computed(() => {
+    const total = this.serviceSize();
+    return Math.min(100, (total / this.maxServiceSize) * 100);
+  });
+
+  private estimateCallSize(call: unknown): number {
+    try {
+      // TextEncoder è disponibile in browser e in Node 11+ (siamo in Angular SSR-safe? L'editor è solo browser).
+      return new TextEncoder().encode(JSON.stringify(call)).length;
+    } catch {
+      return 0;
+    }
+  }
+
+  formatBytes(bytes: number): string {
+    if (!Number.isFinite(bytes) || bytes < 0) return '—';
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+    return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+  }
+
+  formatPercent(value: number): string {
+    if (!Number.isFinite(value) || value < 0) return '—';
+    if (value < 0.1) return '< 0.1%';
+    if (value < 10) return `${value.toFixed(1)}%`;
+    return `${Math.round(value)}%`;
+  }
 
   readonly tabs: TabDef[] = [
     { route: 'call', icon: 'label', title: 'Call definition' },
@@ -132,6 +177,21 @@ export class EditorComponent {
           tooltip: 'Restart service',
           enabled: !!svc,
           action: () => this.onRestart(),
+        },
+        { type: 'separator' },
+        {
+          id: 'download-vs',
+          icon: 'get_app',
+          tooltip: 'Download as virtual-service JSON',
+          enabled: !!svc,
+          action: () => this.onDownloadVirtualService(),
+        },
+        {
+          id: 'download-openapi',
+          icon: 'description',
+          tooltip: 'Download as OpenAPI 3.0 JSON',
+          enabled: !!svc,
+          action: () => this.onDownloadOpenApi(),
         },
         { type: 'separator' },
         {
@@ -248,6 +308,18 @@ export class EditorComponent {
     const svc = this.service();
     if (!svc) return;
     this.router.navigate(['/monitor', svc._id]);
+  }
+
+  private onDownloadVirtualService(): void {
+    const svc = this.service();
+    if (!svc) return;
+    downloadVirtualService(svc);
+  }
+
+  private onDownloadOpenApi(): void {
+    const svc = this.service();
+    if (!svc) return;
+    downloadOpenApi(svc);
   }
 
   private onSaveAsTemplate(): void {

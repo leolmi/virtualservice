@@ -79,7 +79,11 @@ export class ServicesService {
     role?: string,
     options: SaveOptions = {},
   ): Promise<ServiceDocument> {
-    this.validateExpressionSizes(dto);
+    // Gli admin sono esenti dai limiti per-field: possono salvare service
+    // di qualsiasi dimensione senza vincoli (utile per migrazioni/import).
+    if (role !== 'admin') {
+      this.validateExpressionSizes(dto);
+    }
 
     const existingId = dto['_id'] as string | undefined;
 

@@ -1,6 +1,11 @@
 // Service
 export const DEFAULT_PORT = 3000;
+/** Limite body delle rotte mock pubbliche `/service/*` (protezione contro
+ *  abusi esterni). 1 MB. */
 export const DEFAULT_BODY_SIZE_LIMIT = 1024 * 1024;
+/** Limite body delle rotte applicative (`/api/*` ecc.). Generoso perché gli
+ *  admin possono salvare service di grandi dimensioni senza per-field cap. 50 MB. */
+export const DEFAULT_API_BODY_SIZE_LIMIT = 50 * 1024 * 1024;
 
 // MongoDB
 export const DEFAULT_MONGO_URI = 'mongodb://localhost:27017/virtualservice';

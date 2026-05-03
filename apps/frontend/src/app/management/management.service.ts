@@ -11,6 +11,8 @@ export interface UserService {
   starred: boolean;
   callCount: number;
   unlistedCallCount: number;
+  /** Dimensione approssimata del documento service in byte (JSON UTF-8). */
+  size: number;
 }
 
 export interface ManagedUser {

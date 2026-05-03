@@ -44,7 +44,7 @@ export class TemplatesController {
     @Body() dto: CreateTemplateDto,
     @Req() req: RequestWithUser,
   ) {
-    return this.templatesService.create(req.user.userId, dto);
+    return this.templatesService.create(req.user.userId, dto, req.user.role);
   }
 
   /** Installa il template creando un nuovo servizio per l'utente corrente */

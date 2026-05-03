@@ -19,6 +19,28 @@
       }
     </div>
 
+    @if (service()) {
+      <div
+        class="service-size-meter"
+        [class.warn]="serviceSizePercent() >= 50"
+        [class.danger]="serviceSizePercent() >= 80"
+        [matTooltip]="
+          serviceSizePercent() >= 80
+            ? 'Service usage close to the limit — consider splitting into a new service.'
+            : 'Service capacity used. Split into a new service if approaching 100%.'
+        "
+        matTooltipPosition="below"
+      >
+        <div class="meter-row">
+          <span class="meter-label">Service usage</span>
+          <span class="meter-percent">{{ formatPercent(serviceSizePercent()) }}</span>
+        </div>
+        <div class="meter-bar">
+          <div class="meter-fill" [style.width.%]="serviceSizePercent()"></div>
+        </div>
+      </div>
+    }
+
     <div class="calls-list">
       @for (item of displayCalls(); track item.idx) {
         <div
@@ -30,6 +52,14 @@
           <div class="call-path">
             <span class="path-base">./{{ service()?.path }}/</span>{{ item.call.path }}
           </div>
+          <span
+            class="call-size"
+            [class.large]="item.size >= 50_000"
+            [class.huge]="item.size >= 200_000"
+            [matTooltip]="'Approximate size: ' + item.size.toLocaleString() + ' bytes'"
+          >
+            {{ formatBytes(item.size) }}
+          </span>
           <mat-icon
             class="call-unlisted-icon"
             [class.is-unlisted]="item.call.unlisted"
