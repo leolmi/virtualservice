@@ -1,9 +1,10 @@
-import { NestFactory } from '@nestjs/core';
+import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe, Logger, RequestMethod } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import cookieParser = require('cookie-parser');
 import { AppModule } from './app.module';
+import { PayloadTooLargeFilter } from './app/common/payload-too-large.filter';
 import { DEFAULT_BODY_SIZE_LIMIT, DEFAULT_PORT } from './defaults';
 import { readFileSync } from 'fs';
 import { join } from 'path';
@@ -61,6 +62,11 @@ async function bootstrap(): Promise<void> {
       transform: true,
     }),
   );
+
+  // Filter globale: arricchisce gli errori 413 (PayloadTooLarge) con la
+  // dimensione del payload ricevuto e il limite consentito.
+  const { httpAdapter } = app.get(HttpAdapterHost);
+  app.useGlobalFilters(new PayloadTooLargeFilter(httpAdapter));
 
   // CORS permissivo: gli endpoint /service/* devono essere raggiungibili
   // da qualsiasi dominio esterno (mock service pubblici).
