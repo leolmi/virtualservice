@@ -4,7 +4,7 @@ import { DiscoveryService } from './discovery.service';
 
 /**
  * Public discovery API — no auth guard. Returns the flat list of callable
- * endpoints that owners have not marked as unlisted, for active services
+ * endpoints that owners have explicitly marked as public, for active services
  * whose owner is not pending deletion.
  */
 @SkipThrottle({ service: true })

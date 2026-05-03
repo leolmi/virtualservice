@@ -67,7 +67,7 @@ export class UsersService {
       active: boolean;
       starred: boolean;
       callCount: number;
-      unlistedCallCount: number;
+      publicCallCount: number;
       /** Dimensione approssimata del documento in byte (JSON UTF-8). */
       size: number;
     };
@@ -93,8 +93,8 @@ export class UsersService {
         active: svc.active,
         starred: svc.starred,
         callCount: calls.length,
-        unlistedCallCount: calls.reduce(
-          (acc, c) => acc + (c?.unlisted ? 1 : 0),
+        publicCallCount: calls.reduce(
+          (acc, c) => acc + (c?.public ? 1 : 0),
           0,
         ),
         size,

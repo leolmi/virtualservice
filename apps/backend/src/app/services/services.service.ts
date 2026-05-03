@@ -4,6 +4,7 @@ import {
   ForbiddenException,
   BadRequestException,
   Logger,
+  OnModuleInit,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
@@ -36,7 +37,7 @@ interface ExpressionViolation {
 }
 
 @Injectable()
-export class ServicesService {
+export class ServicesService implements OnModuleInit {
   private readonly logger = new Logger(ServicesService.name);
   private readonly expressionSizeLimit: number;
 
@@ -50,6 +51,28 @@ export class ServicesService {
     this.expressionSizeLimit = envLimit
       ? parseInt(envLimit, 10)
       : DEFAULT_EXPRESSION_SIZE_LIMIT;
+  }
+
+  /**
+   * One-shot cleanup della vecchia property `unlisted` introdotta in fase di
+   * sperimentazione e poi sostituita da `public` (semantica invertita,
+   * privacy-by-default). Idempotente: l'updateMany rimuove il campo dai
+   * documenti che ancora lo contengono e non tocca gli altri.
+   */
+  async onModuleInit(): Promise<void> {
+    try {
+      const res = await this.serviceModel.updateMany(
+        { 'calls.unlisted': { $exists: true } },
+        { $unset: { 'calls.$[].unlisted': '' } },
+      );
+      if (res.modifiedCount > 0) {
+        this.logger.log(
+          `Removed legacy 'unlisted' field from ${res.modifiedCount} service document(s).`,
+        );
+      }
+    } catch (err) {
+      this.logger.warn(`Legacy 'unlisted' cleanup skipped: ${(err as Error).message}`);
+    }
   }
 
   /** Restituisce tutti i servizi dell'utente */

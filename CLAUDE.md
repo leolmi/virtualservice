@@ -339,6 +339,8 @@ nx affected:graph           # Only affected projects
 
 > Local values go in `apps/backend/.env` (gitignored). Never commit secrets.
 
+> **Admin throttle bypass**: `AdminBypassThrottlerGuard` (registrato come `APP_GUARD` in `app.module.ts`) verifica il Bearer token e salta tutti i throttler (`default`, `strict`, `service`, `mcp`) quando `payload.role === 'admin'`. Il `role` è incluso nel JWT al momento del sign — utenti admin con token vecchi devono ri-loggarsi per attivare il bypass.
+
 ---
 
 ## Key Design Decisions

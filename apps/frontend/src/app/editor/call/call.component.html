@@ -15,11 +15,11 @@
         placeholder="call-path" />
       <button
         mat-icon-button
-        [matTooltip]="call.unlisted ? 'Unlisted: hidden from public discovery' : 'Listed: visible in public discovery'"
-        class="btn-unlisted"
-        [class.is-unlisted]="call.unlisted"
-        (click)="onToggleUnlisted()">
-        <mat-icon>{{ call.unlisted ? 'visibility_off' : 'visibility' }}</mat-icon>
+        [matTooltip]="call.public ? 'Public: visible in public discovery' : 'Private: hidden from public discovery'"
+        class="btn-visibility"
+        [class.is-private]="!call.public"
+        (click)="onTogglePublic()">
+        <mat-icon>{{ call.public ? 'visibility' : 'visibility_off' }}</mat-icon>
       </button>
       <button
         mat-icon-button

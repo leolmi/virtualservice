@@ -34,6 +34,10 @@ export const updateCall = createAction(
 
 export const addCall = createAction('[Editor] Add Call');
 export const deleteActiveCall = createAction('[Editor] Delete Active Call');
+export const setAllCallsPublic = createAction(
+  '[Editor] Set All Calls Public',
+  props<{ value: boolean }>(),
+);
 
 export const addRule = createAction(
   '[Editor] Add Rule',

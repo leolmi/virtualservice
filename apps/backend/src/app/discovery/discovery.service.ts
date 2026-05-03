@@ -32,7 +32,7 @@ export class DiscoveryService {
    * Lista pubblica di tutte le call invocabili e visibili nella discovery:
    *   - servizi `active=true`
    *   - owner non in pending deletion
-   *   - calls con `unlisted` falsy
+   *   - calls con `public === true`
    */
   async findAll(): Promise<DiscoverCall[]> {
     const services = await this.serviceModel
@@ -74,7 +74,7 @@ export class DiscoveryService {
       // lo stesso al dispatch, quindi è coerente con il comportamento runtime.
       const seen = new Set<string>();
       for (const call of svc.calls ?? []) {
-        if (call?.unlisted) continue;
+        if (!call?.public) continue;
         const key = `${call.verb}:${call.path}`;
         if (seen.has(key)) continue;
         seen.add(key);

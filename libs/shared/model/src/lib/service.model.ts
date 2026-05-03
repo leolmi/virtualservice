@@ -84,13 +84,13 @@ export interface IServiceCall {
   /** Cookie da impostare nella risposta (nome-valore) */
   cookies: Record<string, string>;
   /**
-   * Se true la call viene esclusa dalla pagina pubblica di discovery.
-   * Non influisce sull'esecuzione runtime: la call resta invocabile come prima.
-   * Default false (visibile pubblicamente). Optional al type-level perché documenti
-   * pre-feature potrebbero non avere il campo — il default dello schema lo
-   * popola in lettura.
+   * Se true la call è visibile nella pagina pubblica di discovery.
+   * Non influisce sull'esecuzione runtime: la call è invocabile a prescindere.
+   * Default false (privata). Optional al type-level: documenti pre-feature
+   * (e quelli che usavano la vecchia `unlisted`) leggono `undefined` → trattato
+   * come privato dalla logica di filtro.
    */
-  unlisted?: boolean;
+  public?: boolean;
 }
 
 // ---------------------------------------------------------------------------

@@ -60,6 +60,21 @@
       opacity: 1;
     }
   }
+
+  .bulk-visibility-icon {
+    cursor: pointer;
+    opacity: 0.6;
+    margin-left: 8px;
+
+    &.is-private {
+      color: var(--vs-accent);
+      opacity: 0.85;
+    }
+
+    &:hover {
+      opacity: 1;
+    }
+  }
 }
 
 .service-size-meter {
@@ -165,7 +180,7 @@
     }
   }
 
-  &.unlisted {
+  &.private {
     .call-verb,
     .call-path {
       opacity: 0.55;
@@ -208,7 +223,7 @@
     }
   }
 
-  .call-unlisted-icon {
+  .call-visibility-icon {
     flex-shrink: 0;
     font-size: 14px;
     width: 14px;
@@ -222,7 +237,7 @@
     opacity: 0;
     transition: opacity 0.15s, color 0.15s, background 0.15s;
 
-    &.is-unlisted {
+    &.is-private {
       opacity: 1;
       color: var(--vs-accent);
     }
@@ -233,14 +248,14 @@
     }
   }
 
-  &:hover .call-unlisted-icon {
+  &:hover .call-visibility-icon {
     opacity: 1;
   }
 
-  &.selected .call-unlisted-icon {
+  &.selected .call-visibility-icon {
     color: rgba(0, 0, 0, 0.3);
 
-    &.is-unlisted {
+    &.is-private {
       color: var(--vs-accent);
     }
 

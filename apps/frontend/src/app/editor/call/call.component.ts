@@ -134,11 +134,11 @@ export class CallComponent {
     this.store.dispatch(EditorActions.deleteActiveCall());
   }
 
-  onToggleUnlisted(): void {
+  onTogglePublic(): void {
     const call = this.activeCall();
     if (!call) return;
     this.store.dispatch(
-      EditorActions.updateActiveCall({ changes: { unlisted: !call.unlisted } }),
+      EditorActions.updateActiveCall({ changes: { public: !call.public } }),
     );
   }
 

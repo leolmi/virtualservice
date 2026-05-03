@@ -67,6 +67,7 @@ export const editorReducer = createReducer(
       parameters: [],
       headers: {},
       cookies: {},
+      public: true,
     };
     const calls = [...state.service.calls, newCall];
     return {
@@ -85,6 +86,16 @@ export const editorReducer = createReducer(
       ...state,
       service: { ...state.service, calls },
       activeCallIndex: null,
+      dirty: true,
+    };
+  }),
+
+  on(EditorActions.setAllCallsPublic, (state, { value }) => {
+    if (!state.service) return state;
+    const calls = state.service.calls.map((c) => ({ ...c, public: value }));
+    return {
+      ...state,
+      service: { ...state.service, calls },
       dirty: true,
     };
   }),

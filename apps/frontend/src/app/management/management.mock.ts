@@ -33,7 +33,7 @@ function _mockServices(userId: string, count: number): UserService[] {
       active: Math.random() > 0.3,
       starred: Math.random() > 0.7,
       callCount,
-      unlistedCallCount: Math.floor(Math.random() * Math.max(1, callCount + 1)),
+      publicCallCount: Math.floor(Math.random() * Math.max(1, callCount + 1)),
       size: Math.floor(Math.random() * 5_000_000),
     };
   });

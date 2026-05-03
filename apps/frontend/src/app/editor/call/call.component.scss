@@ -46,12 +46,12 @@
     }
   }
 
-  .btn-unlisted {
+  .btn-visibility {
     position: absolute;
     right: 40px;
     color: rgba(0, 0, 0, 0.4);
 
-    &.is-unlisted {
+    &.is-private {
       color: var(--vs-accent);
     }
   }

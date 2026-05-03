@@ -127,11 +127,11 @@ export class ServiceCall implements IServiceCall {
   cookies!: Record<string, string>;
 
   /**
-   * Se true la call viene esclusa dalla pagina pubblica di discovery.
+   * Se true la call è visibile nella pagina pubblica di discovery.
    * Non influisce sull'esecuzione runtime.
    */
   @Prop({ default: false })
-  unlisted!: boolean;
+  public!: boolean;
 }
 
 export const ServiceCallSchema = SchemaFactory.createForClass(ServiceCall);

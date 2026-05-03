@@ -251,7 +251,7 @@ export class EditorComponent {
     this.store.dispatch(EditorActions.selectCall({ index: idx }));
   }
 
-  onToggleUnlistedAt(idx: number, event: Event): void {
+  onTogglePublicAt(idx: number, event: Event): void {
     event.stopPropagation();
     const svc = this.service();
     if (!svc) return;
@@ -260,9 +260,20 @@ export class EditorComponent {
     this.store.dispatch(
       EditorActions.updateCall({
         index: idx,
-        changes: { unlisted: !call.unlisted },
+        changes: { public: !call.public },
       }),
     );
+  }
+
+  readonly hasAnyPublicCall = computed(
+    () => this.service()?.calls.some((c) => c.public) ?? false,
+  );
+
+  onToggleAllPublic(): void {
+    const svc = this.service();
+    if (!svc?.calls.length) return;
+    const value = !svc.calls.some((c) => c.public);
+    this.store.dispatch(EditorActions.setAllCallsPublic({ value }));
   }
 
   onClearSelection(): void {

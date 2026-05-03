@@ -10,7 +10,7 @@ export interface UserService {
   active: boolean;
   starred: boolean;
   callCount: number;
-  unlistedCallCount: number;
+  publicCallCount: number;
   /** Dimensione approssimata del documento service in byte (JSON UTF-8). */
   size: number;
 }

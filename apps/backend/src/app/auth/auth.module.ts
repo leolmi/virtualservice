@@ -17,6 +17,7 @@ import { DEFAULT_JWT_SECRET, DEFAULT_JWT_EXPIRES_IN } from '../../defaults';
   imports: [
     PassportModule,
     JwtModule.registerAsync({
+      global: true,
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         secret: configService.getOrThrow<string>('JWT_SECRET', DEFAULT_JWT_SECRET),

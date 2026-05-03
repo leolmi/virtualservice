@@ -17,6 +17,16 @@
       @if (search()) {
         <mat-icon class="clear-icon" (click)="search.set('')">close</mat-icon>
       }
+      @if ((service()?.calls?.length ?? 0) > 0) {
+        <mat-icon
+          class="bulk-visibility-icon"
+          [class.is-private]="!hasAnyPublicCall()"
+          [matTooltip]="hasAnyPublicCall() ? 'Hide all calls from public discovery' : 'Make all calls public'"
+          (click)="onToggleAllPublic()"
+        >
+          {{ hasAnyPublicCall() ? 'visibility' : 'visibility_off' }}
+        </mat-icon>
+      }
     </div>
 
     @if (service()) {
@@ -46,7 +56,7 @@
         <div
           class="call-item"
           [class.selected]="item.idx === activeCallIndex()"
-          [class.unlisted]="item.call.unlisted"
+          [class.private]="!item.call.public"
           (click)="onSelectCall(item.idx)">
           <span class="call-verb">{{ item.call.verb }}</span>
           <div class="call-path">
@@ -61,12 +71,12 @@
             {{ formatBytes(item.size) }}
           </span>
           <mat-icon
-            class="call-unlisted-icon"
-            [class.is-unlisted]="item.call.unlisted"
-            [matTooltip]="item.call.unlisted ? 'Unlisted — click to make it visible in public discovery' : 'Listed — click to hide from public discovery'"
-            (click)="onToggleUnlistedAt(item.idx, $event)"
+            class="call-visibility-icon"
+            [class.is-private]="!item.call.public"
+            [matTooltip]="item.call.public ? 'Public — click to hide from discovery' : 'Private — click to make it visible in public discovery'"
+            (click)="onTogglePublicAt(item.idx, $event)"
           >
-            {{ item.call.unlisted ? 'visibility_off' : 'visibility' }}
+            {{ item.call.public ? 'visibility' : 'visibility_off' }}
           </mat-icon>
         </div>
       }

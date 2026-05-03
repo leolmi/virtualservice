@@ -2,7 +2,8 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { AdminBypassThrottlerGuard } from './app/common/admin-throttler.guard';
 import { UsersModule } from './app/users/users.module';
 import { AuthModule } from './app/auth/auth.module';
 import { MailModule } from './app/mail/mail.module';
@@ -90,7 +91,7 @@ import { join } from 'path';
   providers: [
     {
       provide: APP_GUARD,
-      useClass: ThrottlerGuard,
+      useClass: AdminBypassThrottlerGuard,
     },
   ],
 })

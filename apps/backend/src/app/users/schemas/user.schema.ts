@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, HydratedDocument } from 'mongoose';
+import { UserRole } from '@virtualservice/shared/model';
 
 export type UserDocument = HydratedDocument<User>;
 
@@ -30,7 +31,7 @@ export class User extends Document {
   deletionRequestedAt!: Date | null;
 
   @Prop({ type: String, default: 'user', enum: ['user', 'admin'] })
-  role!: string;
+  role!: UserRole;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
