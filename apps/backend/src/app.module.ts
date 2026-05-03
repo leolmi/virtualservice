@@ -11,6 +11,7 @@ import { TemplatesModule } from './app/templates/templates.module';
 import { ApiKeysModule } from './app/api-keys/api-keys.module';
 import { McpModule } from './app/mcp/mcp.module';
 import { MockServerModule } from './app/mock-server/mock-server.module';
+import { DiscoveryModule } from './app/discovery/discovery.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { RequestLoggerMiddleware } from './app/common/request-logger.middleware';
 import { DEFAULT_MONGO_URI } from './defaults';
@@ -84,6 +85,7 @@ import { join } from 'path';
     ApiKeysModule,
     McpModule,
     MockServerModule,
+    DiscoveryModule,
   ],
   providers: [
     {

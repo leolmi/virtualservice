@@ -44,6 +44,15 @@ export const editorReducer = createReducer(
     return { ...state, service: { ...state.service, calls }, dirty: true };
   }),
 
+  on(EditorActions.updateCall, (state, { index, changes }) => {
+    if (!state.service) return state;
+    if (index < 0 || index >= state.service.calls.length) return state;
+    const calls = state.service.calls.map((c, i) =>
+      i === index ? { ...c, ...changes } : c,
+    );
+    return { ...state, service: { ...state.service, calls }, dirty: true };
+  }),
+
   on(EditorActions.addCall, (state) => {
     if (!state.service) return state;
     const newCall: IServiceCall = {

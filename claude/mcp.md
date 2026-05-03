@@ -317,7 +317,7 @@ agent → restore_snapshot(snapshotId)
 - Factory + tool registration: `mcp-server.factory.ts`
 - Tools: `tools/<name>.tool.ts` (con helper condivisi in `_helpers.ts` e shape zod riusabili in `_schemas.ts`)
 - Resources loader: `resources/mcp-resources.service.ts`
-- System templates registry: `resources/system-templates.registry.ts`
+- System templates registry: `apps/backend/src/app/templates/system-templates.registry.ts` (consumato dal modulo Templates e dai tool MCP)
 - Snapshot/audit: `snapshot.service.ts`, `audit.service.ts`
 - API key: `apps/backend/src/app/api-keys/`
 - Frontend page: `apps/frontend/src/app/api-keys/`

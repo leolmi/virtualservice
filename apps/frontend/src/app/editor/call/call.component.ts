@@ -134,6 +134,14 @@ export class CallComponent {
     this.store.dispatch(EditorActions.deleteActiveCall());
   }
 
+  onToggleUnlisted(): void {
+    const call = this.activeCall();
+    if (!call) return;
+    this.store.dispatch(
+      EditorActions.updateActiveCall({ changes: { unlisted: !call.unlisted } }),
+    );
+  }
+
   onAddRule(): void {
     const newRule: IServiceCallRule = {
       expression: '',

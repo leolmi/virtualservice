@@ -159,6 +159,22 @@
                   @if (svc.starred) {
                     <mat-icon class="svc-star">star</mat-icon>
                   }
+                  <span
+                    class="svc-call-count"
+                    [class.zero]="svc.callCount === 0"
+                    [matTooltip]="svc.callCount === 1 ? '1 call defined' : svc.callCount + ' calls defined'"
+                  >
+                    {{ svc.callCount }} {{ svc.callCount === 1 ? 'call' : 'calls' }}
+                  </span>
+                  @if (svc.unlistedCallCount > 0) {
+                    <span
+                      class="svc-unlisted-count"
+                      [matTooltip]="svc.unlistedCallCount + ' unlisted (hidden from public discovery)'"
+                    >
+                      <mat-icon>visibility_off</mat-icon>
+                      {{ svc.unlistedCallCount }}
+                    </span>
+                  }
                   <mat-icon
                     class="as-button row-btn"
                     matTooltip="Download as JSON"
@@ -169,6 +185,11 @@
                     matTooltip="Open service in editor"
                     (click)="onOpenService(svc, $event)"
                   >edit</mat-icon>
+                  <mat-icon
+                    class="as-button row-btn danger"
+                    matTooltip="Delete service"
+                    (click)="onDeleteService(user, svc, $event)"
+                  >delete</mat-icon>
                 </div>
               }
             </div>

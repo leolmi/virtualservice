@@ -16,6 +16,8 @@ import {
 import { Template, TemplateDocument } from './schemas/template.schema';
 import { Service, ServiceDocument } from '../services/schemas/service.schema';
 import { UsersService } from '../users/users.service';
+import { SystemTemplatesRegistry, SystemTemplate } from './system-templates.registry';
+import { ITemplateItem } from '@virtualservice/shared/model';
 
 const DEFAULT_EXPRESSION_SIZE_LIMIT = 64 * 1024;
 
@@ -35,6 +37,7 @@ export class TemplatesService {
     @InjectModel(Service.name)
     private readonly serviceModel: Model<ServiceDocument>,
     private readonly usersService: UsersService,
+    private readonly systemTemplates: SystemTemplatesRegistry,
     configService: ConfigService,
   ) {
     const envLimit = configService.get<string>(
@@ -45,19 +48,87 @@ export class TemplatesService {
       : DEFAULT_EXPRESSION_SIZE_LIMIT;
   }
 
-  /** Lista pubblica dei template (tutti gli utenti autenticati possono vederla) */
-  async findAll(): Promise<TemplateDocument[]> {
-    return this.templateModel
+  /**
+   * Lista pubblica dei template (tutti gli utenti autenticati possono vederla).
+   * Unisce i template di sistema (in-memory, immutabili) con quelli community
+   * (DB). I system arrivano in testa, ordinati per titolo; i community a seguire,
+   * dal più recente.
+   */
+  async findAll(): Promise<ITemplateItem[]> {
+    const community = await this.templateModel
       .find()
       .sort({ creationDate: -1 })
+      .lean()
       .exec();
+
+    const system = this.systemTemplates
+      .list()
+      .slice()
+      .sort((a, b) => a.title.localeCompare(b.title))
+      .map((t) => this.systemToItem(t));
+
+    const communityItems: ITemplateItem[] = community.map((t) => ({
+      _id: String(t._id),
+      ownerId: t.ownerId,
+      ownerEmail: t.ownerEmail,
+      title: t.title,
+      description: t.description,
+      tags: t.tags ?? [],
+      calls: t.calls ?? [],
+      dbo: t.dbo ?? '',
+      schedulerFn: t.schedulerFn ?? '',
+      interval: t.interval ?? 0,
+      installs: t.installs ?? 0,
+      creationDate: t.creationDate,
+      source: t.source ?? 'community',
+    }));
+
+    return [...system, ...communityItems];
   }
 
-  /** Dettaglio di un template per id */
-  async findOne(id: string): Promise<TemplateDocument> {
-    const tpl = await this.templateModel.findById(id).exec();
+  /**
+   * Dettaglio di un template per id.
+   * Cerca prima nei system templates (id stringa stabile) e poi su DB.
+   */
+  async findOne(id: string): Promise<ITemplateItem> {
+    const sys = this.systemTemplates.findById(id);
+    if (sys) return this.systemToItem(sys);
+
+    const tpl = await this.templateModel.findById(id).lean().exec();
     if (!tpl) throw new NotFoundException('Template not found');
-    return tpl;
+    return {
+      _id: String(tpl._id),
+      ownerId: tpl.ownerId,
+      ownerEmail: tpl.ownerEmail,
+      title: tpl.title,
+      description: tpl.description,
+      tags: tpl.tags ?? [],
+      calls: tpl.calls ?? [],
+      dbo: tpl.dbo ?? '',
+      schedulerFn: tpl.schedulerFn ?? '',
+      interval: tpl.interval ?? 0,
+      installs: tpl.installs ?? 0,
+      creationDate: tpl.creationDate,
+      source: tpl.source ?? 'community',
+    };
+  }
+
+  private systemToItem(t: SystemTemplate): ITemplateItem {
+    return {
+      _id: t.id,
+      ownerId: t.ownerId,
+      ownerEmail: t.ownerEmail,
+      title: t.title,
+      description: t.description,
+      tags: t.tags ?? [],
+      calls: t.calls ?? [],
+      dbo: t.dbo ?? '',
+      schedulerFn: t.schedulerFn ?? '',
+      interval: t.interval ?? 0,
+      installs: t.installs ?? 0,
+      creationDate: t.creationDate ?? 0,
+      source: 'system',
+    };
   }
 
   /** Crea un nuovo template (immutabile dopo la creazione) */
@@ -89,8 +160,11 @@ export class TemplatesService {
     });
   }
 
-  /** Elimina un template (solo l'autore o un admin) */
+  /** Elimina un template (solo l'autore o un admin). I system non sono eliminabili. */
   async remove(id: string, userId: string, role?: string): Promise<void> {
+    if (this.systemTemplates.findById(id)) {
+      throw new ForbiddenException('System templates cannot be deleted');
+    }
     const tpl = await this.templateModel.findById(id).exec();
     if (!tpl) throw new NotFoundException('Template not found');
     if (role !== 'admin' && tpl.ownerId !== userId) {
@@ -100,19 +174,41 @@ export class TemplatesService {
   }
 
   /**
-   * Installa un template creando un nuovo servizio per l'utente corrente.
-   * Il path è scelto dall'utente (deve essere globalmente unico).
+   * Installa un template (system o community) creando un nuovo servizio per
+   * l'utente corrente. Il path è scelto dall'utente (deve essere globalmente
+   * unico). Per i system template lookup avviene per id stabile.
    */
   async install(
     id: string,
     userId: string,
     dto: InstallTemplateDto,
   ): Promise<ServiceDocument> {
-    const tpl = await this.templateModel.findById(id).exec();
-    if (!tpl) throw new NotFoundException('Template not found');
-
     const path = (dto.path ?? '').trim();
     if (!path) throw new BadRequestException('Il path è obbligatorio');
+
+    const sys = this.systemTemplates.findById(id);
+    if (sys) {
+      const existing = await this.serviceModel.findOne({ path }).exec();
+      if (existing) throw new ConflictException('Path già in uso');
+      const now = Date.now();
+      return this.serviceModel.create({
+        owner: userId,
+        name: dto.name?.trim() || sys.title,
+        description: sys.description,
+        starred: false,
+        active: true,
+        path,
+        dbo: sys.dbo ?? '',
+        schedulerFn: sys.schedulerFn ?? '',
+        interval: sys.interval ?? 0,
+        calls: sys.calls ?? [],
+        creationDate: now,
+        lastChange: now,
+      });
+    }
+
+    const tpl = await this.templateModel.findById(id).exec();
+    if (!tpl) throw new NotFoundException('Template not found');
 
     const existing = await this.serviceModel.findOne({ path }).exec();
     if (existing) throw new ConflictException('Path già in uso');

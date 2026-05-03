@@ -24,13 +24,18 @@ function _mockServices(userId: string, count: number): UserService[] {
     'Geo Locator',
     'Currency Converter',
   ];
-  return Array.from({ length: count }, (_, i) => ({
-    _id: `${userId}-svc-${i}`,
-    name: names[i % names.length],
-    path: names[i % names.length].toLowerCase().replace(/\s+/g, '-'),
-    active: Math.random() > 0.3,
-    starred: Math.random() > 0.7,
-  }));
+  return Array.from({ length: count }, (_, i) => {
+    const callCount = Math.floor(Math.random() * 10);
+    return {
+      _id: `${userId}-svc-${i}`,
+      name: names[i % names.length],
+      path: names[i % names.length].toLowerCase().replace(/\s+/g, '-'),
+      active: Math.random() > 0.3,
+      starred: Math.random() > 0.7,
+      callCount,
+      unlistedCallCount: Math.floor(Math.random() * Math.max(1, callCount + 1)),
+    };
+  });
 }
 
 export const MOCK_USERS: ManagedUser[] = [

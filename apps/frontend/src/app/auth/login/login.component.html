@@ -50,11 +50,22 @@
           <input
             class="login-input"
             matInput
-            type="password"
+            [type]="showPassword() ? 'text' : 'password'"
             placeholder="password"
             formControlName="password"
             autocomplete="current-password"
           />
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            class="password-toggle"
+            [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'"
+            [attr.aria-pressed]="showPassword()"
+            (click)="togglePasswordVisibility()"
+          >
+            <mat-icon>{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
         </mat-form-field>
 
         <p class="form-hint">

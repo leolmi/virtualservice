@@ -5,10 +5,34 @@
       <div class="error-banner">{{ error() }}</div>
     }
 
+    @if (templates().length > 0) {
+      <div class="search-row">
+        <span class="count-label">
+          @if (search()) {
+            <strong class="count-current">{{ filteredTemplates().length }}</strong> / {{ templates().length }} templates
+          } @else {
+            {{ templates().length }} {{ templates().length === 1 ? 'template' : 'templates' }}
+          }
+        </span>
+        <div class="search-box">
+          <mat-icon class="search-icon">search</mat-icon>
+          <input
+            class="search-input"
+            [ngModel]="search()"
+            (ngModelChange)="search.set($event)"
+            placeholder="search by title, description or call path..."
+          />
+          @if (search()) {
+            <mat-icon class="clear-icon" (click)="search.set('')">close</mat-icon>
+          }
+        </div>
+      </div>
+    }
+
     <section class="templates-section">
       <mat-icon class="section-icon">collections_bookmark</mat-icon>
       <div class="tiles-grid">
-        @for (tpl of templates(); track tpl._id) {
+        @for (tpl of filteredTemplates(); track tpl._id) {
           <vs-template-tile
             [template]="tpl"
             (preview)="onPreview($event)"
@@ -16,11 +40,15 @@
             (delete)="onDelete($event)"
           />
         }
-        @if (templates().length === 0 && !loading()) {
-          <p class="empty-label">
-            No public templates yet. Open a service in the editor and use
-            <strong>Save as template</strong> to share one.
-          </p>
+        @if (filteredTemplates().length === 0 && !loading()) {
+          @if (templates().length === 0) {
+            <p class="empty-label">
+              No public templates yet. Open a service in the editor and use
+              <strong>Save as template</strong> to share one.
+            </p>
+          } @else {
+            <p class="empty-label">No templates match your search.</p>
+          }
         }
       </div>
     </section>

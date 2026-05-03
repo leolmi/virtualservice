@@ -191,6 +191,20 @@ export class EditorComponent {
     this.store.dispatch(EditorActions.selectCall({ index: idx }));
   }
 
+  onToggleUnlistedAt(idx: number, event: Event): void {
+    event.stopPropagation();
+    const svc = this.service();
+    if (!svc) return;
+    const call = svc.calls[idx];
+    if (!call) return;
+    this.store.dispatch(
+      EditorActions.updateCall({
+        index: idx,
+        changes: { unlisted: !call.unlisted },
+      }),
+    );
+  }
+
   onClearSelection(): void {
     this.store.dispatch(EditorActions.selectCall({ index: null }));
   }

@@ -30,6 +30,14 @@ export const appRoutes: Route[] = [
       import('./legal/legal.component').then((m) => m.LegalComponent),
   },
   {
+    path: 'discover',
+    title: 'discover',
+    loadComponent: () =>
+      import('./discover/discover-page/discover-page.component').then(
+        (m) => m.DiscoverPageComponent,
+      ),
+  },
+  {
     path: 'services',
     title: 'services',
     data: { helpContext: 'services' },

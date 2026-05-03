@@ -39,11 +39,14 @@ export class TemplateTileComponent {
 
   private user = this.store.selectSignal(selectUser);
 
-  /** True se l'utente corrente può eliminare il template (autore o admin) */
+  /** True se l'utente corrente può eliminare il template (autore o admin).
+   *  I template di sistema non sono eliminabili. */
   canDelete = computed(() => {
+    const tpl = this.template();
+    if (tpl.source === 'system') return false;
     const u = this.user();
     if (!u) return false;
-    return u.role === 'admin' || u._id === this.template().ownerId;
+    return u.role === 'admin' || u._id === tpl.ownerId;
   });
 
   formatDate(timestamp: number): string {

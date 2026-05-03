@@ -1,8 +1,9 @@
-import { Component, DestroyRef, inject } from '@angular/core';
+import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Actions, ofType } from '@ngrx/effects';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormsModule } from '@angular/forms';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
@@ -37,6 +38,7 @@ import { ITemplateItem } from '../store/templates.state';
   selector: 'vs-templates-page',
   standalone: true,
   imports: [
+    FormsModule,
     MatProgressSpinnerModule,
     MatIconModule,
     MatSnackBarModule,
@@ -56,6 +58,24 @@ export class TemplatesPageComponent {
   readonly loading = this.store.selectSignal(selectTemplatesLoading);
   readonly error = this.store.selectSignal(selectTemplatesError);
   readonly templates = this.store.selectSignal(selectTemplates);
+
+  readonly search = signal('');
+
+  readonly filteredTemplates = computed(() => {
+    const q = this.search().trim().toLowerCase();
+    const items = this.templates();
+    if (!q) return items;
+    return items.filter((t) => {
+      if ((t.title ?? '').toLowerCase().includes(q)) return true;
+      if ((t.description ?? '').toLowerCase().includes(q)) return true;
+      const calls = t.calls ?? [];
+      for (const c of calls) {
+        if ((c.path ?? '').toLowerCase().includes(q)) return true;
+        if ((c.description ?? '').toLowerCase().includes(q)) return true;
+      }
+      return false;
+    });
+  });
 
   constructor() {
     this.store.dispatch(loadTemplates());

@@ -23,14 +23,14 @@
       <div class="error-banner">{{ error() }}</div>
     }
 
-    <!-- Header: count label + search box -->
+    <!-- Search row: counter (left) + search box (right) -->
     @if (hasAnyService()) {
-      <div class="services-header">
-        <span class="services-count">
-          @if (isFiltering()) {
-            <strong>{{ visibleCount() }}</strong> / {{ totalCount() }} services
+      <div class="search-row">
+        <span class="count-label">
+          @if (search()) {
+            <strong class="count-current">{{ filteredCount() }}</strong> / {{ totalCount() }} services
           } @else {
-            <strong>{{ totalCount() }}</strong> services
+            {{ totalCount() }} {{ totalCount() === 1 ? 'service' : 'services' }}
           }
         </span>
         <div class="search-box">

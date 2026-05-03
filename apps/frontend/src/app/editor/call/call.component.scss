@@ -46,6 +46,16 @@
     }
   }
 
+  .btn-unlisted {
+    position: absolute;
+    right: 40px;
+    color: rgba(0, 0, 0, 0.4);
+
+    &.is-unlisted {
+      color: var(--vs-accent);
+    }
+  }
+
   .btn-delete-call {
     position: absolute;
     right: 0;

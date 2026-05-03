@@ -3,7 +3,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { McpController } from './mcp.controller';
 import { McpServerFactory } from './mcp-server.factory';
 import { McpResourcesService } from './resources/mcp-resources.service';
-import { SystemTemplatesRegistry } from './resources/system-templates.registry';
 import { SnapshotService } from './snapshot.service';
 import { AuditService } from './audit.service';
 import {
@@ -28,14 +27,12 @@ import { TemplatesModule } from '../templates/templates.module';
   providers: [
     McpServerFactory,
     McpResourcesService,
-    SystemTemplatesRegistry,
     SnapshotService,
     AuditService,
   ],
   controllers: [McpController],
   exports: [
     McpResourcesService,
-    SystemTemplatesRegistry,
     SnapshotService,
     AuditService,
   ],

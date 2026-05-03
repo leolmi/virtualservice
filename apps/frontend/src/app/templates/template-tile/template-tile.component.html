@@ -2,9 +2,18 @@
 
   <mat-card-header>
     <div class="title-block">
-      <span class="template-title">{{ template().title }}</span>
+      <span class="template-title">
+        {{ template().title }}
+        @if (template().source === 'system') {
+          <span class="source-badge system" matTooltip="Built-in template provided by the platform">system</span>
+        }
+      </span>
       <span class="template-meta">
-        by {{ template().ownerEmail }} · {{ formatDate(template().creationDate) }}
+        @if (template().source === 'system') {
+          built-in
+        } @else {
+          by {{ template().ownerEmail }} · {{ formatDate(template().creationDate) }}
+        }
       </span>
     </div>
 

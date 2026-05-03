@@ -21,6 +21,7 @@ import { TemplatesEffects } from './templates/store/templates.effects';
 import { apiKeysReducer } from './api-keys/store/api-keys.reducer';
 import { ApiKeysEffects } from './api-keys/store/api-keys.effects';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
+import { apiPrefixInterceptor } from './core/interceptors/api-prefix.interceptor';
 import { APP_VERSION } from './core/tokens/app.tokens';
 import { AppTitleStrategy } from './core/services/app-title.strategy';
 import { version } from '../../../../package.json';
@@ -38,7 +39,7 @@ export const appConfig: ApplicationConfig = {
         scrollPositionRestoration: 'enabled',
       })
     ),
-    provideHttpClient(withInterceptors([authInterceptor])),
+    provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
     provideAnimationsAsync(),
     provideStore({
       auth: authReducer,

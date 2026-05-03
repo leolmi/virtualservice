@@ -55,17 +55,41 @@ export class UsersService {
     // Recupera tutti i servizi raggruppati per owner
     const services = await this.serviceModel
       .find()
-      .select('owner name path active starred')
+      .select('owner name path active starred calls')
       .lean()
       .exec();
 
-    const servicesByOwner = new Map<string, typeof services>();
+    type ServiceRow = {
+      _id: unknown;
+      owner: string;
+      name: string;
+      path: string;
+      active: boolean;
+      starred: boolean;
+      callCount: number;
+      unlistedCallCount: number;
+    };
+
+    const servicesByOwner = new Map<string, ServiceRow[]>();
     for (const svc of services) {
       const ownerId = String(svc.owner);
       if (!servicesByOwner.has(ownerId)) {
         servicesByOwner.set(ownerId, []);
       }
-      servicesByOwner.get(ownerId)!.push(svc);
+      const calls = svc.calls ?? [];
+      servicesByOwner.get(ownerId)!.push({
+        _id: svc._id,
+        owner: ownerId,
+        name: svc.name,
+        path: svc.path,
+        active: svc.active,
+        starred: svc.starred,
+        callCount: calls.length,
+        unlistedCallCount: calls.reduce(
+          (acc, c) => acc + (c?.unlisted ? 1 : 0),
+          0,
+        ),
+      });
     }
 
     return users.map((user) => {

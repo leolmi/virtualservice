@@ -1,15 +1,5 @@
 {
-  "/auth": {
-    "target": "http://localhost:3000",
-    "secure": false,
-    "changeOrigin": true
-  },
-  "/users": {
-    "target": "http://localhost:3000",
-    "secure": false,
-    "changeOrigin": true
-  },
-  "/services": {
+  "/api": {
     "target": "http://localhost:3000",
     "secure": false,
     "changeOrigin": true
@@ -19,17 +9,17 @@
     "secure": false,
     "changeOrigin": true
   },
-  "/templates": {
-    "target": "http://localhost:3000",
-    "secure": false,
-    "changeOrigin": true
-  },
-  "/api-keys": {
-    "target": "http://localhost:3000",
-    "secure": false,
-    "changeOrigin": true
-  },
   "/mcp": {
+    "target": "http://localhost:3000",
+    "secure": false,
+    "changeOrigin": true
+  },
+  "/auth/google": {
+    "target": "http://localhost:3000",
+    "secure": false,
+    "changeOrigin": true
+  },
+  "/auth/verify-email": {
     "target": "http://localhost:3000",
     "secure": false,
     "changeOrigin": true

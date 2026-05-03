@@ -15,6 +15,14 @@
         placeholder="call-path" />
       <button
         mat-icon-button
+        [matTooltip]="call.unlisted ? 'Unlisted: hidden from public discovery' : 'Listed: visible in public discovery'"
+        class="btn-unlisted"
+        [class.is-unlisted]="call.unlisted"
+        (click)="onToggleUnlisted()">
+        <mat-icon>{{ call.unlisted ? 'visibility_off' : 'visibility' }}</mat-icon>
+      </button>
+      <button
+        mat-icon-button
         matTooltip="Delete call"
         class="btn-delete-call warn"
         (click)="onDeleteCall()">

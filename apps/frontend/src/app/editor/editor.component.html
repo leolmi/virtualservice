@@ -24,11 +24,20 @@
         <div
           class="call-item"
           [class.selected]="item.idx === activeCallIndex()"
+          [class.unlisted]="item.call.unlisted"
           (click)="onSelectCall(item.idx)">
           <span class="call-verb">{{ item.call.verb }}</span>
           <div class="call-path">
             <span class="path-base">./{{ service()?.path }}/</span>{{ item.call.path }}
           </div>
+          <mat-icon
+            class="call-unlisted-icon"
+            [class.is-unlisted]="item.call.unlisted"
+            [matTooltip]="item.call.unlisted ? 'Unlisted — click to make it visible in public discovery' : 'Listed — click to hide from public discovery'"
+            (click)="onToggleUnlistedAt(item.idx, $event)"
+          >
+            {{ item.call.unlisted ? 'visibility_off' : 'visibility' }}
+          </mat-icon>
         </div>
       }
       @if (!displayCalls().length && !loading()) {

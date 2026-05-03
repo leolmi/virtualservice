@@ -69,10 +69,9 @@ export class ServicesComponent {
   readonly otherServices = computed(() => this._applySearch(this.rawOther()));
   readonly hasAnyService = computed(() => this.allServices().length > 0);
   readonly totalCount = computed(() => this.allServices().length);
-  readonly visibleCount = computed(
+  readonly filteredCount = computed(
     () => this.starredServices().length + this.otherServices().length,
   );
-  readonly isFiltering = computed(() => this.search().trim().length > 0);
 
   readonly dropFileTypes = DROP_FILE_TYPES;
 
@@ -98,6 +97,12 @@ export class ServicesComponent {
     this.store.dispatch(loadServices());
 
     const commands: ToolbarCommand[] = [
+      {
+        id: 'discover',
+        icon: 'search',
+        tooltip: 'Discover public endpoints',
+        action: () => this.router.navigate(['/discover']),
+      },
       {
         id: 'templates',
         icon: 'collections_bookmark',

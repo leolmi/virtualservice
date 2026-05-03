@@ -51,6 +51,20 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+
+    .source-badge.system {
+      display: inline-block;
+      margin-left: 6px;
+      padding: 1px 6px;
+      border-radius: 8px;
+      font-size: 0.6rem;
+      font-weight: 600;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      background: var(--vs-primary, cornflowerblue);
+      color: white;
+      vertical-align: middle;
+    }
   }
 
   .template-meta {

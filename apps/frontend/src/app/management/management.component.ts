@@ -10,7 +10,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ToolbarService } from '../core/services/toolbar.service';
-import { ManagementService, ManagedUser } from './management.service';
+import { ManagementService, ManagedUser, UserService } from './management.service';
 import { ConfirmDialogComponent, ConfirmDialogData } from '../core/components/confirm-dialog/confirm-dialog.component';
 import { SendMailDialogComponent, SendMailDialogData, SendMailDialogResult } from './send-mail-dialog/send-mail-dialog.component';
 import { EditEmailDialogComponent, EditEmailDialogData } from './edit-email-dialog/edit-email-dialog.component';
@@ -252,6 +252,38 @@ export class ManagementComponent {
   onOpenService(svc: { _id: string; }, event: Event): void {
     event.stopPropagation();
     this.router.navigate(['/editor', svc._id]);
+  }
+
+  onDeleteService(user: ManagedUser, svc: UserService, event: Event): void {
+    event.stopPropagation();
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        data: {
+          title: 'Delete service',
+          message: `Permanently delete service "${svc.name}" (/${svc.path}) of "${user.email}"? This action cannot be undone.`,
+          confirmLabel: 'Delete',
+        } satisfies ConfirmDialogData,
+      })
+      .afterClosed()
+      .subscribe((confirmed) => {
+        if (!confirmed) return;
+        this.managementService.deleteService(svc._id).subscribe({
+          next: () =>
+            this.users.update((list) =>
+              list.map((u) =>
+                u._id === user._id
+                  ? {
+                      ...u,
+                      services: u.services.filter((s) => s._id !== svc._id),
+                      serviceCount: Math.max(0, u.serviceCount - 1),
+                    }
+                  : u,
+              ),
+            ),
+          error: (err) =>
+            this.notify('Delete failed', err.error?.message ?? 'Could not delete service'),
+        });
+      });
   }
 
   onDownloadService(svc: { _id: string; name: string }, event: Event): void {

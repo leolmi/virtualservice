@@ -27,6 +27,11 @@ export const updateActiveCall = createAction(
   props<{ changes: Partial<IServiceCall> }>(),
 );
 
+export const updateCall = createAction(
+  '[Editor] Update Call',
+  props<{ index: number; changes: Partial<IServiceCall> }>(),
+);
+
 export const addCall = createAction('[Editor] Add Call');
 export const deleteActiveCall = createAction('[Editor] Delete Active Call');
 

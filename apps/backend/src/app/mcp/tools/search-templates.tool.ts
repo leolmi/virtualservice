@@ -36,27 +36,16 @@ export function registerSearchTemplates(
       },
     },
     async ({ query }) => {
-      const community = await deps.templatesService.findAll();
-      const system = deps.systemTemplates.list();
+      const merged = await deps.templatesService.findAll();
 
-      const all: TemplateSearchItem[] = [
-        ...system.map<TemplateSearchItem>((t) => ({
-          id: t.id,
-          title: t.title,
-          description: t.description,
-          tags: t.tags ?? [],
-          callsCount: Array.isArray(t.calls) ? t.calls.length : 0,
-          source: 'system',
-        })),
-        ...community.map<TemplateSearchItem>((t) => ({
-          id: String(t._id),
-          title: t.title,
-          description: t.description,
-          tags: t.tags ?? [],
-          callsCount: Array.isArray(t.calls) ? t.calls.length : 0,
-          source: 'community',
-        })),
-      ];
+      const all: TemplateSearchItem[] = merged.map<TemplateSearchItem>((t) => ({
+        id: t._id,
+        title: t.title,
+        description: t.description,
+        tags: t.tags ?? [],
+        callsCount: Array.isArray(t.calls) ? t.calls.length : 0,
+        source: t.source,
+      }));
 
       const needle = query?.trim().toLowerCase();
       const items = needle

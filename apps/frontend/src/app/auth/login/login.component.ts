@@ -1,4 +1,4 @@
-import { Component, effect, inject } from '@angular/core';
+import { Component, DestroyRef, effect, inject, signal } from '@angular/core';
 import {
   FormBuilder,
   ReactiveFormsModule,
@@ -16,6 +16,8 @@ import { map } from 'rxjs';
 import { login, loginWithGoogle } from '../store/auth.actions';
 import { selectAuthLoading, selectAuthError, selectIsLoggedIn, selectSessionRestored } from '../store/auth.selectors';
 import { APP_VERSION } from '../../core/tokens/app.tokens';
+import { ToolbarService } from '../../core/services/toolbar.service';
+import { ToolbarCommand } from '../../core/models/toolbar-command.model';
 import { Clipboard, ClipboardModule } from '@angular/cdk/clipboard';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
@@ -40,6 +42,8 @@ export class LoginComponent {
   private fb = inject(FormBuilder);
   private router = inject(Router);
 
+  private toolbar = inject(ToolbarService);
+
   constructor() {
     // Se la sessione è stata ripristinata e l'utente risulta autenticato,
     // redirect a /services. Copre la race condition in cui restoreSessionSuccess
@@ -53,6 +57,17 @@ export class LoginComponent {
         this.router.navigate(['/services']);
       }
     });
+
+    const commands: ToolbarCommand[] = [
+      {
+        id: 'discover',
+        icon: 'search',
+        tooltip: 'Discover public endpoints',
+        action: () => this.router.navigate(['/discover']),
+      },
+    ];
+    this.toolbar.set(commands);
+    inject(DestroyRef).onDestroy(() => this.toolbar.clear());
   }
 
   readonly NPM_LOCAL_URL = 'https://www.npmjs.com/package/virtualservice-local';
@@ -69,6 +84,12 @@ export class LoginComponent {
 
   loading = this.store.selectSignal(selectAuthLoading);
   error = this.store.selectSignal(selectAuthError);
+
+  readonly showPassword = signal(false);
+
+  togglePasswordVisibility(): void {
+    this.showPassword.update((v) => !v);
+  }
 
   form = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],

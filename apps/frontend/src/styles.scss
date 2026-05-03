@@ -77,6 +77,10 @@ body {
   height: 100%;
   margin: 0;
   font-family: Roboto, sans-serif;
+  /* Le scrollbar appartengono ALLE PAGINE INTERNE, non al root.
+     Bloccare overflow qui forza ogni pagina a gestire il proprio scroll
+     (la toolbar resta fissa al top, niente doppie scrollbar). */
+  overflow: hidden;
 }
 
 .flex-spacer {

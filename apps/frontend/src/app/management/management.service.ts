@@ -9,6 +9,8 @@ export interface UserService {
   path: string;
   active: boolean;
   starred: boolean;
+  callCount: number;
+  unlistedCallCount: number;
 }
 
 export interface ManagedUser {
@@ -57,6 +59,10 @@ export class ManagementService {
 
   deleteUser(userId: string): Observable<void> {
     return this.http.delete<void>(`/users/${userId}`);
+  }
+
+  deleteService(serviceId: string): Observable<void> {
+    return this.http.delete<void>(`/services/${serviceId}`);
   }
 
   restoreUser(userId: string): Observable<{ message: string }> {

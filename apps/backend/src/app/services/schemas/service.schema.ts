@@ -125,6 +125,13 @@ export class ServiceCall implements IServiceCall {
   /** Cookie da impostare nella risposta */
   @Prop({ type: MongooseSchema.Types.Mixed, default: {} })
   cookies!: Record<string, string>;
+
+  /**
+   * Se true la call viene esclusa dalla pagina pubblica di discovery.
+   * Non influisce sull'esecuzione runtime.
+   */
+  @Prop({ default: false })
+  unlisted!: boolean;
 }
 
 export const ServiceCallSchema = SchemaFactory.createForClass(ServiceCall);
@@ -184,9 +191,24 @@ export const ServiceSchema = SchemaFactory.createForClass(Service);
 // Aggiorna lastChange automaticamente ad ogni salvataggio.
 // Backfilla `id` su ogni rule che ne è priva (uuid v4) — migrazione naturale
 // idempotente. I documenti pre-feature acquisiscono ids al primo save (UI o MCP).
+// Rifiuta i save che contengono call duplicate (stesso `verb` + `path`): a
+// runtime il mock-server serve solo la prima occorrenza, le successive sono
+// codice morto. Il bootstrap dedup ripulisce lo storico (vedi
+// `services-dedup.bootstrap.ts`); questo guard impedisce di reintrodurle.
 ServiceSchema.pre('save', function (next) {
   this.lastChange = Date.now();
+
+  const seen = new Set<string>();
   for (const call of this.calls ?? []) {
+    const key = `${call.verb}:${call.path}`;
+    if (seen.has(key)) {
+      return next(
+        new Error(
+          `Duplicate call definition: a call with verb "${call.verb}" and path "${call.path}" already exists in this service.`,
+        ),
+      );
+    }
+    seen.add(key);
     for (const rule of call.rules ?? []) {
       if (!rule.id) {
         rule.id = randomUUID();

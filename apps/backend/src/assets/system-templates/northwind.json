@@ -1,0 +1,132 @@
+{
+  "id": "system-northwind",
+  "title": "Northwind all db tables",
+  "description": "## NORTHWIND\n\nservice publish all notrwind tables in json format\n\n- catagories\n- customers\n- employees\n- orders\n- products\n- regions\n- shippers\n- suppliers\n",
+  "tags": ["northwind", "catalog"],
+  "dbo": "const db = samples.northwind;\nreturn db;",
+  "schedulerFn": "",
+  "interval": 0,
+  "calls": [
+    {
+      "path": "categories",
+      "verb": "GET",
+      "description": "",
+      "response": "return db.categories;",
+      "file": "",
+      "respType": "json",
+      "rules": [],
+      "body": "{}",
+      "parameters": []
+    },
+    {
+      "path": "customers",
+      "verb": "GET",
+      "description": "",
+      "response": "return db.customers;",
+      "file": "",
+      "respType": "json",
+      "rules": [],
+      "body": "{}",
+      "parameters": []
+    },
+    {
+      "path": "employees",
+      "verb": "GET",
+      "description": "",
+      "response": "return db.employees;",
+      "file": "",
+      "respType": "json",
+      "rules": [],
+      "body": "{}",
+      "parameters": []
+    },
+    {
+      "path": "orders",
+      "verb": "GET",
+      "description": "",
+      "response": "return db.orders;",
+      "file": "",
+      "respType": "json",
+      "rules": [],
+      "body": "{}",
+      "parameters": []
+    },
+    {
+      "path": "products",
+      "verb": "GET",
+      "description": "",
+      "response": "return db.products;",
+      "file": "",
+      "respType": "json",
+      "rules": [],
+      "body": "{}",
+      "parameters": []
+    },
+    {
+      "path": "regions",
+      "verb": "GET",
+      "description": "",
+      "response": "return db.regions;",
+      "file": "",
+      "respType": "json",
+      "rules": [],
+      "body": "{}",
+      "parameters": []
+    },
+    {
+      "path": "shippers",
+      "verb": "GET",
+      "description": "",
+      "response": "return db.shippers;",
+      "file": "",
+      "respType": "json",
+      "rules": [],
+      "body": "{}",
+      "parameters": []
+    },
+    {
+      "path": "suppliers",
+      "verb": "GET",
+      "description": "",
+      "response": "return db.suppliers;",
+      "file": "",
+      "respType": "json",
+      "rules": [],
+      "body": "{}",
+      "parameters": []
+    },
+    {
+      "path": "products-by-category/{category}",
+      "verb": "GET",
+      "description": "",
+      "response": "return db.products.filter(p => p.categoryID === parseInt(pathValue.category, 10));",
+      "file": "",
+      "respType": "json",
+      "rules": [],
+      "body": "{}",
+      "parameters": []
+    },
+    {
+      "path": "orders-by-employee/{employee}",
+      "verb": "GET",
+      "description": "",
+      "response": "return db.orders.filter(o => o.employeeID === parseInt(pathValue.employee, 10));",
+      "file": "",
+      "respType": "json",
+      "rules": [],
+      "body": "{}",
+      "parameters": []
+    },
+    {
+      "path": "orders-by-product/{product}",
+      "verb": "GET",
+      "description": "",
+      "response": "return db.orders.filter(o => !!o.details.find(d => d.productID === parseInt(pathValue.product, 10)));",
+      "file": "",
+      "respType": "json",
+      "rules": [],
+      "body": "{}",
+      "parameters": []
+    }
+  ]
+}

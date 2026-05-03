@@ -105,12 +105,62 @@
 
   .call-path {
     //font-size: 0.85rem;
+    flex: 1;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 
     .path-base {
       opacity: 0.5;
+    }
+  }
+
+  &.unlisted {
+    .call-verb,
+    .call-path {
+      opacity: 0.55;
+    }
+  }
+
+  .call-unlisted-icon {
+    flex-shrink: 0;
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    margin-left: 8px;
+    cursor: pointer;
+    border-radius: 4px;
+    padding: 2px;
+    box-sizing: content-box;
+    color: rgba(255, 255, 255, 0.25);
+    opacity: 0;
+    transition: opacity 0.15s, color 0.15s, background 0.15s;
+
+    &.is-unlisted {
+      opacity: 1;
+      color: var(--vs-accent);
+    }
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--vs-accent);
+    }
+  }
+
+  &:hover .call-unlisted-icon {
+    opacity: 1;
+  }
+
+  &.selected .call-unlisted-icon {
+    color: rgba(0, 0, 0, 0.3);
+
+    &.is-unlisted {
+      color: var(--vs-accent);
+    }
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.06);
+      color: var(--vs-accent);
     }
   }
 }

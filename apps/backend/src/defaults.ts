@@ -6,6 +6,9 @@ export const DEFAULT_BODY_SIZE_LIMIT = 1024 * 1024;
 export const DEFAULT_MONGO_URI = 'mongodb://localhost:27017/virtualservice';
 
 // Google OAuth 2.0
+// NB: deve corrispondere a quanto registrato sul Google Cloud Console per il client OAuth.
+// /auth/google e /auth/google/callback sono ESCLUSI dal global prefix /api proprio per
+// preservare questa URL contractuale (vedi `setGlobalPrefix` in main.ts).
 export const DEFAULT_GOOGLE_CALLBACK_URL = 'https://virtualservice.herokuapp.com/auth/google/callback';
 export const DEFAULT_GOOGLE_CLIENT_ID = 'xxxxx';
 export const DEFAULT_GOOGLE_CLIENT_SECRET = 'xxx';

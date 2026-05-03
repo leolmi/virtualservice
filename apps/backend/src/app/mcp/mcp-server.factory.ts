@@ -6,7 +6,7 @@ import { LogService } from '../services/log.service';
 import { TemplatesService } from '../templates/templates.service';
 import { ApiKeysService } from '../api-keys/api-keys.service';
 import { McpResourcesService } from './resources/mcp-resources.service';
-import { SystemTemplatesRegistry } from './resources/system-templates.registry';
+import { SystemTemplatesRegistry } from '../templates/system-templates.registry';
 import { SnapshotService } from './snapshot.service';
 import { AuditService } from './audit.service';
 import { VS_INSTRUCTIONS } from './instructions';
